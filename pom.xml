@@ -5,11 +5,12 @@
   <groupId>com.inrupt</groupId>
   <artifactId>inrupt-commons-wrapping</artifactId>
   <version>0.1.0-SNAPSHOT</version>
-  <name>Commons RDF Object Wrapping</name>
-  <url>https://inrupt.com</url>
+  <name>Inrupt Commons Wrapping</name>
+  <url>https://inrupt.github.io/commons-rdf-wrapping/</url>
   <description>
-      An Object Wrapper for the Apache Commons RDF APIs.
+    <!-- TODO: Write -->
   </description>
+  <packaging>pom</packaging>
 
   <properties>
     <maven.compiler.parameters>true</maven.compiler.parameters>
@@ -22,6 +23,7 @@
     <commons.rdf.version>0.5.0</commons.rdf.version>
     <rdf4j.version>4.2.2</rdf4j.version>
     <jena.version>4.7.0</jena.version>
+    <inrupt.commons.rdf4j.version>0.4.0</inrupt.commons.rdf4j.version>
 
     <!-- plugins -->
     <buildhelper.plugin.version>3.3.0</buildhelper.plugin.version>
@@ -53,6 +55,7 @@
     <!-- testing -->
     <junit.version>5.9.2</junit.version>
     <slf4j.version>2.0.6</slf4j.version>
+    <hamcrest.version>2.2</hamcrest.version>
 
     <!-- sonar -->
     <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/target/site/jacoco-merged/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -60,6 +63,14 @@
     <sonar.projectKey>commons-wrapping</sonar.projectKey>
     <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
   </properties>
+
+  <modules>
+    <module>commonsrdf</module>
+    <module>test</module>
+    <module>jena</module>
+    <module>rdf4j</module>
+    <module>reports</module>
+  </modules>
 
   <distributionManagement>
     <snapshotRepository>
@@ -92,6 +103,21 @@
         <artifactId>commons-rdf-api</artifactId>
         <version>${commons.rdf.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-rdf-rdf4j</artifactId>
+        <version>${commons.rdf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.inrupt</groupId>
+        <artifactId>inrupt-commons-rdf4j</artifactId>
+        <version>${inrupt.commons.rdf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jena</groupId>
+        <artifactId>jena-commonsrdf</artifactId>
+        <version>${jena.version}</version>
+      </dependency>
 
       <!-- testing -->
       <dependency>
@@ -110,6 +136,11 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
         <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest</artifactId>
+        <version>${hamcrest.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
