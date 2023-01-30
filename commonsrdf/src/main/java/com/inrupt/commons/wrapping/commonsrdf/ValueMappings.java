@@ -20,6 +20,8 @@
  */
 package com.inrupt.commons.wrapping.commonsrdf;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -220,16 +222,34 @@ public final class ValueMappings {
     private static <T extends RDFTerm> T as(final RDFTerm term, final Graph graph, final Class<T> view) {
         Objects.requireNonNull(term, TERM_REQUIRED);
 
+        final Constructor<T> termAndGraphConstructor = findConstructor(view, RDFTerm.class, Graph.class);
+        if (termAndGraphConstructor != null) {
+            return instantiate(termAndGraphConstructor, term, graph);
+        }
+
+        final Constructor<T> justTermConstructor = findConstructor(view, RDFTerm.class);
+        if (justTermConstructor != null) {
+            return instantiate(justTermConstructor, term);
+        }
+
+        // TODO: Throw specific exception
+        throw new IllegalStateException("No constructor found with parameter types (RDFTerm, Graph) or (RDFTerm)");
+    }
+
+    private static <T> Constructor<T> findConstructor(final Class<T> view, final Class<?>... parameterTypes) {
         try {
-            return view.getConstructor(RDFTerm.class, Graph.class).newInstance(term, graph);
-        } catch (ReflectiveOperationException e1) {
-            try {
-                return view.getConstructor(RDFTerm.class).newInstance(term);
-            } catch (ReflectiveOperationException e2) {
-                // TODO: Throw specific exception
-                throw new IllegalStateException(
-                        "No constructor found with parameter types (RDFTerm, Graph) or (RDFTerm)");
-            }
+            return view.getConstructor(parameterTypes);
+        } catch (NoSuchMethodException | SecurityException e) {
+            return null;
+        }
+    }
+
+    private static <T> T instantiate(final Constructor<T> constructor, final Object... initArgs) {
+        try {
+            return constructor.newInstance(initArgs);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            // TODO: Throw specific exception
+            throw new IllegalStateException("Could not instantiate wrapping class", e);
         }
     }
 
