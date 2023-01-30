@@ -79,7 +79,7 @@ import org.apache.jena.rdf.model.RDFNode;
 @SuppressWarnings("java:S2176") // Intentional. Callers can distinguish between base and derived based on package name.
 public class PredicateObjectSet<T> extends com.inrupt.commons.wrapping.commonsrdf.PredicateObjectSet<T> {
     /**
-     * Constructs a new dynamic set view over the objects of statements that share a predicate and an object.
+     * Constructs a new dynamic set view over the objects of statements that share a predicate and a subject.
      *
      * @param subject the subject node shared by all statements
      * @param predicate the predicate node shared by all statements

@@ -82,7 +82,7 @@ public class PredicateObjectSet<T> extends com.inrupt.commons.wrapping.commonsrd
     private static final RDF4J RDF4J = new RDF4J();
 
     /**
-     * Constructs a new dynamic set view over the objects of statements that share a predicate and an object.
+     * Constructs a new dynamic set view over the objects of statements that share a predicate and a subject.
      *
      * @param subject the subject node shared by all statements
      * @param predicate the predicate node shared by all statements
