@@ -21,7 +21,7 @@
 package com.inrupt.commons.wrapping.test;
 
 import com.inrupt.commons.wrapping.commonsrdf.*;
-import com.inrupt.commons.wrapping.test.base.PredicateObjectSetBase;
+import com.inrupt.commons.wrapping.test.base.ObjectSetBase;
 
 import java.util.Set;
 
@@ -30,7 +30,7 @@ import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.rdf.api.Literal;
 import org.apache.commons.rdf.api.RDF;
 
-public class CommonsPredicateObjectSetBase extends PredicateObjectSetBase {
+public class CommonsObjectSetBase extends ObjectSetBase {
     private static final RDF FACTORY = RDFFactory.getInstance();
     private static final TermMapping<String> T2V = TermMappings::asStringLiteral;
     private static final ValueMapping<String> V2T = ValueMappings::literalAsString;
@@ -66,6 +66,6 @@ public class CommonsPredicateObjectSetBase extends PredicateObjectSetBase {
         final IRI s = FACTORY.createIRI(subject);
         final IRI p = FACTORY.createIRI(predicate);
 
-        return new PredicateObjectSet<>(s, p, graph, T2V, V2T);
+        return new ObjectSet<>(s, p, graph, T2V, V2T);
     }
 }

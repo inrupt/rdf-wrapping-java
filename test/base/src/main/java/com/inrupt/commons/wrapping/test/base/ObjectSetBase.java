@@ -41,7 +41,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * This class contains test logic only, while the task of creating instances of that class (and the circumstances
  * required for it) are delegated to derived classes.
  */
-public abstract class PredicateObjectSetBase {
+public abstract class ObjectSetBase {
     // region constants
 
     private static final String URN_UUID = "urn:uuid:";

@@ -33,7 +33,7 @@ class TermMappingsTest extends TermMappingsBase {
 
 @DisplayName("Commons Predicate-Object Set (Jena)")
 @SuppressWarnings("java:S2187") // Tests in base class
-class JenaCommonsPredicateObjectSetTest extends CommonsPredicateObjectSetBase {
+class JenaCommonsObjectSetTest extends CommonsObjectSetBase {
 }
 
 @DisplayName("Value Mapping (Jena)")

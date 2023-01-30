@@ -1,6 +1,6 @@
 package com.inrupt.commons.wrapping.jena;
 
-import com.inrupt.commons.wrapping.test.base.PredicateObjectSetBase;
+import com.inrupt.commons.wrapping.test.base.ObjectSetBase;
 
 import java.util.Set;
 
@@ -11,7 +11,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.junit.jupiter.api.DisplayName;
 
 @DisplayName("Jena Predicate-Object Set")
-class JenaPredicateObjectSetTest extends PredicateObjectSetBase {
+class JenaObjectSetTest extends ObjectSetBase {
     private static final NodeMapping<String> N2V = (n, m) -> m.createLiteral(n);
     private static final ValueMapping<String> V2N = n -> n.asLiteral().getLexicalForm();
 
@@ -44,6 +44,6 @@ class JenaPredicateObjectSetTest extends PredicateObjectSetBase {
         final Resource s = subject == null ? null : model.createResource(subject);
         final Property p = predicate == null ? null : model.createProperty(predicate);
 
-        return new com.inrupt.commons.wrapping.jena.PredicateObjectSet<>(s, p, N2V, V2N);
+        return new ObjectSet<>(s, p, N2V, V2N);
     }
 }

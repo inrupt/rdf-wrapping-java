@@ -52,11 +52,11 @@ import org.apache.commons.rdf.api.*;
  * <p>This table details the behavior of plural getter helper methods in terms of reflecting changes to the underlying
  * graph after calling them:
  * <pre>
- * ┌──────────┬─────────┐
- * │ iterator │ static  │
- * │ snapshot │ static  │
- * │ live     │ dynamic │
- * └──────────┴─────────┘
+ * ┌────────────────┬─────────┐
+ * │ objectIterator │ static  │
+ * │ objectSnapshot │ static  │
+ * │ objects        │ dynamic │
+ * └────────────────┴─────────┘
  * </pre>
  *
  * <p>This table details the behavior of setter helper methods in terms of effect on existing statements in the
@@ -100,7 +100,7 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        return stream(p, m).findAny().orElse(null);
+        return objectStream(p, m).findAny().orElse(null);
     }
 
     /**
@@ -137,7 +137,7 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        final Iterator<T> statements = iterator(p, m);
+        final Iterator<T> statements = objectIterator(p, m);
 
         if (!statements.hasNext()) {
             return null;
@@ -181,11 +181,11 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
      *
      * @return the converted objects of statements with this subject and the given predicate
      */
-    protected <T> Iterator<T> iterator(final IRI p, final ValueMapping<T> m) {
+    protected <T> Iterator<T> objectIterator(final IRI p, final ValueMapping<T> m) {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        return stream(p, m).iterator();
+        return objectStream(p, m).iterator();
     }
 
     /**
@@ -197,11 +197,11 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
      *
      * @return a static set view over converted objects of statements with this subject and the given predicate
      */
-    protected <T> Set<T> snapshot(final IRI p, final ValueMapping<T> m) {
+    protected <T> Set<T> objectsReadOnly(final IRI p, final ValueMapping<T> m) {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        return stream(p, m).collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
+        return objectStream(p, m).collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
     }
 
     /**
@@ -214,8 +214,8 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
      *
      * @return a dynamic set view over converted objects of statements with this subject and the given predicate
      */
-    protected <T> Set<T> live(final IRI p, final TermMapping<T> tm, final ValueMapping<T> vm) {
-        return new PredicateObjectSet<>(this, p, graph, tm, vm);
+    protected <T> Set<T> objects(final IRI p, final TermMapping<T> tm, final ValueMapping<T> vm) {
+        return new ObjectSet<>(this, p, graph, tm, vm);
     }
 
     /**
@@ -227,7 +227,7 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
      *
      * @return a static stream of converted objects of statements with this subject and the given predicate
      */
-    protected <T> Stream<T> stream(final IRI p, final ValueMapping<T> m) {
+    protected <T> Stream<T> objectStream(final IRI p, final ValueMapping<T> m) {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
@@ -374,7 +374,7 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
     }
 
     private <T> Iterator<T> atLeastOne(final IRI p, final ValueMapping<T> m) {
-        final Iterator<T> statements = iterator(p, m);
+        final Iterator<T> statements = objectIterator(p, m);
 
         if (!statements.hasNext()) {
             final String message = String.format("No statements with subject [%s] and predicate [%s]", this, p);

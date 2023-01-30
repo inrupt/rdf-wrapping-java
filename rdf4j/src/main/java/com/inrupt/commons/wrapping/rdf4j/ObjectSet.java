@@ -18,11 +18,12 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.commons.wrapping.jena;
+package com.inrupt.commons.wrapping.rdf4j;
 
 import static java.util.Objects.requireNonNull;
-import static org.apache.jena.commonsrdf.JenaCommonsRDF.fromJena;
 
+import com.inrupt.commons.rdf4j.RDF4J;
+import com.inrupt.commons.wrapping.commonsrdf.TermMappings;
 import com.inrupt.commons.wrapping.commonsrdf.ValueMappings;
 
 import java.util.AbstractSet;
@@ -33,8 +34,8 @@ import org.apache.commons.rdf.api.BlankNodeOrIRI;
 import org.apache.commons.rdf.api.Graph;
 import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.rdf.api.RDFTerm;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Value;
 
 
 /**
@@ -77,35 +78,39 @@ import org.apache.jena.rdf.model.RDFNode;
  * @author Samu Lang
  */
 @SuppressWarnings("java:S2176") // Intentional. Callers can distinguish between base and derived based on package name.
-public class PredicateObjectSet<T> extends com.inrupt.commons.wrapping.commonsrdf.PredicateObjectSet<T> {
+public class ObjectSet<T> extends com.inrupt.commons.wrapping.commonsrdf.ObjectSet<T> {
+    private static final RDF4J RDF4J = new RDF4J();
+
     /**
      * Constructs a new dynamic set view over the objects of statements that share a predicate and a subject.
      *
      * @param subject the subject node shared by all statements
      * @param predicate the predicate node shared by all statements
-     * @param nodeMapping a mapping from terms to values used for read operations (use {@link NodeMappings} for common
+     * @param model TODO: Document
+     * @param nodeMapping a mapping from terms to values used for read operations (use {@link TermMappings} for common
      * mappings)
      * @param valueMapping a mapping from values to nodes used for write operations (use {@link ValueMappings} for
      * common mappings)
      *
      * @throws NullPointerException if any of the arguments are null
      */
-    public PredicateObjectSet(
-            final RDFNode subject,
-            final RDFNode predicate,
-            final NodeMapping<T> nodeMapping,
+    public ObjectSet(
+            final Value subject,
+            final Value predicate,
+            final Model model,
+            final RdfValueMapping<T> nodeMapping,
             final ValueMapping<T> valueMapping) {
 
         super(
                 convertSubject(requireNonNull(subject)),
                 convertPredicate(requireNonNull(predicate)),
-                convertGraph(subject),
+                RDF4J.asGraph(requireNonNull(model)),
                 requireNonNull(nodeMapping).asCommons(),
                 requireNonNull(valueMapping).asCommons());
     }
 
-    private static BlankNodeOrIRI convertSubject(final RDFNode subject) {
-        final RDFTerm term = fromJena(subject.asNode());
+    private static BlankNodeOrIRI convertSubject(final Value subject) {
+        final RDFTerm term = RDF4J.asRDFTerm(subject);
 
         if (!(term instanceof BlankNodeOrIRI)) {
             // TODO: Throw specific exception
@@ -115,8 +120,8 @@ public class PredicateObjectSet<T> extends com.inrupt.commons.wrapping.commonsrd
         return (BlankNodeOrIRI) term;
     }
 
-    private static IRI convertPredicate(final RDFNode predicate) {
-        final RDFTerm term = fromJena(predicate.asNode());
+    private static IRI convertPredicate(final Value predicate) {
+        final RDFTerm term = RDF4J.asRDFTerm(predicate);
 
         if (!(term instanceof IRI)) {
             // TODO: Throw specific exception
@@ -124,16 +129,5 @@ public class PredicateObjectSet<T> extends com.inrupt.commons.wrapping.commonsrd
         }
 
         return (IRI) term;
-    }
-
-    private static Graph convertGraph(final RDFNode subject) {
-        final Model model = subject.getModel();
-
-        if (model == null) {
-            // TODO: Throw specific exception
-            throw new IllegalStateException("Subject has no model");
-        }
-
-        return fromJena(model.getGraph());
     }
 }

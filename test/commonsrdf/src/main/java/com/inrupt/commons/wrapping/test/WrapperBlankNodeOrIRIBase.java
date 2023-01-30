@@ -132,77 +132,77 @@ public class WrapperBlankNodeOrIRIBase {
         assertThrows(IllegalStateException.class, s::singleOrThrow);
     }
 
-    @DisplayName("iterator is empty if no statements match subject & predicate")
+    @DisplayName("objectIterator is empty if no statements match subject & predicate")
     @Test
-    void iteratorEmptyIfZero() {
-        assertThat(s.iterator().hasNext(), is(false));
+    void objectIteratorEmptyIfZero() {
+        assertThat(s.objectIterator().hasNext(), is(false));
     }
 
-    @DisplayName("iterator contains converted objects of statements matching subject & predicate")
+    @DisplayName("objectIterator contains converted objects of statements matching subject & predicate")
     @Test
-    void iteratorContainsIfNonZero() {
+    void objectIteratorContainsIfNonZero() {
         g.add(s, P, O1);
         g.add(s, P, O2);
 
-        assertThat(() -> s.iterator(), containsInAnyOrder(V1, V2));
+        assertThat(() -> s.objectIterator(), containsInAnyOrder(V1, V2));
     }
 
-    @DisplayName("iterator does not implement remove")
+    @DisplayName("objectIterator does not implement remove")
     @Test
-    void iteratorRemoveThrows() {
+    void objectIteratorRemoveThrows() {
         g.add(s, P, O1);
 
-        assertThrows(UnsupportedOperationException.class, s.iterator()::remove);
+        assertThrows(UnsupportedOperationException.class, s.objectIterator()::remove);
     }
 
-    @DisplayName("snapshot is empty if no statements match subject & predicate")
+    @DisplayName("objectsReadOnly is empty if no statements match subject & predicate")
     @Test
-    void snapshotEmptyIfZero() {
-        assertThat(s.snapshot(), is(empty()));
+    void objectsReadOnlyEmptyIfZero() {
+        assertThat(s.objectsReadOnly(), is(empty()));
     }
 
-    @DisplayName("snapshot contains converted objects of statements matching subject & predicate")
+    @DisplayName("objectsReadOnly contains converted objects of statements matching subject & predicate")
     @Test
-    void snapshotContainsIfNonZero() {
+    void objectsReadOnlyContainsIfNonZero() {
         g.add(s, P, O1);
         g.add(s, P, O2);
 
-        assertThat(s.snapshot(), containsInAnyOrder(V1, V2));
+        assertThat(s.objectsReadOnly(), containsInAnyOrder(V1, V2));
     }
 
-    @DisplayName("snapshot does not reflect subsequent changes to underlying graph")
+    @DisplayName("objectsReadOnly does not reflect subsequent changes to underlying graph")
     @Test
-    void snapshotIsStatic() {
+    void objectsReadOnlyIsStatic() {
         g.add(s, P, O1);
 
-        final Set<String> snapshot = s.snapshot();
+        final Set<String> snapshot = s.objectsReadOnly();
 
         g.add(s, P, O2);
 
         assertThat(snapshot, not(containsInAnyOrder(V1, V2)));
     }
 
-    @DisplayName("live is empty if no statements match subject & predicate")
+    @DisplayName("objects is empty if no statements match subject & predicate")
     @Test
-    void liveEmptyIfZero() {
-        assertThat(s.live(), is(empty()));
+    void objectsEmptyIfZero() {
+        assertThat(s.objects(), is(empty()));
     }
 
     @DisplayName("live contains converted objects of statements matching subject & predicate")
     @Test
-    void liveContainsIfNonZero() {
+    void objectsContainsIfNonZero() {
         g.add(s, P, O1);
         g.add(s, P, O2);
 
-        assertThat(s.live(), containsInAnyOrder(V1, V2));
+        assertThat(s.objects(), containsInAnyOrder(V1, V2));
     }
 
-    @DisplayName("live reflects subsequent changes to underlying graph")
+    @DisplayName("objects reflects subsequent changes to underlying graph")
     @Test
-    void liveIsDynamic() {
+    void objectsIsDynamic() {
         g.add(s, P, O1);
 
-        final Set<String> live = s.live();
+        final Set<String> live = s.objects();
 
         g.add(s, P, O2);
 
@@ -386,16 +386,16 @@ public class WrapperBlankNodeOrIRIBase {
             return singleOrThrow(P, VM);
         }
 
-        Iterator<String> iterator() {
-            return iterator(P, VM);
+        Iterator<String> objectIterator() {
+            return objectIterator(P, VM);
         }
 
-        Set<String> snapshot() {
-            return snapshot(P, VM);
+        Set<String> objectsReadOnly() {
+            return objectsReadOnly(P, VM);
         }
 
-        Set<String> live() {
-            return live(P, NM, VM);
+        Set<String> objects() {
+            return objects(P, NM, VM);
         }
 
         void overwrite(final String value) {
