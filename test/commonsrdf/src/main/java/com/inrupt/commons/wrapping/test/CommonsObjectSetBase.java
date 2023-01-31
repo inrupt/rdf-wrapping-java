@@ -20,15 +20,24 @@
  */
 package com.inrupt.commons.wrapping.test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import com.inrupt.commons.wrapping.commonsrdf.*;
 import com.inrupt.commons.wrapping.test.base.ObjectSetBase;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.Graph;
 import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.rdf.api.Literal;
 import org.apache.commons.rdf.api.RDF;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class CommonsObjectSetBase extends ObjectSetBase {
     private static final RDF FACTORY = RDFFactory.getInstance();
@@ -67,5 +76,20 @@ public class CommonsObjectSetBase extends ObjectSetBase {
         final IRI p = FACTORY.createIRI(predicate);
 
         return new ObjectSet<>(s, p, graph, T2V, V2T);
+    }
+
+    @DisplayName("Set invariant: size capped at greatest integer")
+    @Test
+    // Here instead of com.inrupt.commons.wrapping.test.base.ObjectSetBase due to circular dependencies
+    void sizeCappedAtIntegerMaxValue() {
+        final IRI any = mock(IRI.class);
+        final Stream manyStatements = mock(Stream.class);
+        final Graph largeGraph = mock(Graph.class);
+        final ObjectSet<?> set = new ObjectSet<>(any, any, largeGraph, T2V, V2T);
+
+        when(manyStatements.count()).thenReturn(Integer.MAX_VALUE + 1L);
+        when(largeGraph.stream(any(), any(), any())).thenReturn(manyStatements);
+
+        assertThat(set, hasSize(lessThanOrEqualTo(Integer.MAX_VALUE)));
     }
 }

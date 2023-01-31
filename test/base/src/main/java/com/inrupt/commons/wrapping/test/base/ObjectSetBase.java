@@ -131,22 +131,6 @@ public abstract class ObjectSetBase {
     // endregion
     // region size
 
-    /**
-     * This untestable invariant of {@link Set} happens to be guaranteed by implementations.
-     */
-    @DisplayName("Set invariant: size capped at greatest integer")
-    @Test
-    void sizeCappedAtIntegerMaxValue() {
-        // Not feasible to exhaust possibility space as of writing.
-        // Not feasible to mock either, because iterator is enumerated.
-        for (long i = 0L; i < 1 /* 0x7fffffffL + 2 */; i++) {
-            // Subject and predicate both match
-            addTriple(S, P, String.valueOf(i));
-        }
-
-        assertThat(set, hasSize(lessThanOrEqualTo(Integer.MAX_VALUE)));
-    }
-
     @DisplayName("size ignores other subjects")
     @Test
     void sizeIgnoresOtherSubjects() {
