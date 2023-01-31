@@ -53,9 +53,10 @@ import org.apache.commons.rdf.api.*;
  * graph after calling them:
  * <pre>
  * ┌────────────────┬─────────┐
+ * │ objects        │ dynamic │
+ * │ objectStream   │ static  │
  * │ objectIterator │ static  │
  * │ objectSnapshot │ static  │
- * │ objects        │ dynamic │
  * └────────────────┴─────────┘
  * </pre>
  *
@@ -137,14 +138,14 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        final Iterator<T> statements = objectIterator(p, m);
+        final Iterator<T> objects = objectIterator(p, m);
 
-        if (!statements.hasNext()) {
+        if (!objects.hasNext()) {
             return null;
         }
 
-        final T any = statements.next();
-        atMostOne(statements, p);
+        final T any = objects.next();
+        atMostOne(objects, p);
 
         return any;
     }
@@ -165,9 +166,9 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        final Iterator<T> statements = atLeastOne(p, m);
-        final T any = statements.next();
-        atMostOne(statements, p);
+        final Iterator<T> objects = atLeastOne(p, m);
+        final T any = objects.next();
+        atMostOne(objects, p);
 
         return any;
     }
@@ -365,8 +366,8 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         graph.remove(this, p, null);
     }
 
-    private <T> void atMostOne(final Iterator<T> statements, final IRI p) {
-        if (statements.hasNext()) {
+    private <T> void atMostOne(final Iterator<T> objects, final IRI p) {
+        if (objects.hasNext()) {
             final String message = String.format("Multiple statements with subject [%s] and predicate [%s]", this, p);
             // TODO: Throw specific exception
             throw new IllegalStateException(message);
@@ -374,14 +375,14 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
     }
 
     private <T> Iterator<T> atLeastOne(final IRI p, final ValueMapping<T> m) {
-        final Iterator<T> statements = objectIterator(p, m);
+        final Iterator<T> objects = objectIterator(p, m);
 
-        if (!statements.hasNext()) {
+        if (!objects.hasNext()) {
             final String message = String.format("No statements with subject [%s] and predicate [%s]", this, p);
             // TODO: Throw specific exception
             throw new IllegalStateException(message);
         }
 
-        return statements;
+        return objects;
     }
 }
