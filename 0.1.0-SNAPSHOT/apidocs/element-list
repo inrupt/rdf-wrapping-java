@@ -1,0 +1,5 @@
+com.inrupt.commons.wrapping.commonsrdf
+com.inrupt.commons.wrapping.jena
+com.inrupt.commons.wrapping.rdf4j
+com.inrupt.commons.wrapping.test
+com.inrupt.commons.wrapping.test.base
