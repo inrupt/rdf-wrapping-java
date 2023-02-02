@@ -59,7 +59,7 @@
     <mockito.version>4.11.0</mockito.version>
 
     <!-- sonar -->
-    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/target/site/jacoco-merged/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/reports/target/site/jacoco-merged/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     <sonar.host.url>https://sonarqube.dev.inrupt.com</sonar.host.url>
     <sonar.projectKey>commons-wrapping</sonar.projectKey>
     <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
