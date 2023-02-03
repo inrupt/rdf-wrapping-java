@@ -16,7 +16,7 @@
 
   <modules>
     <module>base</module>
-    <module>commonsrdf</module>
+    <module>commons</module>
     <module>jena</module>
     <module>rdf4j</module>
   </modules>
