@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>inrupt-rdf-wrapping-test-rdf4j</artifactId>
-  <name>Inrupt Commons Wrapping Tests - RDF4J</name>
+  <name>Inrupt RDF Wrapping Tests - RDF4J</name>
   <description>
     <!-- TODO: Write -->
   </description>

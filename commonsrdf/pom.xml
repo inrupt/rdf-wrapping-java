@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>inrupt-rdf-wrapping-commons</artifactId>
-  <name>Inrupt Commons Wrapping - Commons RDF</name>
+  <name>Inrupt RDF Wrapping - Commons RDF</name>
   <description>
     <!-- TODO: Write -->
   </description>

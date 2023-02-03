@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>inrupt-rdf-wrapping-test-jena</artifactId>
-  <name>Inrupt Commons Wrapping Tests - Jena</name>
+  <name>Inrupt RDF Wrapping Tests - Jena</name>
   <description>
     <!-- TODO: Write -->
   </description>

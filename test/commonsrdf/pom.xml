@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>inrupt-rdf-wrapping-test-commons</artifactId>
-  <name>Inrupt Commons Wrapping Tests - Commons RDF</name>
+  <name>Inrupt RDF Wrapping Tests - Commons RDF</name>
   <description>
     <!-- TODO: Write -->
   </description>
