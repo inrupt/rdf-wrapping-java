@@ -1,5 +1,5 @@
-com.inrupt.commons.wrapping.commonsrdf
-com.inrupt.commons.wrapping.jena
-com.inrupt.commons.wrapping.rdf4j
-com.inrupt.commons.wrapping.test
-com.inrupt.commons.wrapping.test.base
+com.inrupt.rdf.wrapping.commons
+com.inrupt.rdf.wrapping.jena
+com.inrupt.rdf.wrapping.rdf4j
+com.inrupt.rdf.wrapping.test.base
+com.inrupt.rdf.wrapping.test.commons

@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.inrupt.commons.wrapping.commonsrdf"},{"l":"com.inrupt.commons.wrapping.jena"},{"l":"com.inrupt.commons.wrapping.rdf4j"},{"l":"com.inrupt.commons.wrapping.test"},{"l":"com.inrupt.commons.wrapping.test.base"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.inrupt.rdf.wrapping.commons"},{"l":"com.inrupt.rdf.wrapping.jena"},{"l":"com.inrupt.rdf.wrapping.rdf4j"},{"l":"com.inrupt.rdf.wrapping.test.base"},{"l":"com.inrupt.rdf.wrapping.test.commons"}]
