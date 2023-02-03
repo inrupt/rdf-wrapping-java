@@ -6,7 +6,7 @@
   <artifactId>inrupt-rdf-wrapping</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <name>Inrupt Commons Wrapping</name>
-  <url>https://inrupt.github.io/commons-rdf-wrapping/</url>
+  <url>https://inrupt.github.io/rdf-wrapping/</url>
   <description>
     <!-- TODO: Write -->
   </description>
@@ -673,9 +673,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/inrupt/commons-rdf-wrapping.git</connection>
-    <developerConnection>scm:git:git@github.com:inrupt/commons-rdf-wrapping.git</developerConnection>
-    <url>https://github.com/inrupt/commons-rdf-wrapping</url>
+    <connection>scm:git:git://github.com/inrupt/rdf-wrapping.git</connection>
+    <developerConnection>scm:git:git@github.com:inrupt/rdf-wrapping.git</developerConnection>
+    <url>https://github.com/inrupt/rdf-wrapping</url>
     <tag>HEAD</tag>
   </scm>
 
