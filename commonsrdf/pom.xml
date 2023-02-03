@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.inrupt</groupId>
-    <artifactId>inrupt-commons-wrapping</artifactId>
+    <artifactId>inrupt-rdf-wrapping</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>inrupt-commons-wrapping-commonsrdf</artifactId>
+  <artifactId>inrupt-rdf-wrapping-commons</artifactId>
   <name>Inrupt Commons Wrapping - Commons RDF</name>
   <description>
     <!-- TODO: Write -->
