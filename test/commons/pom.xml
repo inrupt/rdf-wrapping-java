@@ -7,8 +7,8 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>inrupt-rdf-wrapping-test-jena</artifactId>
-  <name>Inrupt RDF Wrapping Tests - Jena</name>
+  <artifactId>inrupt-rdf-wrapping-test-commons</artifactId>
+  <name>Inrupt RDF Wrapping Tests - Commons RDF</name>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -23,29 +23,17 @@
     </dependency>
 
     <dependency>
-      <groupId>com.inrupt</groupId>
-      <artifactId>inrupt-rdf-wrapping-test-commons</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>org.apache.jena</groupId>
-      <artifactId>jena-commonsrdf</artifactId>
-      <scope>test</scope>
+      <groupId>com.inrupt</groupId>
+      <artifactId>inrupt-rdf-wrapping-test-base</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

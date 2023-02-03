@@ -3,10 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.inrupt</groupId>
-  <artifactId>inrupt-commons-wrapping</artifactId>
+  <artifactId>inrupt-rdf-wrapping</artifactId>
   <version>0.1.0-SNAPSHOT</version>
-  <name>Inrupt Commons Wrapping</name>
-  <url>https://inrupt.github.io/commons-rdf-wrapping/</url>
+  <name>Inrupt RDF Wrapping</name>
+  <url>https://inrupt.github.io/rdf-wrapping/</url>
   <description>
     <!-- TODO: Write -->
   </description>
@@ -61,12 +61,12 @@
     <!-- sonar -->
     <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/reports/target/site/jacoco-merged/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     <sonar.host.url>https://sonarqube.dev.inrupt.com</sonar.host.url>
-    <sonar.projectKey>commons-wrapping</sonar.projectKey>
+    <sonar.projectKey>rdf-wrapping</sonar.projectKey>
     <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
   </properties>
 
   <modules>
-    <module>commonsrdf</module>
+    <module>commons</module>
     <module>test</module>
     <module>jena</module>
     <module>rdf4j</module>
@@ -673,9 +673,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/inrupt/commons-rdf-wrapping.git</connection>
-    <developerConnection>scm:git:git@github.com:inrupt/commons-rdf-wrapping.git</developerConnection>
-    <url>https://github.com/inrupt/commons-rdf-wrapping</url>
+    <connection>scm:git:git://github.com/inrupt/rdf-wrapping.git</connection>
+    <developerConnection>scm:git:git@github.com:inrupt/rdf-wrapping.git</developerConnection>
+    <url>https://github.com/inrupt/rdf-wrapping</url>
     <tag>HEAD</tag>
   </scm>
 
