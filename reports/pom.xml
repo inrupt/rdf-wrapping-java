@@ -9,9 +9,7 @@
 
   <artifactId>inrupt-rdf-wrapping-report</artifactId>
   <name>Inrupt RDF Wrapping Reports</name>
-  <description>
-    <!-- TODO: Write -->
-  </description>
+  <packaging>pom</packaging>
 
   <dependencies>
     <dependency>

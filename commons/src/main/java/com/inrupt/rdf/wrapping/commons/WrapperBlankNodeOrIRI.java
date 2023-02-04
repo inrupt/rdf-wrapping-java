@@ -77,8 +77,6 @@ import org.apache.commons.rdf.api.*;
 public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
     // TODO: Document
     protected final Graph graph;
-    // TODO: Document
-    protected final RDF rdf = RDFFactory.getInstance();
 
     // TODO: Document
     protected WrapperBlankNodeOrIRI(final Graph graph) {

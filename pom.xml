@@ -105,11 +105,6 @@
         <version>${commons.rdf.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-rdf-rdf4j</artifactId>
-        <version>${commons.rdf.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.inrupt</groupId>
         <artifactId>inrupt-commons-rdf4j</artifactId>
         <version>${inrupt.commons.rdf4j.version}</version>
