@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import org.apache.commons.rdf.api.*;
 
 // TODO: Document
-// TODO: Cover
 public class WrapperDataset implements Dataset {
     private final Dataset original;
 
