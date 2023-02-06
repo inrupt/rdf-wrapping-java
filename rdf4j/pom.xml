@@ -9,9 +9,7 @@
 
   <artifactId>inrupt-rdf-wrapping-rdf4j</artifactId>
   <name>Inrupt RDF Wrapping - RDF4J</name>
-  <description>
-    <!-- TODO: Write -->
-  </description>
+  <description>Inrupt RDF4J RDF Wrapping libraries</description>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>

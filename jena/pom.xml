@@ -9,9 +9,7 @@
 
   <artifactId>inrupt-rdf-wrapping-jena</artifactId>
   <name>Inrupt RDF Wrapping - Jena</name>
-  <description>
-    <!-- TODO: Write -->
-  </description>
+  <description>Inrupt Jena RDF Wrapping libraries</description>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>

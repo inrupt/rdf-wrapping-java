@@ -9,9 +9,7 @@
 
   <artifactId>inrupt-rdf-wrapping-commons</artifactId>
   <name>Inrupt RDF Wrapping - Commons RDF</name>
-  <description>
-    <!-- TODO: Write -->
-  </description>
+  <description>Inrupt Commons RDF Wrapping libraries</description>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
