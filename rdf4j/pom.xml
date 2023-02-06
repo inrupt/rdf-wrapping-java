@@ -4,14 +4,12 @@
   <parent>
     <groupId>com.inrupt</groupId>
     <artifactId>inrupt-rdf-wrapping</artifactId>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.1.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>inrupt-rdf-wrapping-rdf4j</artifactId>
   <name>Inrupt RDF Wrapping - RDF4J</name>
-  <description>
-    <!-- TODO: Write -->
-  </description>
+  <description>Inrupt RDF4J RDF Wrapping libraries</description>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
