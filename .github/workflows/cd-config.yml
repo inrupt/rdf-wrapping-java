@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - inrupt-commons-wrapping-[0-9]+.[0-9]+.[0-9]+
+      - inrupt-rdf-wrapping-[0-9]+.[0-9]+.[0-9]+
 
 jobs:
   publish:
@@ -65,7 +65,7 @@ jobs:
 
       - name: Publish tagged site to GitHub pages
         uses: peaceiris/actions-gh-pages@v3
-        if: github.actor != 'dependabot[bot]' && startsWith(github.event.ref, 'refs/tags/inrupt-commons-wrapping')
+        if: github.actor != 'dependabot[bot]' && startsWith(github.event.ref, 'refs/tags/inrupt-rdf-wrapping')
         with:
           publish_dir: ./target/staging/
           personal_token: ${{ secrets.GITHUB_TOKEN }}
@@ -77,4 +77,3 @@ jobs:
           publish_dir: ./target/staging/
           destination_dir: ${{ env.VERSION_DIR }}
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-

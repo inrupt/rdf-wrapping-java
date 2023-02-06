@@ -4,7 +4,7 @@
 
   <groupId>com.inrupt</groupId>
   <artifactId>inrupt-rdf-wrapping</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.4-SNAPSHOT</version>
   <name>Inrupt RDF Wrapping</name>
   <url>https://inrupt.github.io/rdf-wrapping/</url>
   <description>
