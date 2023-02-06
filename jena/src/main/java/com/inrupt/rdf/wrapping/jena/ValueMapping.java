@@ -59,15 +59,13 @@ public interface ValueMapping<T> extends Function<RDFNode, T> {
     static RDFNode getRdfNode(final RDFTerm term, final Graph graph) {
         final Model model = createModelForGraph(toJena(graph));
 
+        // org.apache.jena.commonsrdf.impl.JCR_Factory#fromJena(Node) creates only these types of terms.
+
         if (term instanceof IRI) {
             return model.createResource(((IRI) term).getIRIString());
-        }
-
-        if (term instanceof BlankNode) {
+        } else if (term instanceof BlankNode) {
             return model.createResource(new AnonId(((BlankNode) term).uniqueReference()));
-        }
-
-        if (term instanceof Literal) {
+        } else { // Literal
             final Literal term1 = (Literal) term;
             final Optional<String> languageTag = term1.getLanguageTag();
             final String lexicalForm = term1.getLexicalForm();
@@ -78,7 +76,5 @@ public interface ValueMapping<T> extends Function<RDFNode, T> {
 
             return model.createTypedLiteral(lexicalForm, term1.getDatatype().getIRIString());
         }
-
-        throw new IllegalStateException("Unknown term type");
     }
 }

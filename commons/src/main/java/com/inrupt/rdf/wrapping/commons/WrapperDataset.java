@@ -27,8 +27,7 @@ import java.util.stream.Stream;
 import org.apache.commons.rdf.api.*;
 
 // TODO: Document
-// TODO: Cover
-public class WrapperDataset implements Dataset, AutoCloseable {
+public class WrapperDataset implements Dataset {
     private final Dataset original;
 
     // TODO: Document
@@ -117,15 +116,5 @@ public class WrapperDataset implements Dataset, AutoCloseable {
             final IRI predicate,
             final RDFTerm object) {
         return original.stream(graphName, subject, predicate, object);
-    }
-
-    @Override
-    public void close() {
-        try {
-            original.close();
-        } catch (Exception e) {
-            // TODO: Throw specific exception
-            throw new RuntimeException("Underlying dataset could not be closed", e);
-        }
     }
 }

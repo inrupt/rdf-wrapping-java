@@ -1,21 +1,50 @@
 package com.inrupt.rdf.wrapping.jena;
 
+import static java.util.UUID.randomUUID;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.inrupt.rdf.wrapping.test.base.ObjectSetBase;
 
 import java.util.Set;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.*;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 @DisplayName("Jena Predicate-Object Set")
 class JenaObjectSetTest extends ObjectSetBase {
-    private static final NodeMapping<String> N2V = (n, m) -> m.createLiteral(n);
-    private static final ValueMapping<String> V2N = n -> n.asLiteral().getLexicalForm();
+    private static final NodeMapping<String> N2V = NodeMappings::asStringLiteral;
+    private static final ValueMapping<String> V2N = ValueMappings::literalAsString;
 
     private Model model;
+
+    @DisplayName("requires blank node or IRI subject")
+    @Test
+    void requiresBlankOrIriSubject() {
+        final RDFNode literal = ResourceFactory.createStringLiteral(randomUUID().toString());
+
+        assertThrows(IllegalStateException.class, () ->
+                new ObjectSet<>(literal, null, null, null));
+    }
+
+    @DisplayName("requires IRI predicate")
+    @Test
+    void requiresIriPredicate() {
+        final RDFNode blank = ResourceFactory.createResource();
+
+        assertThrows(IllegalStateException.class, () ->
+                new ObjectSet<>(blank, blank, null, null));
+    }
+
+    @DisplayName("requires subject with model")
+    @Test
+    void requiresSubjectWithModel() {
+        final RDFNode blank = ResourceFactory.createResource();
+        final RDFNode iri = ResourceFactory.createResource(randomUUID().toString());
+
+        assertThrows(IllegalStateException.class, () ->
+                new ObjectSet<>(blank, iri, null, null));
+    }
 
     @Override
     protected void addTriple(final String subject, final String predicate, final String object) {

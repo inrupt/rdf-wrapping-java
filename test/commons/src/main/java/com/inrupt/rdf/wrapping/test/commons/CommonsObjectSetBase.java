@@ -78,17 +78,17 @@ public class CommonsObjectSetBase extends ObjectSetBase {
         return new ObjectSet<>(s, p, graph, T2V, V2T);
     }
 
+    // Here instead of com.inrupt.rdf.wrapping.test.base.ObjectSetBase due to circular dependencies
     @DisplayName("Set invariant: size capped at greatest integer")
     @Test
-    // Here instead of com.inrupt.rdf.wrapping.test.base.ObjectSetBase due to circular dependencies
     void sizeCappedAtIntegerMaxValue() {
         final IRI any = mock(IRI.class);
-        final Stream manyStatements = mock(Stream.class);
+        final Stream<?> manyStatements = mock(Stream.class);
         final Graph largeGraph = mock(Graph.class);
         final ObjectSet<?> set = new ObjectSet<>(any, any, largeGraph, T2V, V2T);
 
         when(manyStatements.count()).thenReturn(Integer.MAX_VALUE + 1L);
-        when(largeGraph.stream(any(), any(), any())).thenReturn(manyStatements);
+        doReturn(manyStatements).when(largeGraph).stream(any(), any(), any());
 
         assertThat(set, hasSize(lessThanOrEqualTo(Integer.MAX_VALUE)));
     }

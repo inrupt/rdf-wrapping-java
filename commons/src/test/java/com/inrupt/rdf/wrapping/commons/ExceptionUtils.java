@@ -20,47 +20,11 @@
  */
 package com.inrupt.rdf.wrapping.commons;
 
-import java.util.Objects;
-
-import org.apache.commons.rdf.api.Graph;
-import org.apache.commons.rdf.api.IRI;
-import org.apache.commons.rdf.api.RDFTerm;
-
-// TODO: Document
-public class WrapperIRI extends WrapperBlankNodeOrIRI implements IRI {
-    private final IRI original;
-
-    // TODO: Document
-    protected WrapperIRI(final RDFTerm original, final Graph graph) {
-        super(graph);
-
-        Objects.requireNonNull(original, "IRI is required");
-
-        if (!(original instanceof IRI)) {
-            // TODO: Throw specific exception
-            throw new IllegalStateException("Original is not IRI");
-        }
-
-        this.original = (IRI) original;
+final class ExceptionUtils {
+    static Throwable rootCause(final Throwable t) {
+        return t.getCause() == null ? t : rootCause(t.getCause());
     }
 
-    @Override
-    public String getIRIString() {
-        return original.getIRIString();
-    }
-
-    @Override
-    public String ntriplesString() {
-        return original.ntriplesString();
-    }
-
-    @Override
-    public int hashCode() {
-        return original.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return original.equals(obj);
+    private ExceptionUtils() {
     }
 }

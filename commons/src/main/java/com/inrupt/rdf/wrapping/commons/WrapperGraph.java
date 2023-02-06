@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 import org.apache.commons.rdf.api.*;
 
 // TODO: Document
-// TODO: Cover
 public class WrapperGraph implements Graph {
     private final Graph original;
 

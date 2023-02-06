@@ -26,36 +26,39 @@ import java.util.ServiceLoader;
 import org.apache.commons.rdf.api.RDF;
 
 /**
- * A RDF commons handling abstraction.
+ * Provider for {@link RDF Commons RDF implementation}s.
  */
 public final class RDFFactory {
 
-    private static RDF instance = null;
+    private static class Holder {
+        static final RDF INSTANCE = loadSpi();
 
-    /**
-     * Find and return the RDF instance.
-     *
-     * @return the RDF instance
-     */
-    public static RDF getInstance() {
-        if (instance == null) {
-            synchronized (RDFFactory.class) {
-                if (instance != null) {
-                    return instance;
-                }
-                instance = loadSpi(RDFFactory.class.getClassLoader());
+        private static RDF loadSpi() {
+            final ServiceLoader<RDF> loader = ServiceLoader.load(RDF.class, RDFFactory.class.getClassLoader());
+            final Iterator<RDF> iterator = loader.iterator();
+
+            if (iterator.hasNext()) {
+                return iterator.next();
             }
+
+            throw new IllegalStateException("No Commons RDF implementation available");
         }
-        return instance;
     }
 
-    private static RDF loadSpi(final ClassLoader cl) {
-        final ServiceLoader<RDF> loader = ServiceLoader.load(RDF.class, cl);
-        final Iterator<RDF> iterator = loader.iterator();
-        if (iterator.hasNext()) {
-            return iterator.next();
+    /**
+     * Creates an RDF implementation by using the {@link ServiceLoader#load(Class)} method.
+     *
+     * @return the first RDF implementation found
+     *
+     * @throws IllegalStateException if there are no available RDF implementations
+     */
+    public static RDF getInstance() {
+        try {
+            return Holder.INSTANCE;
+        } catch (ExceptionInInitializerError e) {
+            // TODO: Throw specific exception
+            throw (IllegalStateException) e.getCause();
         }
-        throw new IllegalStateException("No RDF Commons implementation available");
     }
 
     private RDFFactory() {
