@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"com.inrupt.rdf.wrapping.test.base","l":"HasSameMethods"},{"p":"com.inrupt.rdf.wrapping.test.base","l":"ObjectSetBase"}]
