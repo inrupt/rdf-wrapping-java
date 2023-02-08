@@ -27,16 +27,6 @@
       <artifactId>inrupt-rdf-wrapping-rdf4j</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.inrupt</groupId>
-      <artifactId>inrupt-rdf-wrapping-test-jena</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.inrupt</groupId>
-      <artifactId>inrupt-rdf-wrapping-test-rdf4j</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 
   <build>
