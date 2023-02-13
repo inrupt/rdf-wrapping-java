@@ -77,17 +77,30 @@ public class TermMappingsBase {
     }
 
     @Test
-    void asTypedLiteralTest() {
+    void asTypedLiteralInstantTest() {
         final IRI xsdDateTime = FACTORY.createIRI("http://www.w3.org/2001/XMLSchema#dateTime");
         final Instant instant = Instant.now();
 
-        assertThrows(NullPointerException.class, () -> asTypedLiteral(null, null));
+        assertThrows(NullPointerException.class, () -> asTypedLiteral((Instant)null, null));
         assertThrows(NullPointerException.class, () -> asTypedLiteral(instant, null));
 
         assertThat(asTypedLiteral(instant, GRAPH), both(
                 instanceOf(Literal.class)).and(
                 hasProperty("lexicalForm", is(instant.toString()))).and(
                 hasProperty("datatype", is(xsdDateTime))));
+    }
+
+    @Test
+    void asTypedLiteralBooleanTest() {
+        final IRI xsdBoolean = FACTORY.createIRI("http://www.w3.org/2001/XMLSchema#boolean");
+
+        assertThrows(NullPointerException.class, () -> asTypedLiteral((Boolean) null, null));
+        assertThrows(NullPointerException.class, () -> asTypedLiteral(true, null));
+
+        assertThat(asTypedLiteral(true, GRAPH), both(
+                instanceOf(Literal.class)).and(
+                hasProperty("lexicalForm", is("true"))).and(
+                hasProperty("datatype", is(xsdBoolean))));
     }
 
     @Test

@@ -110,6 +110,24 @@ public final class TermMappings {
     }
 
     /**
+     * Maps a boolean value to a literal term.
+     *
+     * @param value the value to map
+     * @param graph ignored
+     *
+     * @return an xsd:boolean typed literal node with the boolean value as its lexical value
+     *
+     * @throws NullPointerException if the value is null
+     * @throws NullPointerException if the model is null
+     */
+    public static Literal asTypedLiteral(final Boolean value, final Graph graph) {
+        Objects.requireNonNull(value, VALUE_REQUIRED);
+        Objects.requireNonNull(graph, GRAPH_REQUIRED);
+
+        return FACTORY.createLiteral(value.toString(), FACTORY.createIRI("http://www.w3.org/2001/XMLSchema#boolean"));
+    }
+
+    /**
      * Maps a term to itself.
      *
      * @param value the value to map

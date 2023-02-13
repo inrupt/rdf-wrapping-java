@@ -129,16 +129,27 @@ class Rdf4JTermMappingsTest extends HasSameMethods {
     }
 
     @Test
-    void asTypedLiteralTest() {
+    void asTypedLiteralInstantTest() {
         final Instant instant = Instant.now();
 
-        assertThrows(NullPointerException.class, () -> asTypedLiteral(null, null));
+        assertThrows(NullPointerException.class, () -> asTypedLiteral((Instant) null, null));
         assertThrows(NullPointerException.class, () -> asTypedLiteral(instant, null));
 
         assertThat(asTypedLiteral(instant, MODEL), both(
                 instanceOf(Literal.class)).and(
                 hasProperty("label", is(instant.toString()))).and(
                 hasProperty("datatype", is(XSD.DATETIME))));
+    }
+
+    @Test
+    void asTypedLiteralBooleanTest() {
+        assertThrows(NullPointerException.class, () -> asTypedLiteral((Boolean) null, null));
+        assertThrows(NullPointerException.class, () -> asTypedLiteral(true, null));
+
+        assertThat(asTypedLiteral(true, MODEL), both(
+                instanceOf(Literal.class)).and(
+                hasProperty("label", is("true".toString()))).and(
+                hasProperty("datatype", is(XSD.BOOLEAN))));
     }
 
     @Test

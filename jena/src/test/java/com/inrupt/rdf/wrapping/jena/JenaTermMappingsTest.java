@@ -37,6 +37,7 @@ import org.apache.commons.rdf.api.Graph;
 import org.apache.commons.rdf.api.RDFTerm;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -127,16 +128,27 @@ class JenaTermMappingsTest extends HasSameMethods {
     }
 
     @Test
-    void asTypedLiteralTest() {
+    void asTypedLiteralInstantTest() {
         final Instant instant = Instant.now();
 
-        assertThrows(NullPointerException.class, () -> asTypedLiteral(null, null));
+        assertThrows(NullPointerException.class, () -> asTypedLiteral((Instant) null, null));
         assertThrows(NullPointerException.class, () -> asTypedLiteral(instant, null));
 
         assertThat(asTypedLiteral(instant, MODEL), both(
                 instanceOf(Literal.class)).and(
                 hasProperty("lexicalForm", is(instant.toString()))).and(
                 hasProperty("datatype", is(XSDDatatype.XSDdateTime))));
+    }
+
+    @Test
+    void asTypedLiteralBooleanTest() {
+        assertThrows(NullPointerException.class, () -> asTypedLiteral((Boolean) null, null));
+        assertThrows(NullPointerException.class, () -> asTypedLiteral(true, null));
+
+        assertThat(asTypedLiteral(true, MODEL), both(
+                instanceOf(Literal.class)).and(
+                hasProperty("lexicalForm", is("true"))).and(
+                hasProperty("datatypeURI", is(XSD.xboolean.getURI()))));
     }
 
     @Test
