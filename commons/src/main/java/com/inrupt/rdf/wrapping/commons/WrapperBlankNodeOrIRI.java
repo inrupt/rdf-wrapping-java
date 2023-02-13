@@ -52,12 +52,12 @@ import org.apache.commons.rdf.api.*;
  * <p>This table details the behavior of plural getter helper methods in terms of reflecting changes to the underlying
  * graph after calling them:
  * <pre>
- * ┌────────────────┬─────────┐
- * │ objects        │ dynamic │
- * │ objectStream   │ static  │
- * │ objectIterator │ static  │
- * │ objectSnapshot │ static  │
- * └────────────────┴─────────┘
+ * ┌─────────────────┬─────────┐
+ * │ objects         │ dynamic │
+ * │ objectStream    │ static  │
+ * │ objectIterator  │ static  │
+ * │ objectsReadOnly │ static  │
+ * └─────────────────┴─────────┘
  * </pre>
  *
  * <p>This table details the behavior of setter helper methods in terms of effect on existing statements in the
