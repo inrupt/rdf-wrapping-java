@@ -9,7 +9,6 @@
 
   <artifactId>inrupt-rdf-wrapping-test-rdf4j</artifactId>
   <name>Inrupt RDF Wrapping Tests - RDF4J</name>
-  <packaging>pom</packaging>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>

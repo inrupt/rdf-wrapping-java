@@ -9,7 +9,6 @@
 
   <artifactId>inrupt-rdf-wrapping-test-jena</artifactId>
   <name>Inrupt RDF Wrapping Tests - Jena</name>
-  <packaging>pom</packaging>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
