@@ -671,8 +671,8 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/inrupt/rdf-wrapping.git</connection>
-    <developerConnection>scm:git:git@github.com:inrupt/rdf-wrapping.git</developerConnection>
+    <connection>scm:git:https://github.com/inrupt/rdf-wrapping.git</connection>
+    <developerConnection>scm:git:https://github.com/inrupt/rdf-wrapping.git</developerConnection>
     <url>https://github.com/inrupt/rdf-wrapping</url>
     <tag>HEAD</tag>
   </scm>
