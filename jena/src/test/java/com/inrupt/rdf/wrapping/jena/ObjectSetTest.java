@@ -32,7 +32,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("Jena Predicate-Object Set")
-class JenaObjectSetTest extends ObjectSetBase {
+class ObjectSetTest extends ObjectSetBase {
     private static final NodeMapping<String> N2V = NodeMappings::asStringLiteral;
     private static final ValueMapping<String> V2N = ValueMappings::literalAsString;
 

@@ -53,7 +53,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("Jena Value Mappings")
-class JenaValueMappingsTest extends HasSameMethods {
+class ValueMappingsTest extends HasSameMethods {
     @BeforeAll
     static void init() {
         HasSameMethods.initializeClassesForComparison(

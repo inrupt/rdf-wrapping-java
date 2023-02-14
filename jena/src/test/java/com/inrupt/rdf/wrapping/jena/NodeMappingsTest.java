@@ -18,9 +18,9 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.rdf4j;
+package com.inrupt.rdf.wrapping.jena;
 
-import static com.inrupt.rdf.wrapping.rdf4j.RdfValueMappings.*;
+import static com.inrupt.rdf.wrapping.jena.NodeMappings.*;
 import static java.util.UUID.randomUUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -35,28 +35,29 @@ import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.Graph;
 import org.apache.commons.rdf.api.RDFTerm;
-import org.eclipse.rdf4j.model.*;
-import org.eclipse.rdf4j.model.impl.DynamicModelFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.model.vocabulary.XSD;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("RDF4J Term Mappings")
-class Rdf4JTermMappingsTest extends HasSameMethods {
+@DisplayName("Jena Term Mappings")
+class NodeMappingsTest extends HasSameMethods {
     @BeforeAll
     static void init() {
-        HasSameMethods.initializeClassesForComparison(TermMappings.class, RdfValueMappings.class);
+        HasSameMethods.initializeClassesForComparison(
+                TermMappings.class,
+                NodeMappings.class);
     }
 
     @Override
     protected Stream<Class<?>> translate(final Class<?> clazz) {
         if (clazz == RDFTerm.class) {
-            return Stream.of(Value.class);
+            return Stream.of(RDFNode.class);
         }
 
-        if (clazz == Value.class) {
+        if (clazz == RDFNode.class) {
             return Stream.of(RDFTerm.class);
         }
 
@@ -76,18 +77,18 @@ class Rdf4JTermMappingsTest extends HasSameMethods {
             return Stream.of(Literal.class);
         }
 
-        if (clazz == IRI.class) {
+        if (clazz == Resource.class) {
             return Stream.of(org.apache.commons.rdf.api.IRI.class);
         }
 
         if (clazz == org.apache.commons.rdf.api.IRI.class) {
-            return Stream.of(IRI.class);
+            return Stream.of(Resource.class);
         }
 
         return Stream.of(clazz);
     }
 
-    private static final Model MODEL = new DynamicModelFactory().createEmptyModel();
+    private static final Model MODEL = ModelFactory.createDefaultModel();
 
     @Test
     void asStringLiteralTest() {
@@ -98,34 +99,32 @@ class Rdf4JTermMappingsTest extends HasSameMethods {
 
         assertThat(asStringLiteral(string, MODEL), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("label", is(string))).and(
-                hasProperty("datatype", is(XSD.STRING))));
+                hasProperty("lexicalForm", is(string))).and(
+                hasProperty("datatype", is(XSDDatatype.XSDstring))));
     }
 
     @Test
     void asIriResourceStringTest() {
         final String uri = "urn:" + randomUUID();
-        final IRI iri = SimpleValueFactory.getInstance().createIRI(uri);
 
         assertThrows(NullPointerException.class, () -> asIri((String) null, null));
         assertThrows(NullPointerException.class, () -> asIri(uri, null));
 
         assertThat(asIri(uri, MODEL), both(
-                instanceOf(IRI.class)).and(
-                is(equalTo(iri))));
+                instanceOf(Resource.class)).and(
+                hasProperty("URI", is(uri))));
     }
 
     @Test
     void asIriResourceUriTest() {
         final URI uri = URI.create("urn:" + randomUUID());
-        final IRI iri = SimpleValueFactory.getInstance().createIRI(uri.toString());
 
         assertThrows(NullPointerException.class, () -> asIri((URI) null, null));
         assertThrows(NullPointerException.class, () -> asIri(uri, null));
 
         assertThat(asIri(uri, MODEL), both(
-                instanceOf(IRI.class)).and(
-                is(equalTo(iri))));
+                instanceOf(Resource.class)).and(
+                hasProperty("URI", is(uri.toString()))));
     }
 
     @Test
@@ -137,8 +136,8 @@ class Rdf4JTermMappingsTest extends HasSameMethods {
 
         assertThat(asTypedLiteral(instant, MODEL), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("label", is(instant.toString()))).and(
-                hasProperty("datatype", is(XSD.DATETIME))));
+                hasProperty("lexicalForm", is(instant.toString()))).and(
+                hasProperty("datatype", is(XSDDatatype.XSDdateTime))));
     }
 
     @Test
@@ -148,13 +147,13 @@ class Rdf4JTermMappingsTest extends HasSameMethods {
 
         assertThat(asTypedLiteral(true, MODEL), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("label", is("true".toString()))).and(
-                hasProperty("datatype", is(XSD.BOOLEAN))));
+                hasProperty("lexicalForm", is("true"))).and(
+                hasProperty("datatypeURI", is(XSD.xboolean.getURI()))));
     }
 
     @Test
     void identityTest() {
-        final BNode blank = SimpleValueFactory.getInstance().createBNode();
+        final Resource blank = MODEL.createResource();
 
         assertThrows(NullPointerException.class, () -> identity(null, null));
         assertThrows(NullPointerException.class, () -> identity(blank, null));

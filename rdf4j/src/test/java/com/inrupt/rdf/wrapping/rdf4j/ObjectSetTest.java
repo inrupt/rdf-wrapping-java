@@ -12,7 +12,7 @@ import org.eclipse.rdf4j.model.util.Values;
 import org.junit.jupiter.api.DisplayName;
 
 @DisplayName("RDF4J Predicate-Object Set")
-class Rdf4JObjectSetTest extends ObjectSetBase {
+class ObjectSetTest extends ObjectSetBase {
     private static final RdfValueMapping<String> N2V = (v, m) -> Values.literal(v);
     private static final ValueMapping<String> V2N = (n, m) -> n.stringValue();
     private static final DynamicModelFactory FACTORY = new DynamicModelFactory();
