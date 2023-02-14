@@ -20,8 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.test.base;
 
-import static java.lang.reflect.Modifier.isPublic;
-import static java.lang.reflect.Modifier.isStatic;
+import static java.lang.reflect.Modifier.*;
 import static java.util.Arrays.stream;
 import static java.util.stream.Stream.concat;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,10 +71,14 @@ public abstract class HasSameMethods {
                 asArguments(class2, class1));
     }
 
-    static Stream<Arguments> asArguments(final Class<?> thisClass, final Class<?> thatClass) {
+    private static Stream<Arguments> asArguments(final Class<?> thisClass, final Class<?> thatClass) {
         return stream(thatClass.getDeclaredMethods())
-                .filter(method -> isPublic(method.getModifiers()))
-                .filter(method -> isStatic(method.getModifiers()))
+                .filter(HasSameMethods::relevantMethod)
                 .map(thatMethod -> Arguments.of(thisClass, thatMethod));
+    }
+
+    private static boolean relevantMethod(final Method method) {
+        return isPublic(method.getModifiers()) && isStatic(method.getModifiers())
+               || isProtected(method.getModifiers());
     }
 }

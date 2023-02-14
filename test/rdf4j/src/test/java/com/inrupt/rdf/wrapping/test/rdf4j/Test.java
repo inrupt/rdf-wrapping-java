@@ -33,7 +33,7 @@ class TermMappingsTest extends TermMappingsBase {
 
 @DisplayName("Commons Predicate-Object Set (RDF4J)")
 @SuppressWarnings("java:S2187") // Tests in base class
-class Rdf4JCommonsObjectSetTest extends CommonsObjectSetBase {
+class ObjectSetTest extends CommonsObjectSetBase {
 }
 
 @DisplayName("Value Mapping (RDF4J)")

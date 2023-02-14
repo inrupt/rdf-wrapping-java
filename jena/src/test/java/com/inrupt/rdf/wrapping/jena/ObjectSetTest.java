@@ -1,3 +1,23 @@
+/*
+ * Copyright 2023 Inrupt Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package com.inrupt.rdf.wrapping.jena;
 
 import static java.util.UUID.randomUUID;
@@ -12,38 +32,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("Jena Predicate-Object Set")
-class JenaObjectSetTest extends ObjectSetBase {
+class ObjectSetTest extends ObjectSetBase {
     private static final NodeMapping<String> N2V = NodeMappings::asStringLiteral;
     private static final ValueMapping<String> V2N = ValueMappings::literalAsString;
 
     private Model model;
 
-    @DisplayName("requires blank node or IRI subject")
-    @Test
-    void requiresBlankOrIriSubject() {
-        final RDFNode literal = ResourceFactory.createStringLiteral(randomUUID().toString());
-
-        assertThrows(IllegalStateException.class, () ->
-                new ObjectSet<>(literal, null, null, null));
-    }
-
-    @DisplayName("requires IRI predicate")
-    @Test
-    void requiresIriPredicate() {
-        final RDFNode blank = ResourceFactory.createResource();
-
-        assertThrows(IllegalStateException.class, () ->
-                new ObjectSet<>(blank, blank, null, null));
-    }
-
     @DisplayName("requires subject with model")
     @Test
     void requiresSubjectWithModel() {
-        final RDFNode blank = ResourceFactory.createResource();
-        final RDFNode iri = ResourceFactory.createResource(randomUUID().toString());
+        final Resource s = ResourceFactory.createResource();
+        final Property p = ResourceFactory.createProperty(randomUUID().toString());
 
-        assertThrows(IllegalStateException.class, () ->
-                new ObjectSet<>(blank, iri, null, null));
+        assertThrows(HasNoModelException.class, () ->
+                new ObjectSet<>(s, p, N2V, V2N));
     }
 
     @Override

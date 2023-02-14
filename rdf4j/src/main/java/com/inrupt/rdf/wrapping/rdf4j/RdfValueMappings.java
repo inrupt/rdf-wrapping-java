@@ -113,6 +113,24 @@ public final class RdfValueMappings {
     }
 
     /**
+     * Maps a boolean value to a literal term.
+     *
+     * @param value the value to map
+     * @param model ignored
+     *
+     * @return an xsd:boolean typed literal node with the boolean value as its lexical value
+     *
+     * @throws NullPointerException if the value is null
+     * @throws NullPointerException if the model is null
+     */
+    public static Literal asTypedLiteral(final Boolean value, final Model model) {
+        Objects.requireNonNull(value, VALUE_REQUIRED);
+        Objects.requireNonNull(model, GRAPH_REQUIRED);
+
+        return FACTORY.createLiteral(value.toString(), XSD.BOOLEAN);
+    }
+
+    /**
      * Maps a term to itself.
      *
      * @param value the value to map
