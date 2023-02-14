@@ -109,6 +109,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.jena</groupId>
+        <artifactId>jena-arq</artifactId>
+        <version>${jena.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jena</groupId>
         <artifactId>jena-commonsrdf</artifactId>
         <version>${jena.version}</version>
       </dependency>

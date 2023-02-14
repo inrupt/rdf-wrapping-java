@@ -38,32 +38,14 @@ class JenaObjectSetTest extends ObjectSetBase {
 
     private Model model;
 
-    @DisplayName("requires blank node or IRI subject")
-    @Test
-    void requiresBlankOrIriSubject() {
-        final RDFNode literal = ResourceFactory.createStringLiteral(randomUUID().toString());
-
-        assertThrows(IllegalStateException.class, () ->
-                new ObjectSet<>(literal, null, null, null));
-    }
-
-    @DisplayName("requires IRI predicate")
-    @Test
-    void requiresIriPredicate() {
-        final RDFNode blank = ResourceFactory.createResource();
-
-        assertThrows(IllegalStateException.class, () ->
-                new ObjectSet<>(blank, blank, null, null));
-    }
-
     @DisplayName("requires subject with model")
     @Test
     void requiresSubjectWithModel() {
-        final RDFNode blank = ResourceFactory.createResource();
-        final RDFNode iri = ResourceFactory.createResource(randomUUID().toString());
+        final Resource s = ResourceFactory.createResource();
+        final Property p = ResourceFactory.createProperty(randomUUID().toString());
 
-        assertThrows(IllegalStateException.class, () ->
-                new ObjectSet<>(blank, iri, null, null));
+        assertThrows(HasNoModelException.class, () ->
+                new ObjectSet<>(s, p, N2V, V2N));
     }
 
     @Override
