@@ -80,9 +80,14 @@ import org.apache.jena.shared.PropertyNotFoundException;
  * @author Samu Lang
  */
 public abstract class WrapperResource extends ResourceImpl {
-    // TODO: Document
-    protected WrapperResource(final Node n, final EnhGraph m) {
-        super(n, m);
+    /**
+     * Create a new subject resource with a backing {@link Graph} structure.
+     *
+     * @param node the subject node
+     * @param model the rdf model
+     */
+    protected WrapperResource(final Node node, final EnhGraph model) {
+        super(node, model);
     }
 
     /**

@@ -25,11 +25,17 @@ import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.*;
 
-// TODO: Document
+/**
+ * A wrapper class for {@link Graph} objects.
+ */
 public class WrapperGraph implements Graph {
     private final Graph original;
 
-    // TODO: Document
+    /**
+     * Create a new graph wrapper object.
+     *
+     * @param original The original graph to be wrapped, may not be {@code null}
+     */
     protected WrapperGraph(final Graph original) {
         Objects.requireNonNull(original, "Graph is required");
 
