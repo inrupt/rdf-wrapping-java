@@ -81,7 +81,7 @@ import org.apache.jena.shared.PropertyNotFoundException;
  */
 public abstract class WrapperResource extends ResourceImpl {
     /**
-     * Create a new subject resource with a backing {@link Graph} structure.
+     * Create a new subject resource with a backing {@link EnhGraph} structure.
      *
      * @param node the subject node
      * @param model the rdf model
