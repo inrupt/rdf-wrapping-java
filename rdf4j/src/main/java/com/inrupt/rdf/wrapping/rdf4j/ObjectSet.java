@@ -86,7 +86,7 @@ public class ObjectSet<T> extends com.inrupt.rdf.wrapping.commons.ObjectSet<T> {
      *
      * @param subject the subject node shared by all statements
      * @param predicate the predicate node shared by all statements
-     * @param model TODO: Document
+     * @param model the underlying RDF model from which the data is accessed
      * @param nodeMapping a mapping from terms to values used for read operations (use {@link TermMappings} for common
      * mappings)
      * @param valueMapping a mapping from values to nodes used for write operations (use {@link ValueMappings} for

@@ -26,11 +26,17 @@ import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.*;
 
-// TODO: Document
+/**
+ * A wrapper class for {@link Dataset} objects.
+ */
 public class WrapperDataset implements Dataset {
     private final Dataset original;
 
-    // TODO: Document
+    /**
+     * Create a new dataset wrapper object.
+     *
+     * @param original The original dataset to be wrapped, may not be {@code null}
+     */
     protected WrapperDataset(final Dataset original) {
         Objects.requireNonNull(original, "Dataset is required");
 

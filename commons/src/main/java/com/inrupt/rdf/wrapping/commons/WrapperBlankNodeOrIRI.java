@@ -75,10 +75,14 @@ import org.apache.commons.rdf.api.*;
  * @author Samu Lang
  */
 public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
-    // TODO: Document
+    /** The internal wrapped graph object. **/
     protected final Graph graph;
 
-    // TODO: Document
+    /**
+     * Create a new subject node with a backing {@link Graph} object.
+     *
+     * @param graph The wrapped graph, may not be {@code null}
+     */
     protected WrapperBlankNodeOrIRI(final Graph graph) {
         Objects.requireNonNull(graph, "Graph is required");
 

@@ -26,11 +26,18 @@ import org.apache.commons.rdf.api.BlankNode;
 import org.apache.commons.rdf.api.Graph;
 import org.apache.commons.rdf.api.RDFTerm;
 
-// TODO: Document
+/**
+ * A wrapper for Blank Node terms which contains methods that aid authoring wrapping classes.
+ */
 public class WrapperBlankNode extends WrapperBlankNodeOrIRI implements BlankNode {
     private final BlankNode original;
 
-    // TODO: Document
+    /**
+     * Create a new subject node with a backing {@link Graph} object.
+     *
+     * @param original The subject node, must be a non-null {@link IRI}
+     * @param graph The wrapped graph, may not be {@code null}
+     */
     protected WrapperBlankNode(final RDFTerm original, final Graph graph) {
         super(graph);
 

@@ -19,6 +19,6 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
- * TODO: Write.
+ * <h2>RDF Wrapping utilities for the Apache Commons RDF API.</h2>
  */
 package com.inrupt.rdf.wrapping.commons;
