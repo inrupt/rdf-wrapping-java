@@ -35,7 +35,7 @@ public class WrapperBlankNode extends WrapperBlankNodeOrIRI implements BlankNode
     /**
      * Create a new subject node with a backing {@link Graph} object.
      *
-     * @param original The subject node, must be a non-null {@link IRI}
+     * @param original The subject node, must be a non-null {@link BlankNode}
      * @param graph The wrapped graph, may not be {@code null}
      */
     protected WrapperBlankNode(final RDFTerm original, final Graph graph) {
