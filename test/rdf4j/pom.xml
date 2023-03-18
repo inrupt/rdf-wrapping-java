@@ -34,6 +34,18 @@
       <artifactId>inrupt-commons-rdf4j</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-model</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-repository-sail</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
