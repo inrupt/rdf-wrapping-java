@@ -5,9 +5,9 @@
   <groupId>com.inrupt</groupId>
   <artifactId>inrupt-rdf-wrapping</artifactId>
   <version>0.3.1-SNAPSHOT</version>
-  <name>Inrupt RDF Wrapping</name>
-  <url>https://inrupt.github.io/rdf-wrapping/</url>
-  <description>Inrupt RDF Wrapping libraries</description>
+  <name>Inrupt RDF Wrapping Java</name>
+  <url>https://inrupt.github.io/rdf-wrapping-java/</url>
+  <description>Inrupt RDF Wrapping Java libraries</description>
   <packaging>pom</packaging>
 
   <properties>
