@@ -25,3 +25,12 @@ jobs:
       - name: Build the code with Maven
         run: mvn -B -ntp verify javadoc:javadoc
 
+  check:
+    if: always()
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
