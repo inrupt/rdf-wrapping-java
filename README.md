@@ -16,10 +16,10 @@ To use the library in your own project you can add the dependency to your build.
     <inrupt.rdf.wrapping.version>x.x.x</inrupt.rdf.wrapping.version>
 </properties>
 <dependency>
-      <groupId>com.inrupt</groupId>
-      <artifactId>inrupt-rdf-wrapping-commons</artifactId>
-      <version>${inrupt.rdf.wrapping.version}</version>
-    </dependency>
+    <groupId>com.inrupt.rdf</groupId>
+    <artifactId>inrupt-rdf-wrapping-commons</artifactId>
+    <version>${inrupt.rdf.wrapping.version}</version>
+</dependency>
 ```
 
 ## Using this repository locally
