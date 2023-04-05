@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"com.inrupt.rdf.wrapping.rdf4j","l":"ObjectSet"},{"p":"com.inrupt.rdf.wrapping.rdf4j","l":"RdfValueMapping"},{"p":"com.inrupt.rdf.wrapping.rdf4j","l":"RdfValueMappings"},{"p":"com.inrupt.rdf.wrapping.rdf4j","l":"ValueMapping"}]
