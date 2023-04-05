@@ -30,7 +30,7 @@
     </dependency>
 
     <dependency>
-      <groupId>com.inrupt</groupId>
+      <groupId>com.inrupt.rdf</groupId>
       <artifactId>inrupt-commons-rdf4j</artifactId>
       <scope>test</scope>
     </dependency>
