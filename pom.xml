@@ -20,7 +20,7 @@
     <!-- dependencies -->
     <commons.rdf.version>0.5.0</commons.rdf.version>
     <rdf4j.version>4.2.4</rdf4j.version>
-    <jena.version>4.7.0</jena.version>
+    <jena.version>4.8.0</jena.version>
     <inrupt.commons.rdf4j.version>0.6.0</inrupt.commons.rdf4j.version>
 
     <!-- plugins -->
