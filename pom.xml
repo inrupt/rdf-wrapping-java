@@ -48,7 +48,7 @@
     <surefire.plugin.version>3.1.0</surefire.plugin.version>
 
     <!-- tooling -->
-    <checkstyle.tool.version>10.10.0</checkstyle.tool.version>
+    <checkstyle.tool.version>10.11.0</checkstyle.tool.version>
 
     <!-- testing -->
     <junit.version>5.9.3</junit.version>
