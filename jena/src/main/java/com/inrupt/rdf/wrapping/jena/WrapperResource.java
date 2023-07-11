@@ -27,10 +27,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.jena.enhanced.EnhGraph;
-import org.apache.jena.ext.com.google.common.collect.Streams;
 import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Statement;
@@ -246,7 +248,8 @@ public abstract class WrapperResource extends ResourceImpl {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        return Streams.stream(objectIterator(p, m));
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(objectIterator(p, m), Spliterator.NONNULL),
+                false);
     }
 
     /**
