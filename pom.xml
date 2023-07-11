@@ -44,6 +44,7 @@
     <sonar.plugin.version>3.9.1.2184</sonar.plugin.version>
     <source.plugin.version>3.3.0</source.plugin.version>
     <surefire.plugin.version>3.1.2</surefire.plugin.version>
+    <guava.version>32.1.1-jre</guava.version>
 
     <!-- tooling -->
     <checkstyle.tool.version>10.12.1</checkstyle.tool.version>
@@ -114,6 +115,12 @@
         <groupId>org.apache.jena</groupId>
         <artifactId>jena-commonsrdf</artifactId>
         <version>${jena.version}</version>
+      </dependency>
+      <!-- patch CVE-2023-2976 guava-31.x.x-->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
       </dependency>
 
       <!-- testing -->
