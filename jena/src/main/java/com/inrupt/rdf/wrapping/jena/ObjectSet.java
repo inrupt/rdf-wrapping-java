@@ -24,10 +24,10 @@ import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import org.apache.jena.ext.com.google.common.collect.Iterators;
-import org.apache.jena.ext.com.google.common.collect.Streams;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.util.iterator.ExtendedIterator;
 
 /**
  * This class implements the {@link Set} interface as a dynamic, mutable view over an RDF predicate-object list
@@ -113,7 +113,13 @@ public class ObjectSet<T> extends AbstractSet<T> {
 
     @Override
     public int size() {
-        return Iterators.size(statements());
+        int total = 0;
+        final ExtendedIterator iter = statements();
+        while (iter.hasNext()) {
+            total += 1;
+            iter.next();
+        }
+        return total;
     }
 
     @Override
@@ -235,7 +241,8 @@ public class ObjectSet<T> extends AbstractSet<T> {
     }
 
     private Stream<RDFNode> objects() {
-        return Streams.stream(statements()).map(Statement::getObject);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(statements(), Spliterator.NONNULL), false)
+            .map(Statement::getObject);
     }
 
     private Stream<T> values() {
