@@ -4,7 +4,7 @@
 
   <groupId>com.inrupt.rdf</groupId>
   <artifactId>inrupt-rdf-wrapping</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>Inrupt RDF Wrapping Java</name>
   <url>https://inrupt.github.io/rdf-wrapping-java/</url>
   <description>Inrupt RDF Wrapping Java libraries</description>
@@ -645,7 +645,7 @@
     <connection>scm:git:git://github.com/inrupt/rdf-wrapping.git</connection>
     <developerConnection>scm:git:git@github.com:inrupt/rdf-wrapping.git</developerConnection>
     <url>https://github.com/inrupt/rdf-wrapping</url>
-    <tag>inrupt-rdf-wrapping-1.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <licenses>
