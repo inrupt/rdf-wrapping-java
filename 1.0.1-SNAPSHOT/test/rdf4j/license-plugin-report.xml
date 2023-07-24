@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<licensePluginReport goal="CHECK" timestamp="1690198544430">
+    <module artifactId="inrupt-rdf-wrapping-test-rdf4j" groupId="com.inrupt.rdf" version="1.0.1-SNAPSHOT"/>
+    <files>
+        <file path="src/test/java/com/inrupt/rdf/wrapping/test/rdf4j/Test.java" result="PRESENT"/>
+    </files>
+</licensePluginReport>

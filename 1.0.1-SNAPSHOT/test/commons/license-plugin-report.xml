@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<licensePluginReport goal="CHECK" timestamp="1690198525303">
+    <module artifactId="inrupt-rdf-wrapping-test-commons" groupId="com.inrupt.rdf" version="1.0.1-SNAPSHOT"/>
+    <files>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/test/commons/CommonsObjectSetBase.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/test/commons/RdfFactoryBase.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/test/commons/TermMappingsBase.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/test/commons/ValueMappingsBase.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/test/commons/WrapperBlankNodeOrIRIBase.java" result="PRESENT"/>
+    </files>
+</licensePluginReport>
