@@ -30,7 +30,7 @@ import org.apache.commons.rdf.api.RDF;
  */
 public final class RDFFactory {
 
-    private static class Holder {
+    private static final class Holder {
         static final RDF INSTANCE = loadSpi();
 
         private static RDF loadSpi() {
