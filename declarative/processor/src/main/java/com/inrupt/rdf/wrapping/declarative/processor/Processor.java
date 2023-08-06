@@ -20,6 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.declarative.processor;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -29,21 +31,58 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 
-import org.jboss.logging.Logger;
-
-@SupportedAnnotationTypes("com.inrupt.rdf.wrapping.declarative.annotations.*")
+@SupportedAnnotationTypes({
+        "com.inrupt.rdf.wrapping.declarative.annotations.Dataset",
+        "com.inrupt.rdf.wrapping.declarative.annotations.Graph",
+        "com.inrupt.rdf.wrapping.declarative.annotations.Resource"
+})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class Processor extends AbstractProcessor {
-    private static final Logger LOG = Logger.getLogger(Processor.class);
-
     @Override
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-        LOG.infov("annotations {0}", annotations);
+        if (roundEnv.processingOver()) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "processing over");
+            return true;
+        }
+
+        if (annotations.isEmpty()) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "annotations empty");
+            return true;
+        }
 
         for (TypeElement annotation : annotations) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("annotation [%s]", annotation), annotation);
+
+            // TODO: Just to get started
+            if (!"com.inrupt.rdf.wrapping.declarative.annotations.Resource".equals(annotation.getQualifiedName().toString())) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("skipping [%s]", annotation), annotation);
+                continue;
+            }
+
             final Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
-            LOG.infov("annotatedElements {0}", annotatedElements);
+            for (Element annotatedElement : annotatedElements) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("annotatedElement [%s]", annotatedElement), annotatedElement);
+
+                final TypeElement annotatedType = (TypeElement) annotatedElement;
+                final String qualifiedName = annotatedType.getQualifiedName().toString() + "_$impl";
+
+                final JavaFileObject builderFile;
+                try {
+                    builderFile = processingEnv.getFiler().createSourceFile(qualifiedName, annotatedElement);
+                } catch (IOException e) {
+                    throw new RuntimeException("could not create class file", e);
+                }
+
+                try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
+                    // This should surely be a framework like JDeparser
+                    out.println("generated");
+                } catch (IOException e) {
+                    throw new RuntimeException("could not open writer", e);
+                }
+            }
         }
 
         return true;
