@@ -32,28 +32,27 @@ import org.junit.jupiter.api.Test;
 class ExampleGraphTest {
     @Test
     void test() {
-        final Dataset dataset = datasetFrom("""
-                PREFIX : <urn:example:>
+        final Dataset dataset = datasetFrom("" +
+                                            "PREFIX : <urn:example:>\n" +
+                                            "\n" +
+                                            "[\n" +
+                                            "    a :C ;\n" +
+                                            "    :p1 [\n" +
+                                            "        :p2 \"XXX\" ;\n" +
+                                            "    ] ;\n" +
+                                            "] .\n");
 
-                [
-                    a :C ;
-                    :p1 [
-                        :p2 "XXX" ;
-                    ] ;
-                ] .
-                """);
-
-        final var wrap = ExampleDataset.wrap(dataset);
-        final var graph = wrap.getGraph();
-        final var resource = graph.getResource();
-        final var p1 = resource.getP1();
-        final var p2 = p1.getP2();
+        final ExampleDataset wrap = ExampleDataset.wrap(dataset);
+        final ExampleGraph graph = wrap.getGraph();
+        final ExampleNode1 resource = graph.getResource();
+        final ExampleNode2 p1 = resource.getP1();
+        final String p2 = p1.getP2();
 
         System.out.println(p2);
     }
 
     private static Dataset datasetFrom(final String rdf) {
-        final var dataset = DatasetFactory.create();
+        final Dataset dataset = DatasetFactory.create();
         RDFDataMgr.read(dataset, IOUtils.toInputStream(rdf, Charsets.UTF_8), Lang.TRIG);
         return dataset;
     }
