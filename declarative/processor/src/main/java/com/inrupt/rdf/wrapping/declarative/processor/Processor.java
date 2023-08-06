@@ -22,6 +22,7 @@ package com.inrupt.rdf.wrapping.declarative.processor;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Instant;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -56,7 +57,15 @@ public class Processor extends AbstractProcessor {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("annotatedElement [%s]", annotatedElement), annotatedElement);
 
                 final TypeElement annotatedType = (TypeElement) annotatedElement;
-                final String qualifiedName = annotatedType.getQualifiedName().toString() + "_$impl";
+                final String originalInterfaceName = annotatedType.getQualifiedName().toString();
+                final String originalBinaryName = processingEnv.getElementUtils().getBinaryName(annotatedType).toString();
+                final String qualifiedName = originalBinaryName + "_$impl";
+                final int lastDot = originalBinaryName.lastIndexOf('.');
+                final String implementationClassName = qualifiedName.substring(lastDot + 1);
+                String packageName = null;
+                if (lastDot > 0) {
+                    packageName = originalBinaryName.substring(0, lastDot);
+                }
 
                 final JavaFileObject builderFile;
                 try {
@@ -67,7 +76,31 @@ public class Processor extends AbstractProcessor {
 
                 try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
                     // This should surely be a framework like JDeparser
-                    out.println("generated");
+                    if (packageName != null) {
+                        out.print("package ");
+                        out.print(packageName);
+                        out.println(";");
+                        out.println();
+                    }
+
+                    out.println("import javax.annotation.processing.Generated;");
+                    out.println();
+
+                    out.println("/**");
+                    out.println(" * Warning this class consists of generated code.");
+                    out.println(" */");
+
+                    out.print("@Generated(value = \"");
+                    out.print(this.getClass().getName());
+                    out.print("\", date = \"");
+                    out.print(Instant.now());
+                    out.println("\")");
+
+                    out.print("public class ");
+                    out.print(implementationClassName);
+                    out.print(" implements ");
+                    out.print(originalInterfaceName);
+                    out.println(" {}");
                 } catch (IOException e) {
                     throw new RuntimeException("could not open writer", e);
                 }
