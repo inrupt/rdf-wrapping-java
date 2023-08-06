@@ -83,24 +83,20 @@ public class Processor extends AbstractProcessor {
                         out.println();
                     }
 
-                    out.println("import javax.annotation.processing.Generated;");
-                    out.println();
+                    switch (annotation.getQualifiedName().toString()) {
+                        case "com.inrupt.rdf.wrapping.declarative.annotations.Dataset":
+                            printDataset(originalInterfaceName, implementationClassName, out);
+                            break;
+                        case "com.inrupt.rdf.wrapping.declarative.annotations.Graph":
+                            printGraph(originalInterfaceName, implementationClassName, out);
+                            break;
+                        case "com.inrupt.rdf.wrapping.declarative.annotations.Resource":
+                            printResource(originalInterfaceName, implementationClassName, out);
+                            break;
 
-                    out.println("/**");
-                    out.println(" * Warning this class consists of generated code.");
-                    out.println(" */");
+                    }
 
-                    out.print("@Generated(value = \"");
-                    out.print(this.getClass().getName());
-                    out.print("\", date = \"");
-                    out.print(Instant.now());
-                    out.println("\")");
 
-                    out.print("public class ");
-                    out.print(implementationClassName);
-                    out.print(" implements ");
-                    out.print(originalInterfaceName);
-                    out.println(" {}");
                 } catch (IOException e) {
                     throw new RuntimeException("could not open writer", e);
                 }
@@ -108,5 +104,103 @@ public class Processor extends AbstractProcessor {
         }
 
         return true;
+    }
+
+    private void printDataset(final String originalInterfaceName, final String implementationClassName, final PrintWriter out) {
+        out.println("import javax.annotation.processing.Generated;");
+        out.println();
+        out.println("import org.apache.jena.sparql.core.DatasetGraph;");
+        out.println("import org.apache.jena.sparql.core.DatasetImpl;");
+        out.println();
+
+        printJavadoc(out);
+        printGenerated(out);
+
+        out.print("public class ");
+        out.print(implementationClassName);
+        out.print(" extends DatasetImpl implements ");
+        out.print(originalInterfaceName);
+        out.println(" {");
+
+        out.print("    protected ");
+        out.print(implementationClassName);
+        out.println("(final DatasetGraph original) {");
+        out.println("        super(original);");
+        out.println("    }");
+
+        out.println("}");
+    }
+
+    private void printGraph(final String originalInterfaceName, final String implementationClassName, final PrintWriter out) {
+        out.println("import javax.annotation.processing.Generated;");
+        out.println();
+        out.println("import org.apache.jena.graph.Graph;");
+        out.println("import org.apache.jena.rdf.model.impl.ModelCom;");
+        out.println();
+
+        printJavadoc(out);
+        printGenerated(out);
+
+        out.print("public class ");
+        out.print(implementationClassName);
+        out.print(" extends ModelCom implements ");
+        out.print(originalInterfaceName);
+        out.println(" {");
+
+        out.print("    protected ");
+        out.print(implementationClassName);
+        out.println("(final Graph original) {");
+        out.println("        super(original);");
+        out.println("    }");
+
+        out.println("}");
+    }
+
+    private void printResource(final String originalInterfaceName, final String implementationClassName, final PrintWriter out) {
+        out.println("import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;");
+        out.println("import com.inrupt.rdf.wrapping.jena.WrapperResource;");
+        out.println();
+        out.println("import javax.annotation.processing.Generated;");
+        out.println();
+        out.println("import org.apache.jena.enhanced.EnhGraph;");
+        out.println("import org.apache.jena.enhanced.Implementation;");
+        out.println("import org.apache.jena.graph.Node;");
+        out.println();
+
+        printJavadoc(out);
+        printGenerated(out);
+
+        out.print("public class ");
+        out.print(implementationClassName);
+        out.print(" extends WrapperResource implements ");
+        out.print(originalInterfaceName);
+        out.println(" {");
+
+        out.print("    static final Implementation factory = new UriOrBlankFactory(");
+        out.print(implementationClassName);
+        out.println("::new);");
+        out.println();
+
+        out.print("    protected ");
+        out.print(implementationClassName);
+        out.println("(final Node node, final EnhGraph graph) {");
+        out.println("        super(node, graph);");
+        out.println("    }");
+
+        out.println("}");
+    }
+
+    private void printGenerated(final PrintWriter out) {
+        out.print("@Generated(value = \"");
+        out.print(this.getClass().getName());
+        out.print("\", date = \"");
+        out.print(Instant.now());
+        out.println("\")");
+    }
+
+    private static void printJavadoc(final PrintWriter out) {
+        out.println("/**");
+        out.println(" * Warning this class consists of generated code.");
+        out.println(" */");
     }
 }

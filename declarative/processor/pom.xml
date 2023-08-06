@@ -24,6 +24,11 @@
             <artifactId>inrupt-rdf-wrapping-declarative-annotations</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.inrupt.rdf</groupId>
+            <artifactId>inrupt-rdf-wrapping-jena</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
