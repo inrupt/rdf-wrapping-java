@@ -20,7 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
-import static org.apache.jena.rdf.model.ResourceFactory.*;
+import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
@@ -31,7 +31,6 @@ import javax.annotation.processing.Generated;
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.enhanced.Implementation;
 import org.apache.jena.graph.Node;
-import org.apache.jena.rdf.model.ResourceFactory;
 
 /**
  * Warning this class consists of generated code.

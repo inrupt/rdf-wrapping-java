@@ -45,22 +45,11 @@ public class Processor extends AbstractProcessor {
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         if (roundEnv.processingOver()) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "processing over");
-            return true;
-        }
-
-        if (annotations.isEmpty()) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "annotations empty");
-            return true;
+            return false;
         }
 
         for (TypeElement annotation : annotations) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("annotation [%s]", annotation), annotation);
-
-            // TODO: Just to get started
-            if (!"com.inrupt.rdf.wrapping.declarative.annotations.Resource".equals(annotation.getQualifiedName().toString())) {
-                processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("skipping [%s]", annotation), annotation);
-                continue;
-            }
 
             final Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
             for (Element annotatedElement : annotatedElements) {
