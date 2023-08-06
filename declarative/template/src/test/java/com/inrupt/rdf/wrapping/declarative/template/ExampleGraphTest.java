@@ -51,6 +51,11 @@ class ExampleGraphTest {
         System.out.println(p2);
     }
 
+    @Test
+    void test2() {
+        final ExampleI1.ExampleI2 wrap = ExampleI1.ExampleI2.wrap(DatasetFactory.create());
+    }
+
     private static Dataset datasetFrom(final String rdf) {
         final Dataset dataset = DatasetFactory.create();
         RDFDataMgr.read(dataset, IOUtils.toInputStream(rdf, Charsets.UTF_8), Lang.TRIG);
