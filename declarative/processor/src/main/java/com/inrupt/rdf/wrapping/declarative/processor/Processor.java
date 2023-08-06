@@ -36,9 +36,9 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 @SupportedAnnotationTypes({
-        "com.inrupt.rdf.wrapping.declarative.annotations.Dataset",
-        "com.inrupt.rdf.wrapping.declarative.annotations.Graph",
-        "com.inrupt.rdf.wrapping.declarative.annotations.Resource"
+    "com.inrupt.rdf.wrapping.declarative.annotations.Dataset",
+    "com.inrupt.rdf.wrapping.declarative.annotations.Graph",
+    "com.inrupt.rdf.wrapping.declarative.annotations.Resource"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class Processor extends AbstractProcessor {
@@ -50,15 +50,22 @@ public class Processor extends AbstractProcessor {
         }
 
         for (TypeElement annotation : annotations) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("annotation [%s]", annotation), annotation);
+            processingEnv.getMessager().printMessage(
+                    Diagnostic.Kind.NOTE,
+                    String.format("annotation [%s]", annotation), annotation);
 
             final Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
             for (Element annotatedElement : annotatedElements) {
-                processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("annotatedElement [%s]", annotatedElement), annotatedElement);
+                processingEnv.getMessager().printMessage(
+                        Diagnostic.Kind.NOTE,
+                        String.format("annotatedElement [%s]", annotatedElement), annotatedElement);
 
                 final TypeElement annotatedType = (TypeElement) annotatedElement;
                 final String originalInterfaceName = annotatedType.getQualifiedName().toString();
-                final String originalBinaryName = processingEnv.getElementUtils().getBinaryName(annotatedType).toString();
+                final String originalBinaryName = processingEnv
+                        .getElementUtils()
+                        .getBinaryName(annotatedType)
+                        .toString();
                 final String qualifiedName = originalBinaryName + "_$impl";
                 final int lastDot = originalBinaryName.lastIndexOf('.');
                 final String implementationClassName = qualifiedName.substring(lastDot + 1);
@@ -106,7 +113,10 @@ public class Processor extends AbstractProcessor {
         return true;
     }
 
-    private void printDataset(final String originalInterfaceName, final String implementationClassName, final PrintWriter out) {
+    private void printDataset(
+            final String originalInterfaceName,
+            final String implementationClassName,
+            final PrintWriter out) {
         out.println("import javax.annotation.processing.Generated;");
         out.println();
         out.println("import org.apache.jena.sparql.core.DatasetGraph;");
@@ -131,7 +141,10 @@ public class Processor extends AbstractProcessor {
         out.println("}");
     }
 
-    private void printGraph(final String originalInterfaceName, final String implementationClassName, final PrintWriter out) {
+    private void printGraph(
+            final String originalInterfaceName,
+            final String implementationClassName,
+            final PrintWriter out) {
         out.println("import javax.annotation.processing.Generated;");
         out.println();
         out.println("import org.apache.jena.graph.Graph;");
@@ -156,7 +169,10 @@ public class Processor extends AbstractProcessor {
         out.println("}");
     }
 
-    private void printResource(final String originalInterfaceName, final String implementationClassName, final PrintWriter out) {
+    private void printResource(
+            final String originalInterfaceName,
+            final String implementationClassName,
+            final PrintWriter out) {
         out.println("import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;");
         out.println("import com.inrupt.rdf.wrapping.jena.WrapperResource;");
         out.println();

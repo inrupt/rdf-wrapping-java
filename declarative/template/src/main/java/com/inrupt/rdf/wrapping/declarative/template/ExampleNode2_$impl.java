@@ -39,7 +39,7 @@ import org.apache.jena.graph.Node;
 public class ExampleNode2_$impl extends WrapperResource implements ExampleNode2 {
     static final Implementation factory = new UriOrBlankFactory(ExampleNode2_$impl::new);
 
-    protected ExampleNode2_$impl(Node node, EnhGraph model) {
+    protected ExampleNode2_$impl(final Node node, final EnhGraph model) {
         super(node, model);
     }
 

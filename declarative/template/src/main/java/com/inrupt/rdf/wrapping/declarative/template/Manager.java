@@ -27,7 +27,7 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 
 /**
- * A utility class that aids wrapper interfaces to find generated implementations
+ * A utility class that aids wrapper interfaces to find generated implementations.
  */
 // TODO: Move to processor module
 // TODO: Should this be SPI?
@@ -43,11 +43,11 @@ public final class Manager {
         return wrap(type, original, Dataset.class);
     }
 
-    private static <T> T wrap(final Class<T> type, final Object original, Class<?> xtype) {
+    private static <T> T wrap(final Class<T> type, final Object original, final Class<?> xtype) {
         final ClassLoader classLoader = type.getClassLoader();
         final String implTypeName = type.getName() + "_$impl";
 
-        Class<? extends T> implClass;
+        final Class<? extends T> implClass;
         try {
             implClass = Class.forName(implTypeName, true, classLoader).asSubclass(type);
         } catch (ClassNotFoundException e) {

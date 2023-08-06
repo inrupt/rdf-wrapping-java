@@ -22,6 +22,9 @@ package com.inrupt.rdf.wrapping.declarative.template;
 
 // @Resource
 public interface ExampleNode2 {
-    // @Property(predicate = "urn:example:p2", type = PropertyMappingTypes.anyOrNull, mapping = ValueMappingTypes.literalAsString)
+    // @Property(
+    //     predicate = "urn:example:p2",
+    //     type = PropertyMappingTypes.anyOrNull,
+    //     mapping = ValueMappingTypes.literalAsString)
     String getP2();
 }

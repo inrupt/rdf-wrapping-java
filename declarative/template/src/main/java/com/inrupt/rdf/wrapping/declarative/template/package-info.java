@@ -20,6 +20,6 @@
  */
 
 /**
- * Examples of wrapper interfaces and the implementations the Processor should generate from them
+ * Examples of wrapper interfaces and the implementations the Processor should generate from them.
  */
 package com.inrupt.rdf.wrapping.declarative.template;
