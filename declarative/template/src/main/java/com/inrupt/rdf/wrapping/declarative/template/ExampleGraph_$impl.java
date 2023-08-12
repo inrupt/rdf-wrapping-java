@@ -20,7 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
-import javax.annotation.processing.Generated;
+import javax.annotation.Generated;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;

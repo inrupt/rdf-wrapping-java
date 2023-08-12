@@ -117,7 +117,7 @@ public class Processor extends AbstractProcessor {
             final String originalInterfaceName,
             final String implementationClassName,
             final PrintWriter out) {
-        out.println("import javax.annotation.processing.Generated;");
+        out.println("import javax.annotation.Generated;");
         out.println();
         out.println("import org.apache.jena.sparql.core.DatasetGraph;");
         out.println("import org.apache.jena.sparql.core.DatasetImpl;");
@@ -145,7 +145,7 @@ public class Processor extends AbstractProcessor {
             final String originalInterfaceName,
             final String implementationClassName,
             final PrintWriter out) {
-        out.println("import javax.annotation.processing.Generated;");
+        out.println("import javax.annotation.Generated;");
         out.println();
         out.println("import org.apache.jena.graph.Graph;");
         out.println("import org.apache.jena.rdf.model.impl.ModelCom;");
@@ -176,7 +176,7 @@ public class Processor extends AbstractProcessor {
         out.println("import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;");
         out.println("import com.inrupt.rdf.wrapping.jena.WrapperResource;");
         out.println();
-        out.println("import javax.annotation.processing.Generated;");
+        out.println("import javax.annotation.Generated;");
         out.println();
         out.println("import org.apache.jena.enhanced.EnhGraph;");
         out.println("import org.apache.jena.enhanced.Implementation;");

@@ -20,7 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
-import javax.annotation.processing.Generated;
+import javax.annotation.Generated;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.sparql.core.DatasetGraph;

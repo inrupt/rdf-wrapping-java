@@ -26,7 +26,7 @@ import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
-import javax.annotation.processing.Generated;
+import javax.annotation.Generated;
 
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.enhanced.Implementation;

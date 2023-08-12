@@ -22,6 +22,7 @@
     <rdf4j.version>4.3.4</rdf4j.version>
     <jena.version>4.9.0</jena.version>
     <inrupt.commons.rdf4j.version>0.6.0</inrupt.commons.rdf4j.version>
+    <javax.annotation.version>1.3.2</javax.annotation.version>
 
     <!-- plugins -->
     <checkstyle.plugin.version>3.3.0</checkstyle.plugin.version>
@@ -117,6 +118,13 @@
         <artifactId>jena-commonsrdf</artifactId>
         <version>${jena.version}</version>
       </dependency>
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>${javax.annotation.version}</version>
+      </dependency>
+
+
       <!-- patch CVE-2023-2976 guava-31.x.x-->
       <dependency>
         <groupId>com.google.guava</groupId>
