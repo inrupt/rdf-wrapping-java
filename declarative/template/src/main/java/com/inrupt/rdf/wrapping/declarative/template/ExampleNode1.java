@@ -20,7 +20,9 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
-// @Resource
+import com.inrupt.rdf.wrapping.declarative.annotations.Resource;
+
+@Resource
 public interface ExampleNode1 {
     // @Property(predicate = "urn:example:p1", type = PropertyMappingTypes.anyOrNull, mapping = ValueMappingTypes.as)
     ExampleNode2 getP1();

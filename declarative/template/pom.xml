@@ -26,8 +26,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>com.inrupt.rdf</groupId>
+            <artifactId>inrupt-rdf-wrapping-declarative-processor</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -45,6 +46,23 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <!-- Disable annotation processing on project compile because this is a template module -->
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <compilerArgument>-proc:none</compilerArgument>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

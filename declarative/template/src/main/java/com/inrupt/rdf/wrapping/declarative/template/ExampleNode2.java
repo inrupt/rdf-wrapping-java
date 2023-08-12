@@ -20,7 +20,9 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
-// @Resource
+import com.inrupt.rdf.wrapping.declarative.annotations.Resource;
+
+@Resource
 public interface ExampleNode2 {
     // @Property(
     //     predicate = "urn:example:p2",

@@ -20,12 +20,13 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
-import org.apache.jena.query.Dataset;
+import com.inrupt.rdf.wrapping.declarative.annotations.Dataset;
+import com.inrupt.rdf.wrapping.declarative.processor.Manager;
 
-// @Dataset
+@Dataset
 public interface ExampleDataset {
-    static ExampleDataset wrap(final Dataset original) {
-        return Manager.wrap(ExampleDataset.class, original);
+    static ExampleDataset wrap(final org.apache.jena.query.Dataset original) {
+        return Manager.wrap(original, ExampleDataset.class);
     }
 
     // @DefaultGraph

@@ -20,12 +20,15 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
+import com.inrupt.rdf.wrapping.declarative.annotations.Graph;
+import com.inrupt.rdf.wrapping.declarative.processor.Manager;
+
 import org.apache.jena.rdf.model.Model;
 
-// @Graph
+@Graph
 public interface ExampleGraph {
     static ExampleGraph wrap(final Model original) {
-        return Manager.wrap(ExampleGraph.class, original);
+        return Manager.wrap(original, ExampleGraph.class);
     }
 
     // @FirstSubjectOf(RDF.type, "urn:example:C")

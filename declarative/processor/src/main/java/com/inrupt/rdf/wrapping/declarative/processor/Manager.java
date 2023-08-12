@@ -18,7 +18,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.declarative.template;
+package com.inrupt.rdf.wrapping.declarative.processor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,27 +29,26 @@ import org.apache.jena.rdf.model.Model;
 /**
  * A utility class that aids wrapper interfaces to find generated implementations.
  */
-// TODO: Move to processor module
 // TODO: Should this be SPI?
 public final class Manager {
     private Manager() {
     }
 
-    public static <T> T wrap(final Class<T> type, final Model original) {
-        return wrap(type, original, Model.class);
+    public static <T> T wrap(final Model original, final Class<T> interfaceType) {
+        return wrap(original, interfaceType, Model.class);
     }
 
-    public static <T> T wrap(final Class<T> type, final Dataset original) {
-        return wrap(type, original, Dataset.class);
+    public static <T> T wrap(final Dataset original, final Class<T> interfaceType) {
+        return wrap(original, interfaceType, Dataset.class);
     }
 
-    private static <T> T wrap(final Class<T> type, final Object original, final Class<?> xtype) {
-        final ClassLoader classLoader = type.getClassLoader();
-        final String implTypeName = type.getName() + "_$impl";
+    private static <T> T wrap(final Object original, final Class<T> interfaceType, final Class<?> parameterType) {
+        final ClassLoader classLoader = interfaceType.getClassLoader();
+        final String implTypeName = interfaceType.getName() + "_$impl";
 
         final Class<? extends T> implClass;
         try {
-            implClass = Class.forName(implTypeName, true, classLoader).asSubclass(type);
+            implClass = Class.forName(implTypeName, true, classLoader).asSubclass(interfaceType);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("implementation not found", e);
         } catch (ClassCastException e) {
@@ -60,13 +59,13 @@ public final class Manager {
 
         final Method wrapMethod;
         try {
-            wrapMethod = implClass.getMethod("wrap", xtype);
+            wrapMethod = implClass.getMethod("wrap", parameterType);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("wrap method not found", e);
         }
 
         try {
-            return type.cast(wrapMethod.invoke(null, original));
+            return interfaceType.cast(wrapMethod.invoke(null, original));
         } catch (IllegalAccessException e) {
             throw new RuntimeException("wrap method inaccessible", e);
         } catch (InvocationTargetException e) {
