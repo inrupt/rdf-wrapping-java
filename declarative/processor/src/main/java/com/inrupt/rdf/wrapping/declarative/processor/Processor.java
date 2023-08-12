@@ -20,11 +20,17 @@
  */
 package com.inrupt.rdf.wrapping.declarative.processor;
 
+import static org.jboss.jdeparser.JExprs.$v;
+import static org.jboss.jdeparser.JTypes.$t;
+
+import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
+import com.inrupt.rdf.wrapping.jena.WrapperResource;
+
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.Instant;
 import java.util.Set;
 
+import javax.annotation.Generated;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -33,7 +39,17 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
+
+import org.apache.jena.enhanced.EnhGraph;
+import org.apache.jena.enhanced.Implementation;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.Node;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.impl.ModelCom;
+import org.apache.jena.sparql.core.DatasetGraph;
+import org.apache.jena.sparql.core.DatasetImpl;
+import org.jboss.jdeparser.*;
 
 @SupportedAnnotationTypes({
     "com.inrupt.rdf.wrapping.declarative.annotations.Dataset",
@@ -74,36 +90,24 @@ public class Processor extends AbstractProcessor {
                     packageName = originalBinaryName.substring(0, lastDot);
                 }
 
-                final JavaFileObject builderFile;
-                try {
-                    builderFile = processingEnv.getFiler().createSourceFile(qualifiedName, annotatedElement);
-                } catch (IOException e) {
-                    throw new RuntimeException("could not create class file", e);
+                final JFiler jFiler = JFiler.newInstance(processingEnv.getFiler());
+                final JSources sources = JDeparser.createSources(jFiler, new FormatPreferences());
+                final JSourceFile sourceFile = sources.createSourceFile(packageName, implementationClassName);
+
+                switch (annotation.getQualifiedName().toString()) {
+                    case "com.inrupt.rdf.wrapping.declarative.annotations.Dataset":
+                        printDataset(originalInterfaceName, implementationClassName, sourceFile);
+                        break;
+                    case "com.inrupt.rdf.wrapping.declarative.annotations.Graph":
+                        printGraph(originalInterfaceName, implementationClassName, sourceFile);
+                        break;
+                    case "com.inrupt.rdf.wrapping.declarative.annotations.Resource":
+                        printResource(originalInterfaceName, implementationClassName, sourceFile);
+                        break;
                 }
 
-                try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
-                    // This should surely be a framework like JDeparser
-                    if (packageName != null) {
-                        out.print("package ");
-                        out.print(packageName);
-                        out.println(";");
-                        out.println();
-                    }
-
-                    switch (annotation.getQualifiedName().toString()) {
-                        case "com.inrupt.rdf.wrapping.declarative.annotations.Dataset":
-                            printDataset(originalInterfaceName, implementationClassName, out);
-                            break;
-                        case "com.inrupt.rdf.wrapping.declarative.annotations.Graph":
-                            printGraph(originalInterfaceName, implementationClassName, out);
-                            break;
-                        case "com.inrupt.rdf.wrapping.declarative.annotations.Resource":
-                            printResource(originalInterfaceName, implementationClassName, out);
-                            break;
-
-                    }
-
-
+                try {
+                    sources.writeSources();
                 } catch (IOException e) {
                     throw new RuntimeException("could not open writer", e);
                 }
@@ -116,127 +120,71 @@ public class Processor extends AbstractProcessor {
     private void printDataset(
             final String originalInterfaceName,
             final String implementationClassName,
-            final PrintWriter out) {
-        out.println("import javax.annotation.Generated;");
-        out.println();
-        out.println("import org.apache.jena.query.Dataset;");
-        out.println("import org.apache.jena.sparql.core.DatasetGraph;");
-        out.println("import org.apache.jena.sparql.core.DatasetImpl;");
-        out.println();
+            final JSourceFile sourceFile) {
+        sourceFile._import(Generated.class);
+        sourceFile._import(Dataset.class);
+        sourceFile._import(DatasetGraph.class);
+        sourceFile._import(DatasetImpl.class);
 
-        printJavadoc(out);
-        printGenerated(out);
+        final JClassDef jClassDef = sourceFile._class(JMod.PUBLIC, implementationClassName);
+        jClassDef.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
+        jClassDef.docComment().text("Warning, this class consists of generated code.");
+        jClassDef._extends(DatasetImpl.class)._implements(originalInterfaceName);
 
-        out.print("public class ");
-        out.print(implementationClassName);
-        out.print(" extends DatasetImpl implements ");
-        out.print(originalInterfaceName);
-        out.println(" {");
+        final JMethodDef constructor = jClassDef.constructor(JMod.PROTECTED);
+        constructor.param(JMod.FINAL, DatasetGraph.class, "original");
+        constructor.body().callSuper().arg($v("original"));
 
-        out.print("    protected ");
-        out.print(implementationClassName);
-        out.println("(final DatasetGraph original) {");
-        out.println("        super(original);");
-        out.println("    }");
-        out.println();
-
-        out.print("    public static ");
-        out.print(originalInterfaceName);
-        out.println(" wrap(final Dataset original) {");
-        out.print("        return new ");
-        out.print(implementationClassName);
-        out.println("(original.asDatasetGraph());");
-        out.println("    }");
-
-        out.println("}");
+        final JMethodDef wrap = jClassDef.method(JMod.PUBLIC | JMod.STATIC, originalInterfaceName, "wrap");
+        wrap.param(JMod.FINAL, Dataset.class, "original");
+        wrap.body()._return($t(implementationClassName)._new().arg($v("original").call("asDatasetGraph")));
     }
 
     private void printGraph(
             final String originalInterfaceName,
             final String implementationClassName,
-            final PrintWriter out) {
-        out.println("import javax.annotation.Generated;");
-        out.println();
-        out.println("import org.apache.jena.graph.Graph;");
-        out.println("import org.apache.jena.rdf.model.Model;");
-        out.println("import org.apache.jena.rdf.model.impl.ModelCom;");
-        out.println();
+            final JSourceFile sourceFile) {
+        sourceFile._import(Generated.class);
+        sourceFile._import(Graph.class);
+        sourceFile._import(Model.class);
+        sourceFile._import(ModelCom.class);
 
-        printJavadoc(out);
-        printGenerated(out);
+        final JClassDef jClassDef = sourceFile._class(JMod.PUBLIC, implementationClassName);
+        jClassDef.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
+        jClassDef.docComment().text("Warning, this class consists of generated code.");
+        jClassDef._extends(ModelCom.class)._implements(originalInterfaceName);
 
-        out.print("public class ");
-        out.print(implementationClassName);
-        out.print(" extends ModelCom implements ");
-        out.print(originalInterfaceName);
-        out.println(" {");
+        final JMethodDef constructor = jClassDef.constructor(JMod.PROTECTED);
+        constructor.param(JMod.FINAL, Graph.class, "original");
+        constructor.body().callSuper().arg($v("original"));
 
-        out.print("    protected ");
-        out.print(implementationClassName);
-        out.println("(final Graph original) {");
-        out.println("        super(original);");
-        out.println("    }");
-        out.println();
-
-        out.print("    public static ");
-        out.print(originalInterfaceName);
-        out.println(" wrap(final Model original) {");
-        out.print("        return new ");
-        out.print(implementationClassName);
-        out.println("(original.getGraph());");
-        out.println("    }");
-
-        out.println("}");
+        final JMethodDef wrap = jClassDef.method(JMod.PUBLIC | JMod.STATIC, originalInterfaceName, "wrap");
+        wrap.param(JMod.FINAL, Model.class, "original");
+        wrap.body()._return($t(implementationClassName)._new().arg($v("original").call("getGraph")));
     }
 
     private void printResource(
             final String originalInterfaceName,
             final String implementationClassName,
-            final PrintWriter out) {
-        out.println("import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;");
-        out.println("import com.inrupt.rdf.wrapping.jena.WrapperResource;");
-        out.println();
-        out.println("import javax.annotation.Generated;");
-        out.println();
-        out.println("import org.apache.jena.enhanced.EnhGraph;");
-        out.println("import org.apache.jena.enhanced.Implementation;");
-        out.println("import org.apache.jena.graph.Node;");
-        out.println();
+            final JSourceFile sourceFile) {
+        sourceFile._import(UriOrBlankFactory.class);
+        sourceFile._import(WrapperResource.class);
+        sourceFile._import(Generated.class);
+        sourceFile._import(EnhGraph.class);
+        sourceFile._import(Implementation.class);
+        sourceFile._import(Node.class);
 
-        printJavadoc(out);
-        printGenerated(out);
+        final JClassDef jClassDef = sourceFile._class(JMod.PUBLIC, implementationClassName);
+        jClassDef.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
+        jClassDef.docComment().text("Warning, this class consists of generated code.");
+        jClassDef._extends(WrapperResource.class)._implements(originalInterfaceName);
 
-        out.print("public class ");
-        out.print(implementationClassName);
-        out.print(" extends WrapperResource implements ");
-        out.print(originalInterfaceName);
-        out.println(" {");
-
-        out.print("    static final Implementation factory = new UriOrBlankFactory(");
-        out.print(implementationClassName);
-        out.println("::new);");
-        out.println();
-
-        out.print("    protected ");
-        out.print(implementationClassName);
-        out.println("(final Node node, final EnhGraph graph) {");
-        out.println("        super(node, graph);");
-        out.println("    }");
-
-        out.println("}");
-    }
-
-    private void printGenerated(final PrintWriter out) {
-        out.print("@Generated(value = \"");
-        out.print(this.getClass().getName());
-        out.print("\", date = \"");
-        out.print(Instant.now());
-        out.println("\")");
-    }
-
-    private static void printJavadoc(final PrintWriter out) {
-        out.println("/**");
-        out.println(" * Warning this class consists of generated code.");
-        out.println(" */");
+        jClassDef.field(JMod.STATIC | JMod.FINAL, Implementation.class, "factory", $t(UriOrBlankFactory.class)._new().arg($t(implementationClassName).methodRef("new")));
+        final JMethodDef constructor = jClassDef.constructor(JMod.PROTECTED);
+        constructor.param(JMod.FINAL, Node.class, "node");
+        constructor.param(JMod.FINAL, EnhGraph.class, "graph");
+        final JCall jCall = constructor.body().callSuper();
+        jCall.arg($v("node"));
+        jCall.arg($v("graph"));
     }
 }
