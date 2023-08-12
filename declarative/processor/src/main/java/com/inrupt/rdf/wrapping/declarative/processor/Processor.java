@@ -158,6 +158,7 @@ public class Processor extends AbstractProcessor {
         out.println("import javax.annotation.Generated;");
         out.println();
         out.println("import org.apache.jena.graph.Graph;");
+        out.println("import org.apache.jena.rdf.model.Model;");
         out.println("import org.apache.jena.rdf.model.impl.ModelCom;");
         out.println();
 
@@ -174,6 +175,15 @@ public class Processor extends AbstractProcessor {
         out.print(implementationClassName);
         out.println("(final Graph original) {");
         out.println("        super(original);");
+        out.println("    }");
+        out.println();
+
+        out.print("    public static ");
+        out.print(originalInterfaceName);
+        out.println(" wrap(final Model original) {");
+        out.print("        return new ");
+        out.print(implementationClassName);
+        out.println("(original.getGraph());");
         out.println("    }");
 
         out.println("}");

@@ -25,6 +25,8 @@ import com.inrupt.rdf.wrapping.declarative.annotations.Graph;
 import com.inrupt.rdf.wrapping.declarative.annotations.Resource;
 import com.inrupt.rdf.wrapping.declarative.processor.Manager;
 
+import org.apache.jena.rdf.model.Model;
+
 @Dataset
 public interface X {
     static X wrap(final org.apache.jena.query.Dataset original) {
@@ -33,6 +35,10 @@ public interface X {
 
     @Graph
     interface Y {
+        static Y wrap(final Model original) {
+            return Manager.wrap(original, Y.class);
+        }
+
         @Resource
         interface Z {
         }
