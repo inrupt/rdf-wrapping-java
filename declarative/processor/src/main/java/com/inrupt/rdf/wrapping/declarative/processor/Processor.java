@@ -119,6 +119,7 @@ public class Processor extends AbstractProcessor {
             final PrintWriter out) {
         out.println("import javax.annotation.Generated;");
         out.println();
+        out.println("import org.apache.jena.query.Dataset;");
         out.println("import org.apache.jena.sparql.core.DatasetGraph;");
         out.println("import org.apache.jena.sparql.core.DatasetImpl;");
         out.println();
@@ -136,6 +137,15 @@ public class Processor extends AbstractProcessor {
         out.print(implementationClassName);
         out.println("(final DatasetGraph original) {");
         out.println("        super(original);");
+        out.println("    }");
+        out.println();
+
+        out.print("    public static ");
+        out.print(originalInterfaceName);
+        out.println(" wrap(final Dataset original) {");
+        out.print("        return new ");
+        out.print(implementationClassName);
+        out.println("(original.asDatasetGraph());");
         out.println("    }");
 
         out.println("}");

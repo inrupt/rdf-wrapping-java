@@ -23,9 +23,14 @@ package com.inrupt.rdf.wrapping.declarative.test;
 import com.inrupt.rdf.wrapping.declarative.annotations.Dataset;
 import com.inrupt.rdf.wrapping.declarative.annotations.Graph;
 import com.inrupt.rdf.wrapping.declarative.annotations.Resource;
+import com.inrupt.rdf.wrapping.declarative.processor.Manager;
 
 @Dataset
 public interface X {
+    static X wrap(final org.apache.jena.query.Dataset original) {
+        return Manager.wrap(original, X.class);
+    }
+
     @Graph
     interface Y {
         @Resource
