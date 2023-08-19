@@ -24,8 +24,8 @@ import static org.jboss.jdeparser.JExprs.$v;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
-import com.inrupt.rdf.wrapping.declarative.annotations.DefaultGraph;
-import com.inrupt.rdf.wrapping.declarative.annotations.NamedGraph;
+import com.inrupt.rdf.wrapping.declarative.annotation.DefaultGraph;
+import com.inrupt.rdf.wrapping.declarative.annotation.NamedGraph;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;

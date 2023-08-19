@@ -20,7 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
-import com.inrupt.rdf.wrapping.declarative.annotations.Resource;
+import com.inrupt.rdf.wrapping.declarative.annotation.Resource;
 
 @Resource
 public interface ExampleNode1 {

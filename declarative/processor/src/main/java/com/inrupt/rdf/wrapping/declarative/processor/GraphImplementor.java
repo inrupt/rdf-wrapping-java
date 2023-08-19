@@ -24,7 +24,7 @@ import static org.jboss.jdeparser.JExprs.$v;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
-import com.inrupt.rdf.wrapping.declarative.annotations.FirstInstanceOf;
+import com.inrupt.rdf.wrapping.declarative.annotation.FirstInstanceOf;
 import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
 import javax.annotation.Generated;

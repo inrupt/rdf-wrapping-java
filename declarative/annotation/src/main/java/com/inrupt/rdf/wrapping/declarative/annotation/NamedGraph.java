@@ -18,7 +18,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.declarative.annotations;
+package com.inrupt.rdf.wrapping.declarative.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.CLASS;
@@ -30,6 +30,6 @@ import java.lang.annotation.Target;
 @Target(METHOD)
 @Retention(CLASS)
 @Documented
-public @interface FirstInstanceOf {
+public @interface NamedGraph {
     String value();
 }

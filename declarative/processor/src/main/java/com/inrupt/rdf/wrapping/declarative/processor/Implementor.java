@@ -68,7 +68,6 @@ abstract class Implementor {
         } catch (IOException e) {
             throw new RuntimeException("could not open writer", e);
         }
-
     }
 
     protected abstract void implementInternal();
@@ -81,11 +80,11 @@ abstract class Implementor {
         final TypeElement annotatedType = (TypeElement) annotatedElement;
 
         switch (annotation.getQualifiedName().toString()) {
-            case "com.inrupt.rdf.wrapping.declarative.annotations.Dataset":
+            case "com.inrupt.rdf.wrapping.declarative.annotation.Dataset":
                 return new DatasetImplementor(processingEnvironment, annotatedType);
-            case "com.inrupt.rdf.wrapping.declarative.annotations.Graph":
+            case "com.inrupt.rdf.wrapping.declarative.annotation.Graph":
                 return new GraphImplementor(processingEnvironment, annotatedType);
-            case "com.inrupt.rdf.wrapping.declarative.annotations.Resource":
+            case "com.inrupt.rdf.wrapping.declarative.annotation.Resource":
                 return new ResourceImplementor(processingEnvironment, annotatedType);
             default:
                 throw new RuntimeException("unknown annotation type");

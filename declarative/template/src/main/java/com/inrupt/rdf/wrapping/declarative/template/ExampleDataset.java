@@ -20,7 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
-import com.inrupt.rdf.wrapping.declarative.annotations.Dataset;
+import com.inrupt.rdf.wrapping.declarative.annotation.Dataset;
 import com.inrupt.rdf.wrapping.declarative.processor.Manager;
 
 @Dataset

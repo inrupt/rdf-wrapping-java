@@ -7,8 +7,8 @@
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>inrupt-rdf-wrapping-declarative-annotations</artifactId>
-    <name>Inrupt RDF Wrapping Declarative - Annotations</name>
+    <artifactId>inrupt-rdf-wrapping-declarative-annotation</artifactId>
+    <name>Inrupt RDF Wrapping Declarative - Annotation</name>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>

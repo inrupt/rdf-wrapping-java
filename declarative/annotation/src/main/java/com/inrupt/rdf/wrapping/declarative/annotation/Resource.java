@@ -18,17 +18,17 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.declarative.annotations;
+package com.inrupt.rdf.wrapping.declarative.annotation;
 
-import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-@Target(METHOD)
+@Target(TYPE)
 @Retention(CLASS)
 @Documented
-public @interface DefaultGraph {
+public @interface Resource {
 }

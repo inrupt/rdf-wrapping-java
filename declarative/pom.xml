@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>annotations</module>
+        <module>annotation</module>
         <module>processor</module>
         <module>test</module>
         <module>template</module>

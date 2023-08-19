@@ -32,9 +32,9 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
 @SupportedAnnotationTypes({
-    "com.inrupt.rdf.wrapping.declarative.annotations.Dataset",
-    "com.inrupt.rdf.wrapping.declarative.annotations.Graph",
-    "com.inrupt.rdf.wrapping.declarative.annotations.Resource"
+    "com.inrupt.rdf.wrapping.declarative.annotation.Dataset",
+    "com.inrupt.rdf.wrapping.declarative.annotation.Graph",
+    "com.inrupt.rdf.wrapping.declarative.annotation.Resource"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class Processor extends AbstractProcessor {
