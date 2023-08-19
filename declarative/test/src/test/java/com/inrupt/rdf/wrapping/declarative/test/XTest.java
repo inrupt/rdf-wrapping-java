@@ -70,6 +70,24 @@ class XTest {
         assertDoesNotThrow(y::getResource);
     }
 
+    @Test
+    void e2e() {
+        final Dataset dataset = datasetFrom("" +
+                                            "PREFIX : <urn:example:>\n" +
+                                            "\n" +
+                                            "GRAPH <urn:example:g1> {\n" +
+                                            "    [\n" +
+                                            "        a :C ;\n" +
+                                            "    ] .\n" +
+                                            "}\n");
+
+        final X x = X.wrap(dataset);
+        final X.Y y = x.getNamedGraph();
+        final X.Y.Z z = y.getResource();
+
+        System.out.println(z);
+    }
+
     private static Dataset datasetFrom(final String rdf) {
         final Dataset dataset = DatasetFactory.create();
         RDFDataMgr.read(dataset, IOUtils.toInputStream(rdf, Charsets.UTF_8), Lang.TRIG);
