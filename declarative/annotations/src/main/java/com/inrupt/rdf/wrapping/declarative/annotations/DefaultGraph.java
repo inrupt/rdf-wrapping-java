@@ -18,33 +18,17 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.declarative.test;
+package com.inrupt.rdf.wrapping.declarative.annotations;
 
-import com.inrupt.rdf.wrapping.declarative.annotations.Dataset;
-import com.inrupt.rdf.wrapping.declarative.annotations.DefaultGraph;
-import com.inrupt.rdf.wrapping.declarative.annotations.Graph;
-import com.inrupt.rdf.wrapping.declarative.annotations.Resource;
-import com.inrupt.rdf.wrapping.declarative.processor.Manager;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
-import org.apache.jena.rdf.model.Model;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-@Dataset
-public interface X {
-    static X wrap(final org.apache.jena.query.Dataset original) {
-        return Manager.wrap(original, X.class);
-    }
-
-    @DefaultGraph
-    Y getDefaultGraph();
-
-    @Graph
-    interface Y {
-        static Y wrap(final Model original) {
-            return Manager.wrap(original, Y.class);
-        }
-
-        @Resource
-        interface Z {
-        }
-    }
+@Target(METHOD)
+@Retention(CLASS)
+@Documented
+public @interface DefaultGraph {
 }

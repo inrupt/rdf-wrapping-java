@@ -24,6 +24,7 @@ import static org.jboss.jdeparser.JExprs.$v;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
+import com.inrupt.rdf.wrapping.declarative.annotations.DefaultGraph;
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
@@ -38,7 +39,9 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 
 import org.apache.jena.enhanced.EnhGraph;
@@ -105,7 +108,7 @@ public class Processor extends AbstractProcessor {
 
         switch (annotation.getQualifiedName().toString()) {
             case "com.inrupt.rdf.wrapping.declarative.annotations.Dataset":
-                implementDataset(originalInterfaceName, implementationClassName, sourceFile);
+                implementDataset(originalInterfaceName, implementationClassName, sourceFile, annotatedType);
                 break;
             case "com.inrupt.rdf.wrapping.declarative.annotations.Graph":
                 implementGraph(originalInterfaceName, implementationClassName, sourceFile);
@@ -127,7 +130,8 @@ public class Processor extends AbstractProcessor {
     private void implementDataset(
             final String originalInterface,
             final String implementationClass,
-            final JSourceFile sourceFile) {
+            final JSourceFile sourceFile,
+            final TypeElement annotatedType) {
 
         sourceFile
                 ._import(Generated.class)
@@ -148,6 +152,26 @@ public class Processor extends AbstractProcessor {
         final JMethodDef wrapMethod = implementation.method(PUBLIC | STATIC, originalInterface, "wrap");
         wrapMethod.param(FINAL, Dataset.class, "original");
         wrapMethod.body()._return($t(implementationClass)._new().arg($v("original").call("asDatasetGraph")));
+
+        ElementFilter.methodsIn(annotatedType.getEnclosedElements()).stream()
+                .filter(method -> !method.isDefault() && !method.getModifiers().contains(Modifier.STATIC))
+                .filter(method -> method.getAnnotation(DefaultGraph.class) != null)
+                .forEach(method -> {
+                    final JType returnType = JTypes.typeOf(method.getReturnType());
+                    sourceFile._import(returnType);
+                    final JMethodDef defaultGraphMethod = implementation.method(
+                            PUBLIC,
+                            returnType,
+                            method.getSimpleName().toString());
+                    defaultGraphMethod.annotate(Override.class);
+                    defaultGraphMethod
+                            .body()
+                            ._return(returnType
+                                    .call("wrap")
+                                    .arg($t(implementationClass)
+                                            ._this()
+                                            .call("getDefaultModel")));
+                });
     }
 
     private void implementGraph(

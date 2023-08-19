@@ -30,6 +30,13 @@ class XTest {
     }
 
     @Test
+    void datasetCanGetDefaultGraph() {
+        final X x = X.wrap(DatasetFactory.create());
+
+        assertDoesNotThrow(x::getDefaultGraph);
+    }
+
+    @Test
     void graphCanWrap() {
         final Model model = modelFrom("" +
                                           "PREFIX : <urn:example:>\n" +
