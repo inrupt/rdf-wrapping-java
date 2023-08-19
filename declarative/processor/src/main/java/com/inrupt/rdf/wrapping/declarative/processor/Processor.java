@@ -209,14 +209,14 @@ public class Processor extends AbstractProcessor {
                 ._import(Model.class)
                 ._import(ModelCom.class);
 
-        final JClassDef jClassDef = sourceFile
+        final JClassDef implementation = sourceFile
                 ._class(PUBLIC, implementationClass)
                 ._extends(WrapperModel.class)
                 ._implements(originalInterface);
 
-        annotateAndDocumentAsGenerated(jClassDef);
+        annotateAndDocumentAsGenerated(implementation);
 
-        final JMethodDef constructor = jClassDef.constructor(PROTECTED);
+        final JMethodDef constructor = implementation.constructor(PROTECTED);
         constructor.param(FINAL, Graph.class, "original");
         constructor.body().callSuper().arg($v("original"));
 
@@ -235,7 +235,7 @@ public class Processor extends AbstractProcessor {
                     constructor.body().call($t(implementationClass)._this().call("getPersonality"), "add").arg($t(qualifiedName)._class()).arg($t(qualifiedName).field("factory"));
                 });
 
-        final JMethodDef wrapMethod = jClassDef.method(PUBLIC | STATIC, originalInterface, "wrap");
+        final JMethodDef wrapMethod = implementation.method(PUBLIC | STATIC, originalInterface, "wrap");
         wrapMethod.param(FINAL, Model.class, "original");
         wrapMethod.body()._return($t(implementationClass)._new().arg($v("original").call("getGraph")));
 
@@ -251,7 +251,7 @@ public class Processor extends AbstractProcessor {
                     final String qualifiedName = originalBinaryName + "_$impl";
 
                     sourceFile._import(returnType);
-                    final JMethodDef namedGraphMethod = jClassDef
+                    final JMethodDef namedGraphMethod = implementation
                             .method(PUBLIC, returnType, method.getSimpleName().toString());
                     namedGraphMethod.annotate(Override.class);
                     namedGraphMethod
