@@ -21,6 +21,7 @@
 package com.inrupt.rdf.wrapping.declarative.processor;
 
 import static org.jboss.jdeparser.JExprs.$v;
+import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
@@ -65,126 +66,153 @@ public class Processor extends AbstractProcessor {
             return false;
         }
 
-        for (TypeElement annotation : annotations) {
-            processingEnv.getMessager().printMessage(
-                    Diagnostic.Kind.NOTE,
-                    String.format("annotation [%s]", annotation), annotation);
-
-            final Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
-            for (Element annotatedElement : annotatedElements) {
-                processingEnv.getMessager().printMessage(
-                        Diagnostic.Kind.NOTE,
-                        String.format("annotatedElement [%s]", annotatedElement), annotatedElement);
-
-                final TypeElement annotatedType = (TypeElement) annotatedElement;
-                final String originalInterfaceName = annotatedType.getQualifiedName().toString();
-                final String originalBinaryName = processingEnv
-                        .getElementUtils()
-                        .getBinaryName(annotatedType)
-                        .toString();
-                final String qualifiedName = originalBinaryName + "_$impl";
-                final int lastDot = originalBinaryName.lastIndexOf('.');
-                final String implementationClassName = qualifiedName.substring(lastDot + 1);
-                String packageName = null;
-                if (lastDot > 0) {
-                    packageName = originalBinaryName.substring(0, lastDot);
-                }
-
-                final JFiler jFiler = JFiler.newInstance(processingEnv.getFiler());
-                final JSources sources = JDeparser.createSources(jFiler, new FormatPreferences());
-                final JSourceFile sourceFile = sources.createSourceFile(packageName, implementationClassName);
-
-                switch (annotation.getQualifiedName().toString()) {
-                    case "com.inrupt.rdf.wrapping.declarative.annotations.Dataset":
-                        printDataset(originalInterfaceName, implementationClassName, sourceFile);
-                        break;
-                    case "com.inrupt.rdf.wrapping.declarative.annotations.Graph":
-                        printGraph(originalInterfaceName, implementationClassName, sourceFile);
-                        break;
-                    case "com.inrupt.rdf.wrapping.declarative.annotations.Resource":
-                        printResource(originalInterfaceName, implementationClassName, sourceFile);
-                        break;
-                }
-
-                try {
-                    sources.writeSources();
-                } catch (IOException e) {
-                    throw new RuntimeException("could not open writer", e);
-                }
-            }
+        for (final TypeElement annotation : annotations) {
+            process(roundEnv, annotation);
         }
 
         return true;
     }
 
-    private void printDataset(
-            final String originalInterfaceName,
-            final String implementationClassName,
-            final JSourceFile sourceFile) {
-        sourceFile._import(Generated.class);
-        sourceFile._import(Dataset.class);
-        sourceFile._import(DatasetGraph.class);
-        sourceFile._import(DatasetImpl.class);
+    private void process(final RoundEnvironment roundEnv, final TypeElement annotation) {
+        processingEnv.getMessager().printMessage(
+                Diagnostic.Kind.NOTE,
+                String.format("annotation [%s]", annotation), annotation);
 
-        final JClassDef jClassDef = sourceFile._class(JMod.PUBLIC, implementationClassName);
-        jClassDef.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
-        jClassDef.docComment().text("Warning, this class consists of generated code.");
-        jClassDef._extends(DatasetImpl.class)._implements(originalInterfaceName);
-
-        final JMethodDef constructor = jClassDef.constructor(JMod.PROTECTED);
-        constructor.param(JMod.FINAL, DatasetGraph.class, "original");
-        constructor.body().callSuper().arg($v("original"));
-
-        final JMethodDef wrap = jClassDef.method(JMod.PUBLIC | JMod.STATIC, originalInterfaceName, "wrap");
-        wrap.param(JMod.FINAL, Dataset.class, "original");
-        wrap.body()._return($t(implementationClassName)._new().arg($v("original").call("asDatasetGraph")));
+        for (final Element annotatedElement : roundEnv.getElementsAnnotatedWith(annotation)) {
+            process(annotation, annotatedElement);
+        }
     }
 
-    private void printGraph(
-            final String originalInterfaceName,
-            final String implementationClassName,
-            final JSourceFile sourceFile) {
-        sourceFile._import(Generated.class);
-        sourceFile._import(Graph.class);
-        sourceFile._import(Model.class);
-        sourceFile._import(ModelCom.class);
+    private void process(final TypeElement annotation, final Element annotatedElement) {
+        processingEnv.getMessager().printMessage(
+                Diagnostic.Kind.NOTE,
+                String.format("annotatedElement [%s]", annotatedElement), annotatedElement);
 
-        final JClassDef jClassDef = sourceFile._class(JMod.PUBLIC, implementationClassName);
-        jClassDef.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
-        jClassDef.docComment().text("Warning, this class consists of generated code.");
-        jClassDef._extends(ModelCom.class)._implements(originalInterfaceName);
+        final TypeElement annotatedType = (TypeElement) annotatedElement;
+        final String originalInterfaceName = annotatedType.getQualifiedName().toString();
+        final String originalBinaryName = processingEnv
+                .getElementUtils()
+                .getBinaryName(annotatedType)
+                .toString();
+        final String qualifiedName = originalBinaryName + "_$impl";
+        final int lastDot = originalBinaryName.lastIndexOf('.');
+        final String implementationClassName = qualifiedName.substring(lastDot + 1);
+        final String packageName = processingEnv.getElementUtils().getPackageOf(annotatedElement).getQualifiedName().toString();
 
-        final JMethodDef constructor = jClassDef.constructor(JMod.PROTECTED);
-        constructor.param(JMod.FINAL, Graph.class, "original");
-        constructor.body().callSuper().arg($v("original"));
+        final JFiler jFiler = JFiler.newInstance(processingEnv.getFiler());
+        final JSources sources = JDeparser.createSources(jFiler, new FormatPreferences());
+        final JSourceFile sourceFile = sources.createSourceFile(packageName, implementationClassName);
 
-        final JMethodDef wrap = jClassDef.method(JMod.PUBLIC | JMod.STATIC, originalInterfaceName, "wrap");
-        wrap.param(JMod.FINAL, Model.class, "original");
-        wrap.body()._return($t(implementationClassName)._new().arg($v("original").call("getGraph")));
+        switch (annotation.getQualifiedName().toString()) {
+            case "com.inrupt.rdf.wrapping.declarative.annotations.Dataset":
+                implementDataset(originalInterfaceName, implementationClassName, sourceFile);
+                break;
+            case "com.inrupt.rdf.wrapping.declarative.annotations.Graph":
+                implementGraph(originalInterfaceName, implementationClassName, sourceFile);
+                break;
+            case "com.inrupt.rdf.wrapping.declarative.annotations.Resource":
+                implementResource(originalInterfaceName, implementationClassName, sourceFile);
+                break;
+            default:
+                throw new RuntimeException("unknown annotation type");
+        }
+
+        try {
+            sources.writeSources();
+        } catch (IOException e) {
+            throw new RuntimeException("could not open writer", e);
+        }
     }
 
-    private void printResource(
-            final String originalInterfaceName,
-            final String implementationClassName,
+    private void implementDataset(
+            final String originalInterface,
+            final String implementationClass,
             final JSourceFile sourceFile) {
-        sourceFile._import(UriOrBlankFactory.class);
-        sourceFile._import(WrapperResource.class);
-        sourceFile._import(Generated.class);
-        sourceFile._import(EnhGraph.class);
-        sourceFile._import(Implementation.class);
-        sourceFile._import(Node.class);
 
-        final JClassDef jClassDef = sourceFile._class(JMod.PUBLIC, implementationClassName);
-        jClassDef.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
-        jClassDef.docComment().text("Warning, this class consists of generated code.");
-        jClassDef._extends(WrapperResource.class)._implements(originalInterfaceName);
+        sourceFile
+                ._import(Generated.class)
+                ._import(Dataset.class)
+                ._import(DatasetGraph.class)
+                ._import(DatasetImpl.class);
 
-        jClassDef.field(JMod.STATIC | JMod.FINAL, Implementation.class, "factory", $t(UriOrBlankFactory.class)._new().arg($t(implementationClassName).methodRef("new")));
-        final JMethodDef constructor = jClassDef.constructor(JMod.PROTECTED);
-        constructor.param(JMod.FINAL, Node.class, "node");
-        constructor.param(JMod.FINAL, EnhGraph.class, "graph");
-        final JCall jCall = constructor.body().callSuper();
-        jCall.arg($v("node"));
-        jCall.arg($v("graph"));
+        final JClassDef implementation = sourceFile._class(PUBLIC, implementationClass)
+                ._extends(DatasetImpl.class)
+                ._implements(originalInterface);
+
+        annotateAndDocumentAsGenerated(implementation);
+
+        final JMethodDef constructor = implementation.constructor(PROTECTED);
+        constructor.param(FINAL, DatasetGraph.class, "original");
+        constructor.body().callSuper().arg($v("original"));
+
+        final JMethodDef wrapMethod = implementation.method(PUBLIC | STATIC, originalInterface, "wrap");
+        wrapMethod.param(FINAL, Dataset.class, "original");
+        wrapMethod.body()._return($t(implementationClass)._new().arg($v("original").call("asDatasetGraph")));
+    }
+
+    private void implementGraph(
+            final String originalInterface,
+            final String implementationClass,
+            final JSourceFile sourceFile) {
+
+        sourceFile
+                ._import(Generated.class)
+                ._import(Graph.class)
+                ._import(Model.class)
+                ._import(ModelCom.class);
+
+        final JClassDef jClassDef = sourceFile
+                ._class(PUBLIC, implementationClass)
+                ._extends(ModelCom.class)
+                ._implements(originalInterface);
+
+        annotateAndDocumentAsGenerated(jClassDef);
+
+        final JMethodDef constructor = jClassDef.constructor(PROTECTED);
+        constructor.param(FINAL, Graph.class, "original");
+        constructor.body().callSuper().arg($v("original"));
+
+        final JMethodDef wrapMethod = jClassDef.method(PUBLIC | STATIC, originalInterface, "wrap");
+        wrapMethod.param(FINAL, Model.class, "original");
+        wrapMethod.body()._return($t(implementationClass)._new().arg($v("original").call("getGraph")));
+    }
+
+    private void implementResource(
+            final String originalInterface,
+            final String implementationClass,
+            final JSourceFile sourceFile) {
+
+        sourceFile
+                ._import(UriOrBlankFactory.class)
+                ._import(WrapperResource.class)
+                ._import(Generated.class)
+                ._import(EnhGraph.class)
+                ._import(Implementation.class)
+                ._import(Node.class);
+
+        final JClassDef implementation = sourceFile._class(PUBLIC, implementationClass)
+                ._extends(WrapperResource.class)
+                ._implements(originalInterface);
+
+        annotateAndDocumentAsGenerated(implementation);
+
+        implementation.field(
+                STATIC | FINAL,
+                Implementation.class,
+                "factory",
+                $t(UriOrBlankFactory.class)._new().arg($t(implementationClass).methodRef("new")));
+
+        final JMethodDef constructor = implementation.constructor(PROTECTED);
+        constructor.param(FINAL, Node.class, "node");
+        constructor.param(FINAL, EnhGraph.class, "graph");
+        constructor.body().callSuper().arg($v("node")).arg($v("graph"));
+    }
+
+    private void annotateAndDocumentAsGenerated(final JClassDef implementation) {
+        implementation.docComment().text("Warning, this class consists of generated code.");
+
+        implementation
+                .annotate(Generated.class)
+                .value(this.getClass().getName()).value("date", Instant.now().toString());
     }
 }
