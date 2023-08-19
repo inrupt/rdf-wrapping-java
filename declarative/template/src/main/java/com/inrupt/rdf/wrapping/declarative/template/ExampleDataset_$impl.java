@@ -49,4 +49,9 @@ public class ExampleDataset_$impl extends DatasetImpl implements ExampleDataset 
     public ExampleGraph getGraph() {
         return ExampleGraph.wrap(getDefaultModel());
     }
+
+    @Override
+    public ExampleGraph getNamedGraph() {
+        return ExampleGraph.wrap(getNamedModel("urn:example:g1"));
+    }
 }

@@ -49,6 +49,13 @@ class XTest {
     }
 
     @Test
+    void datasetCanGetNamedGraph() {
+        final X x = X.wrap(DatasetFactory.create());
+
+        assertDoesNotThrow(x::getNamedGraph);
+    }
+
+    @Test
     void graphCanWrap() {
         final Model model = ModelFactory.createDefaultModel();
 

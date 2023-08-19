@@ -25,6 +25,7 @@ import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
 import com.inrupt.rdf.wrapping.declarative.annotations.DefaultGraph;
+import com.inrupt.rdf.wrapping.declarative.annotations.NamedGraph;
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
@@ -171,6 +172,25 @@ public class Processor extends AbstractProcessor {
                                     .arg($t(implementationClass)
                                             ._this()
                                             .call("getDefaultModel")));
+                });
+
+        ElementFilter.methodsIn(annotatedType.getEnclosedElements()).stream()
+                .filter(method -> !method.isDefault() && !method.getModifiers().contains(Modifier.STATIC))
+                .filter(method -> method.getAnnotation(NamedGraph.class) != null)
+                .forEach(method -> {
+                    final JType returnType = JTypes.typeOf(method.getReturnType());
+                    sourceFile._import(returnType);
+                    final JMethodDef namedGraphMethod = implementation
+                            .method(PUBLIC, returnType, method.getSimpleName().toString());
+                    namedGraphMethod.annotate(Override.class);
+                    namedGraphMethod
+                            .body()
+                            ._return(returnType
+                                    .call("wrap")
+                                    .arg($t(implementationClass)
+                                            ._this()
+                                            .call("getNamedModel")
+                                            .arg(JExprs.str(method.getAnnotation(NamedGraph.class).value()))));
                 });
     }
 

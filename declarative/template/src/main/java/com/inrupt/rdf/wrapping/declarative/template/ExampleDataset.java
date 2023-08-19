@@ -31,4 +31,7 @@ public interface ExampleDataset {
 
     // @DefaultGraph
     ExampleGraph getGraph();
+
+    // @NamedGraph("urn:example:g1")
+    ExampleGraph getNamedGraph();
 }
