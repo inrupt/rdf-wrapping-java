@@ -62,6 +62,14 @@ class XTest {
         assertDoesNotThrow(() -> X.Y.wrap(model));
     }
 
+    @Test
+    void graphCanGetFirstInstanceOf() {
+        final Model model = ModelFactory.createDefaultModel();
+        final X.Y y = X.Y.wrap(model);
+
+        assertDoesNotThrow(y::getResource);
+    }
+
     private static Dataset datasetFrom(final String rdf) {
         final Dataset dataset = DatasetFactory.create();
         RDFDataMgr.read(dataset, IOUtils.toInputStream(rdf, Charsets.UTF_8), Lang.TRIG);

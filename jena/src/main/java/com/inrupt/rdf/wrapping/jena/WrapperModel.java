@@ -18,19 +18,22 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.declarative.template;
+package com.inrupt.rdf.wrapping.jena;
 
-import com.inrupt.rdf.wrapping.declarative.annotations.Graph;
-import com.inrupt.rdf.wrapping.declarative.processor.Manager;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.impl.ModelCom;
+import org.apache.jena.vocabulary.RDF;
 
-import org.apache.jena.rdf.model.Model;
-
-@Graph
-public interface ExampleGraph {
-    static ExampleGraph wrap(final Model original) {
-        return Manager.wrap(original, ExampleGraph.class);
+public abstract class WrapperModel extends ModelCom {
+    protected WrapperModel(final Graph base) {
+        super(base);
     }
 
-    // @FirstInstanceOf("urn:example:C")
-    ExampleNode1 getResource();
+    protected <T extends RDFNode> T firstInstanceOf(final String clazz, final Class<T> view) {
+        return listSubjectsWithProperty(RDF.type, createResource(clazz))
+                .mapWith(subject -> subject.as(view))
+                .nextOptional()
+                .orElse(null);
+    }
 }

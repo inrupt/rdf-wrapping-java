@@ -25,8 +25,10 @@ import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
 import com.inrupt.rdf.wrapping.declarative.annotations.DefaultGraph;
+import com.inrupt.rdf.wrapping.declarative.annotations.FirstInstanceOf;
 import com.inrupt.rdf.wrapping.declarative.annotations.NamedGraph;
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
+import com.inrupt.rdf.wrapping.jena.WrapperModel;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
 import java.io.IOException;
@@ -112,7 +114,7 @@ public class Processor extends AbstractProcessor {
                 implementDataset(originalInterfaceName, implementationClassName, sourceFile, annotatedType);
                 break;
             case "com.inrupt.rdf.wrapping.declarative.annotations.Graph":
-                implementGraph(originalInterfaceName, implementationClassName, sourceFile);
+                implementGraph(originalInterfaceName, implementationClassName, sourceFile, annotatedType);
                 break;
             case "com.inrupt.rdf.wrapping.declarative.annotations.Resource":
                 implementResource(originalInterfaceName, implementationClassName, sourceFile);
@@ -197,9 +199,11 @@ public class Processor extends AbstractProcessor {
     private void implementGraph(
             final String originalInterface,
             final String implementationClass,
-            final JSourceFile sourceFile) {
+            final JSourceFile sourceFile,
+            final TypeElement annotatedType) {
 
         sourceFile
+                ._import(WrapperModel.class)
                 ._import(Generated.class)
                 ._import(Graph.class)
                 ._import(Model.class)
@@ -207,7 +211,7 @@ public class Processor extends AbstractProcessor {
 
         final JClassDef jClassDef = sourceFile
                 ._class(PUBLIC, implementationClass)
-                ._extends(ModelCom.class)
+                ._extends(WrapperModel.class)
                 ._implements(originalInterface);
 
         annotateAndDocumentAsGenerated(jClassDef);
@@ -216,9 +220,48 @@ public class Processor extends AbstractProcessor {
         constructor.param(FINAL, Graph.class, "original");
         constructor.body().callSuper().arg($v("original"));
 
+        ElementFilter.methodsIn(annotatedType.getEnclosedElements()).stream()
+                .filter(method -> !method.isDefault() && !method.getModifiers().contains(Modifier.STATIC) && !method.getReturnType().equals($t(Void.class)))
+                .filter(method -> method.getAnnotation(FirstInstanceOf.class) != null)
+                .forEach(method -> {
+                    final JType returnType = JTypes.typeOf(method.getReturnType());
+                    final String originalBinaryName = processingEnv
+                            .getElementUtils()
+                            .getBinaryName((TypeElement) processingEnv.getTypeUtils().asElement(method.getReturnType()))
+                            .toString();
+                    final String qualifiedName = originalBinaryName + "_$impl";
+
+                    sourceFile._import(returnType);
+                    constructor.body().call($t(implementationClass)._this().call("getPersonality"), "add").arg($t(qualifiedName)._class()).arg($t(qualifiedName).field("factory"));
+                });
+
         final JMethodDef wrapMethod = jClassDef.method(PUBLIC | STATIC, originalInterface, "wrap");
         wrapMethod.param(FINAL, Model.class, "original");
         wrapMethod.body()._return($t(implementationClass)._new().arg($v("original").call("getGraph")));
+
+        ElementFilter.methodsIn(annotatedType.getEnclosedElements()).stream()
+                .filter(method -> !method.isDefault() && !method.getModifiers().contains(Modifier.STATIC) && !method.getReturnType().equals($t(Void.class)))
+                .filter(method -> method.getAnnotation(FirstInstanceOf.class) != null)
+                .forEach(method -> {
+                    final JType returnType = JTypes.typeOf(method.getReturnType());
+                    final String originalBinaryName = processingEnv
+                            .getElementUtils()
+                            .getBinaryName((TypeElement) processingEnv.getTypeUtils().asElement(method.getReturnType()))
+                            .toString();
+                    final String qualifiedName = originalBinaryName + "_$impl";
+
+                    sourceFile._import(returnType);
+                    final JMethodDef namedGraphMethod = jClassDef
+                            .method(PUBLIC, returnType, method.getSimpleName().toString());
+                    namedGraphMethod.annotate(Override.class);
+                    namedGraphMethod
+                            .body()
+                            ._return($t(implementationClass)
+                                    ._this()
+                                    .call("firstInstanceOf")
+                                    .arg(JExprs.str(method.getAnnotation(FirstInstanceOf.class).value()))
+                                    .arg($t(qualifiedName)._class()));
+                });
     }
 
     private void implementResource(

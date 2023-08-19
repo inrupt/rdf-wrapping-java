@@ -20,20 +20,19 @@
  */
 package com.inrupt.rdf.wrapping.declarative.template;
 
+import com.inrupt.rdf.wrapping.jena.WrapperModel;
+
 import javax.annotation.Generated;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.impl.ModelCom;
 import org.apache.jena.sparql.graph.GraphFactory;
-import org.apache.jena.vocabulary.RDF;
 
 /**
  * Warning this class consists of generated code.
  */
 @Generated(value = "TODO: FQCN of generator", date = "TODO: Generation date")
-public class ExampleGraph_$impl extends ModelCom implements ExampleGraph {
+public class ExampleGraph_$impl extends WrapperModel implements ExampleGraph {
     protected ExampleGraph_$impl(final Graph base) {
         super(base);
 
@@ -52,10 +51,6 @@ public class ExampleGraph_$impl extends ModelCom implements ExampleGraph {
 
     @Override
     public ExampleNode1 getResource() {
-        return listResourcesWithProperty(
-                RDF.type,
-                ResourceFactory.createResource("urn:example:C"))
-                .nextResource()
-                .as(ExampleNode1_$impl.class);
+        return firstInstanceOf("urn:example:C", ExampleNode1_$impl.class);
     }
 }

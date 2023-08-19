@@ -18,19 +18,18 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.declarative.template;
+package com.inrupt.rdf.wrapping.declarative.annotations;
 
-import com.inrupt.rdf.wrapping.declarative.annotations.Graph;
-import com.inrupt.rdf.wrapping.declarative.processor.Manager;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
-import org.apache.jena.rdf.model.Model;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-@Graph
-public interface ExampleGraph {
-    static ExampleGraph wrap(final Model original) {
-        return Manager.wrap(original, ExampleGraph.class);
-    }
-
-    // @FirstInstanceOf("urn:example:C")
-    ExampleNode1 getResource();
+@Target(METHOD)
+@Retention(CLASS)
+@Documented
+public @interface FirstInstanceOf {
+    String value();
 }
