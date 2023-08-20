@@ -21,7 +21,8 @@
 package com.inrupt.rdf.wrapping.jena;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.*;
@@ -42,10 +43,13 @@ public abstract class WrapperModel extends ModelCom {
     }
 
     private static final class InstanceOfEitherSelector implements Selector {
-        private final Stream<Resource> classes;
+        private final List<Resource> classes;
 
         private InstanceOfEitherSelector(final String[] classes) {
-            this.classes = Arrays.stream(classes).map(ResourceFactory::createResource);
+            this.classes = Arrays
+                    .stream(classes)
+                    .map(ResourceFactory::createResource)
+                    .collect(Collectors.toList());
         }
 
         @Override
@@ -58,7 +62,7 @@ public abstract class WrapperModel extends ModelCom {
                 return false;
             }
 
-            return classes.anyMatch(clazz -> clazz.equals(statement.getObject()));
+            return classes.contains(statement.getObject().asResource());
         }
 
         @Override
