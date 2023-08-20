@@ -50,6 +50,10 @@ public abstract class WrapperModel extends ModelCom {
 
         @Override
         public boolean test(final Statement statement) {
+            if (!statement.getObject().isResource()) {
+                return false;
+            }
+
             if (!getPredicate().equals(statement.getPredicate())) {
                 return false;
             }
