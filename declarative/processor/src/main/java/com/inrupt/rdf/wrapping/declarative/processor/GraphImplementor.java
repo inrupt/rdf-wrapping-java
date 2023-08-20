@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.declarative.processor;
 
+import static org.jboss.jdeparser.JExpr.THIS;
 import static org.jboss.jdeparser.JExprs.$v;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
@@ -50,19 +51,18 @@ class GraphImplementor extends Implementor {
 
         final JClassDef myClass = createClass(WrapperModel.class);
         final JType myType = $t(myClass);
-        final JExpr myInstance = myType._this();
 
         final JMethodDef myConstructor = createConstructor(myClass);
 
-        addImplementationsToPersonality(myConstructor, myInstance);
+        addImplementationsToPersonality(myConstructor);
 
         createWrapMethod(myClass, myType);
 
-        createOptionalFirstInstanceOfEitherMethods(myClass, myInstance);
+        createOptionalFirstInstanceOfEitherMethods(myClass);
 
-        createOptionalFirstSubjectOfEitherMethods(myClass, myInstance);
+        createOptionalFirstSubjectOfEitherMethods(myClass);
 
-        createOptionalFirstObjectOfEitherMethods(myClass, myInstance);
+        createOptionalFirstObjectOfEitherMethods(myClass);
     }
 
     private void addImports() {
@@ -82,7 +82,7 @@ class GraphImplementor extends Implementor {
         return myConstructor;
     }
 
-    private void addImplementationsToPersonality(final JMethodDef myConstructor, final JExpr myInstance) {
+    private void addImplementationsToPersonality(final JMethodDef myConstructor) {
         membersAnnotatedWithAny(
                 OptionalFirstInstanceOfEither.class,
                 OptionalFirstSubjectOfEither.class,
@@ -94,7 +94,7 @@ class GraphImplementor extends Implementor {
 
                     myConstructor
                             .body()
-                            .call(myInstance.call("getPersonality"), "add")
+                            .call(THIS.call("getPersonality"), "add")
                             .arg(implementationType._class())
                             .arg(implementationType.field(ResourceImplementor.FACTORY));
                 });
@@ -106,7 +106,7 @@ class GraphImplementor extends Implementor {
         myWrap.body()._return(myType._new().arg($v(ORIGINAL).call("getGraph")));
     }
 
-    private void createOptionalFirstInstanceOfEitherMethods(final JClassDef myClass, final JExpr myInstance) {
+    private void createOptionalFirstInstanceOfEitherMethods(final JClassDef myClass) {
         membersAnnotatedWithAny(OptionalFirstInstanceOfEither.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = asImplementation(method.getReturnType());
@@ -115,7 +115,7 @@ class GraphImplementor extends Implementor {
             myMethod.annotate(Override.class);
 
             // Call model wrapper convenience method passing projection class argument
-            final JCall wrapperConvenienceCall = myInstance
+            final JCall wrapperConvenienceCall = THIS
                     .call("optionalFirstInstanceOfEither")
                     .arg(implementationType._class());
 
@@ -128,7 +128,7 @@ class GraphImplementor extends Implementor {
         });
     }
 
-    private void createOptionalFirstSubjectOfEitherMethods(final JClassDef myClass, final JExpr myInstance) {
+    private void createOptionalFirstSubjectOfEitherMethods(final JClassDef myClass) {
         membersAnnotatedWithAny(OptionalFirstSubjectOfEither.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = asImplementation(method.getReturnType());
@@ -137,7 +137,7 @@ class GraphImplementor extends Implementor {
             myMethod.annotate(Override.class);
 
             // Call model wrapper convenience method passing projection class argument
-            final JCall wrapperConvenienceCall = myInstance
+            final JCall wrapperConvenienceCall = THIS
                     .call("optionalFirstSubjectOfEither")
                     .arg(implementationType._class());
 
@@ -150,7 +150,7 @@ class GraphImplementor extends Implementor {
         });
     }
 
-    private void createOptionalFirstObjectOfEitherMethods(final JClassDef myClass, final JExpr myInstance) {
+    private void createOptionalFirstObjectOfEitherMethods(final JClassDef myClass) {
         membersAnnotatedWithAny(OptionalFirstObjectOfEither.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = asImplementation(method.getReturnType());
@@ -159,7 +159,7 @@ class GraphImplementor extends Implementor {
             myMethod.annotate(Override.class);
 
             // Call model wrapper convenience method passing projection class argument
-            final JCall wrapperConvenienceCall = myInstance
+            final JCall wrapperConvenienceCall = THIS
                     .call("optionalFirstObjectOfEither")
                     .arg(implementationType._class());
 

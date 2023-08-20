@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.declarative.processor;
 
+import static org.jboss.jdeparser.JExpr.THIS;
 import static org.jboss.jdeparser.JExprs.$v;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
@@ -47,15 +48,14 @@ class DatasetImplementor extends Implementor {
 
         final JClassDef myClass = createClass(DatasetImpl.class);
         final JType myType = $t(myClass);
-        final JExpr myInstance = myType._this();
 
         createConstructor(myClass);
 
         createWrapMethod(myClass, myType);
 
-        createDefaultGraphMethods(myClass, myInstance);
+        createDefaultGraphMethods(myClass);
 
-        createNamedGraphMethods(myClass, myInstance);
+        createNamedGraphMethods(myClass);
     }
 
     private void addImports() {
@@ -78,7 +78,7 @@ class DatasetImplementor extends Implementor {
         myWrap.body()._return(myType._new().arg($v(ORIGINAL).call("asDatasetGraph")));
     }
 
-    private void createDefaultGraphMethods(final JClassDef myClass, final JExpr myInstance) {
+    private void createDefaultGraphMethods(final JClassDef myClass) {
         membersAnnotatedWithAny(DefaultGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
 
@@ -87,11 +87,11 @@ class DatasetImplementor extends Implementor {
             myMethod.annotate(Override.class);
             myMethod
                     .body()
-                    ._return(returnType.call(WRAP).arg(myInstance.call("getDefaultModel")));
+                    ._return(returnType.call(WRAP).arg(THIS.call("getDefaultModel")));
         });
     }
 
-    private void createNamedGraphMethods(final JClassDef myClass, final JExpr myInstance) {
+    private void createNamedGraphMethods(final JClassDef myClass) {
         membersAnnotatedWithAny(NamedGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
 
@@ -102,7 +102,7 @@ class DatasetImplementor extends Implementor {
                     .body()
                     ._return(returnType
                             .call(WRAP)
-                            .arg(myInstance
+                            .arg(THIS
                                     .call("getNamedModel")
                                     .arg(JExprs.str(method.getAnnotation(NamedGraph.class).value()))));
         });
