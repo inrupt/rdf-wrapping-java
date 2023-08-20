@@ -29,9 +29,7 @@ import com.inrupt.rdf.wrapping.declarative.annotation.NamedGraph;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.ElementFilter;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.sparql.core.DatasetGraph;
@@ -71,44 +69,38 @@ class DatasetImplementor extends Implementor {
         wrapMethod.body()._return($t(implementationClass)._new().arg($v("original").call("asDatasetGraph")));
 
         // @DefaultGraph
-        ElementFilter.methodsIn(annotatedElement.getEnclosedElements()).stream()
-                .filter(method -> !method.isDefault() && !method.getModifiers().contains(Modifier.STATIC))
-                .filter(method -> method.getAnnotation(DefaultGraph.class) != null)
-                .forEach(method -> {
-                    final JType returnType = JTypes.typeOf(method.getReturnType());
-                    sourceFile._import(returnType);
-                    final JMethodDef defaultGraphMethod = implementation.method(
-                            PUBLIC,
-                            returnType,
-                            method.getSimpleName().toString());
-                    defaultGraphMethod.annotate(Override.class);
-                    defaultGraphMethod
-                            .body()
-                            ._return(returnType
-                                    .call("wrap")
-                                    .arg($t(implementationClass)
-                                            ._this()
-                                            .call("getDefaultModel")));
-                });
+        membersAnnotatedWith(DefaultGraph.class).forEach(method -> {
+            final JType returnType = JTypes.typeOf(method.getReturnType());
+            sourceFile._import(returnType);
+            final JMethodDef defaultGraphMethod = implementation.method(
+                    PUBLIC,
+                    returnType,
+                    method.getSimpleName().toString());
+            defaultGraphMethod.annotate(Override.class);
+            defaultGraphMethod
+                    .body()
+                    ._return(returnType
+                            .call("wrap")
+                            .arg($t(implementationClass)
+                                    ._this()
+                                    .call("getDefaultModel")));
+        });
 
         // @NamedGraph
-        ElementFilter.methodsIn(annotatedElement.getEnclosedElements()).stream()
-                .filter(method -> !method.isDefault() && !method.getModifiers().contains(Modifier.STATIC))
-                .filter(method -> method.getAnnotation(NamedGraph.class) != null)
-                .forEach(method -> {
-                    final JType returnType = JTypes.typeOf(method.getReturnType());
-                    sourceFile._import(returnType);
-                    final JMethodDef namedGraphMethod = implementation
-                            .method(PUBLIC, returnType, method.getSimpleName().toString());
-                    namedGraphMethod.annotate(Override.class);
-                    namedGraphMethod
-                            .body()
-                            ._return(returnType
-                                    .call("wrap")
-                                    .arg($t(implementationClass)
-                                            ._this()
-                                            .call("getNamedModel")
-                                            .arg(JExprs.str(method.getAnnotation(NamedGraph.class).value()))));
-                });
+        membersAnnotatedWith(NamedGraph.class).forEach(method -> {
+            final JType returnType = JTypes.typeOf(method.getReturnType());
+            sourceFile._import(returnType);
+            final JMethodDef namedGraphMethod = implementation
+                    .method(PUBLIC, returnType, method.getSimpleName().toString());
+            namedGraphMethod.annotate(Override.class);
+            namedGraphMethod
+                    .body()
+                    ._return(returnType
+                            .call("wrap")
+                            .arg($t(implementationClass)
+                                    ._this()
+                                    .call("getNamedModel")
+                                    .arg(JExprs.str(method.getAnnotation(NamedGraph.class).value()))));
+        });
     }
 }

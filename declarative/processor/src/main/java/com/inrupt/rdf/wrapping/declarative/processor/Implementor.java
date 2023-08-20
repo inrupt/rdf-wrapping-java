@@ -20,13 +20,20 @@
  */
 package com.inrupt.rdf.wrapping.declarative.processor;
 
+import static org.jboss.jdeparser.JTypes.$t;
+
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.time.Instant;
+import java.util.stream.Stream;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.ElementFilter;
 
 import org.jboss.jdeparser.*;
 
@@ -98,4 +105,13 @@ abstract class Implementor {
                 .annotate(Generated.class)
                 .value(this.getClass().getName()).value("date", Instant.now().toString());
     }
+
+    protected Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
+        return ElementFilter.methodsIn(annotatedElement.getEnclosedElements()).stream()
+                .filter(method -> !method.isDefault()
+                                  && !method.getModifiers().contains(Modifier.STATIC)
+                                  && !method.getReturnType().equals($t(Void.class)))
+                .filter(method -> method.getAnnotation(annotation) != null);
+    }
+
 }

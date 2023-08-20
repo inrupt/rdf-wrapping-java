@@ -30,9 +30,7 @@ import com.inrupt.rdf.wrapping.jena.WrapperModel;
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.ElementFilter;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
@@ -69,28 +67,23 @@ class GraphImplementor extends Implementor {
         constructor.body().callSuper().arg($v("original"));
 
         // Personality
-        ElementFilter.methodsIn(annotatedElement.getEnclosedElements()).stream()
-                .filter(method -> !method.isDefault()
-                                  && !method.getModifiers().contains(Modifier.STATIC)
-                                  && !method.getReturnType().equals($t(Void.class)))
-                .filter(method -> method.getAnnotation(FirstInstanceOf.class) != null)
-                .forEach(method -> {
-                    final JType returnType = JTypes.typeOf(method.getReturnType());
-                    final Element returnTypeElement = processingEnvironment.getTypeUtils()
-                            .asElement(method.getReturnType());
-                    final String originalBinaryName = processingEnvironment
-                            .getElementUtils()
-                            .getBinaryName((TypeElement) returnTypeElement)
-                            .toString();
-                    final String qualifiedName = originalBinaryName + "_$impl";
+        membersAnnotatedWith(FirstInstanceOf.class).forEach(method -> {
+            final JType returnType = JTypes.typeOf(method.getReturnType());
+            final Element returnTypeElement = processingEnvironment.getTypeUtils()
+                    .asElement(method.getReturnType());
+            final String originalBinaryName = processingEnvironment
+                    .getElementUtils()
+                    .getBinaryName((TypeElement) returnTypeElement)
+                    .toString();
+            final String qualifiedName = originalBinaryName + "_$impl";
 
-                    sourceFile._import(returnType);
-                    constructor
-                            .body()
-                            .call($t(implementationClass)._this().call("getPersonality"), "add")
-                            .arg($t(qualifiedName)._class())
-                            .arg($t(qualifiedName).field("factory"));
-                });
+            sourceFile._import(returnType);
+            constructor
+                    .body()
+                    .call($t(implementationClass)._this().call("getPersonality"), "add")
+                    .arg($t(qualifiedName)._class())
+                    .arg($t(qualifiedName).field("factory"));
+        });
 
         // Wrap method
         final JMethodDef wrapMethod = implementation.method(PUBLIC | STATIC, originalInterface, "wrap");
@@ -98,32 +91,27 @@ class GraphImplementor extends Implementor {
         wrapMethod.body()._return($t(implementationClass)._new().arg($v("original").call("getGraph")));
 
         // @FirstInstanceOf
-        ElementFilter.methodsIn(annotatedElement.getEnclosedElements()).stream()
-                .filter(method -> !method.isDefault()
-                                  && !method.getModifiers().contains(Modifier.STATIC)
-                                  && !method.getReturnType().equals($t(Void.class)))
-                .filter(method -> method.getAnnotation(FirstInstanceOf.class) != null)
-                .forEach(method -> {
-                    final JType returnType = JTypes.typeOf(method.getReturnType());
-                    final Element returnTypeElement = processingEnvironment.getTypeUtils()
-                            .asElement(method.getReturnType());
-                    final String originalBinaryName = processingEnvironment
-                            .getElementUtils()
-                            .getBinaryName((TypeElement) returnTypeElement)
-                            .toString();
-                    final String qualifiedName = originalBinaryName + "_$impl";
+        membersAnnotatedWith(FirstInstanceOf.class).forEach(method -> {
+            final JType returnType = JTypes.typeOf(method.getReturnType());
+            final Element returnTypeElement = processingEnvironment.getTypeUtils()
+                    .asElement(method.getReturnType());
+            final String originalBinaryName = processingEnvironment
+                    .getElementUtils()
+                    .getBinaryName((TypeElement) returnTypeElement)
+                    .toString();
+            final String qualifiedName = originalBinaryName + "_$impl";
 
-                    sourceFile._import(returnType);
-                    final JMethodDef namedGraphMethod = implementation
-                            .method(PUBLIC, returnType, method.getSimpleName().toString());
-                    namedGraphMethod.annotate(Override.class);
-                    namedGraphMethod
-                            .body()
-                            ._return($t(implementationClass)
-                                    ._this()
-                                    .call("firstInstanceOf")
-                                    .arg(JExprs.str(method.getAnnotation(FirstInstanceOf.class).value()))
-                                    .arg($t(qualifiedName)._class()));
-                });
+            sourceFile._import(returnType);
+            final JMethodDef namedGraphMethod = implementation
+                    .method(PUBLIC, returnType, method.getSimpleName().toString());
+            namedGraphMethod.annotate(Override.class);
+            namedGraphMethod
+                    .body()
+                    ._return($t(implementationClass)
+                            ._this()
+                            .call("firstInstanceOf")
+                            .arg(JExprs.str(method.getAnnotation(FirstInstanceOf.class).value()))
+                            .arg($t(qualifiedName)._class()));
+        });
     }
 }
