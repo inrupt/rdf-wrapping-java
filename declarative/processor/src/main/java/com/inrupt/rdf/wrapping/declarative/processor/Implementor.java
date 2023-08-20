@@ -26,6 +26,7 @@ import static org.jboss.jdeparser.JTypes.$t;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import javax.annotation.Generated;
@@ -109,12 +110,16 @@ abstract class Implementor {
         return myClass;
     }
 
-    protected Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
+    @SafeVarargs
+    protected final Stream<ExecutableElement> membersAnnotatedWithAny(
+            final Class<? extends Annotation>... annotations) {
+
         return ElementFilter.methodsIn(element.getEnclosedElements()).stream()
                 .filter(method -> !method.isDefault()
                                   && !method.getModifiers().contains(Modifier.STATIC)
                                   && !method.getReturnType().equals($t(Void.class)))
-                .filter(method -> method.getAnnotation(annotation) != null);
+                .filter(method -> Arrays.stream(annotations)
+                        .anyMatch(annotation -> method.getAnnotation(annotation) != null));
     }
 
     protected JType returnTypeAsImplementation(final ExecutableElement method) {

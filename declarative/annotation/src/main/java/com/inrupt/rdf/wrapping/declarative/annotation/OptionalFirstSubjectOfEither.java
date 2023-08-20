@@ -18,39 +18,18 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.declarative.test;
+package com.inrupt.rdf.wrapping.declarative.annotation;
 
-import com.inrupt.rdf.wrapping.declarative.annotation.*;
-import com.inrupt.rdf.wrapping.declarative.processor.Manager;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-import org.apache.jena.rdf.model.Model;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-@Dataset
-public interface X {
-    static X wrap(final org.apache.jena.query.Dataset original) {
-        return Manager.wrap(original, X.class);
-    }
-
-    @DefaultGraph
-    Y getDefaultGraph();
-
-    @NamedGraph("urn:example:g1")
-    Y getNamedGraph();
-
-    @Graph
-    interface Y {
-        static Y wrap(final Model original) {
-            return Manager.wrap(original, Y.class);
-        }
-
-        @OptionalFirstInstanceOfEither({"urn:example:C", "urn:example:Other"})
-        Z getResource();
-
-        @OptionalFirstSubjectOfEither({"urn:example:p", "urn:example:Other"})
-        Z getResource2();
-
-        @Resource
-        interface Z {
-        }
-    }
+@Target(METHOD)
+@Retention(SOURCE)
+@Documented
+public @interface OptionalFirstSubjectOfEither {
+    String[] value();
 }

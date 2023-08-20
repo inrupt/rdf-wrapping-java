@@ -25,6 +25,7 @@ import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
 import com.inrupt.rdf.wrapping.declarative.annotation.OptionalFirstInstanceOfEither;
+import com.inrupt.rdf.wrapping.declarative.annotation.OptionalFirstSubjectOfEither;
 import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
 import javax.annotation.Generated;
@@ -56,6 +57,8 @@ class GraphImplementor extends Implementor {
         createWrapMethod(myClass, myType);
 
         createOptionalFirstInstanceOfEitherMethods(myClass, myInstance);
+
+        createOptionalFirstSubjectOfEitherMethods(myClass, myInstance);
     }
 
     private void addImports() {
@@ -76,17 +79,18 @@ class GraphImplementor extends Implementor {
     }
 
     private void addImplementationsToPersonality(final JMethodDef myConstructor, final JExpr myInstance) {
-        membersAnnotatedWith(OptionalFirstInstanceOfEither.class).forEach(method -> {
-            final JType returnType = JTypes.typeOf(method.getReturnType());
-            final JType implementationType = returnTypeAsImplementation(method);
+        membersAnnotatedWithAny(OptionalFirstInstanceOfEither.class, OptionalFirstSubjectOfEither.class)
+                .forEach(method -> {
+                    final JType returnType = JTypes.typeOf(method.getReturnType());
+                    final JType implementationType = returnTypeAsImplementation(method);
 
-            sourceFile._import(returnType);
-            myConstructor
-                    .body()
-                    .call(myInstance.call("getPersonality"), "add")
-                    .arg(implementationType._class())
-                    .arg(implementationType.field(ResourceImplementor.FACTORY));
-        });
+                    sourceFile._import(returnType);
+                    myConstructor
+                            .body()
+                            .call(myInstance.call("getPersonality"), "add")
+                            .arg(implementationType._class())
+                            .arg(implementationType.field(ResourceImplementor.FACTORY));
+                });
     }
 
     private void createWrapMethod(final JClassDef myClass, final JType myType) {
@@ -96,7 +100,7 @@ class GraphImplementor extends Implementor {
     }
 
     private void createOptionalFirstInstanceOfEitherMethods(final JClassDef myClass, final JExpr myInstance) {
-        membersAnnotatedWith(OptionalFirstInstanceOfEither.class).forEach(method -> {
+        membersAnnotatedWithAny(OptionalFirstInstanceOfEither.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = returnTypeAsImplementation(method);
 
@@ -111,6 +115,29 @@ class GraphImplementor extends Implementor {
 
             // Pass each filter class value from the annotation as additional argument
             for (final String s : method.getAnnotation(OptionalFirstInstanceOfEither.class).value()) {
+                wrapperConvenienceCall.arg(JExprs.str(s));
+            }
+
+            myMethod.body()._return(wrapperConvenienceCall);
+        });
+    }
+
+    private void createOptionalFirstSubjectOfEitherMethods(final JClassDef myClass, final JExpr myInstance) {
+        membersAnnotatedWithAny(OptionalFirstSubjectOfEither.class).forEach(method -> {
+            final JType returnType = JTypes.typeOf(method.getReturnType());
+            final JType implementationType = returnTypeAsImplementation(method);
+
+            sourceFile._import(returnType);
+            final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
+            myMethod.annotate(Override.class);
+
+            // Call model wrapper convenience method passing projection class argument
+            final JCall wrapperConvenienceCall = myInstance
+                    .call("optionalFirstSubjectOfEither")
+                    .arg(implementationType._class());
+
+            // Pass each filter predicate value from the annotation as additional argument
+            for (final String s : method.getAnnotation(OptionalFirstSubjectOfEither.class).value()) {
                 wrapperConvenienceCall.arg(JExprs.str(s));
             }
 

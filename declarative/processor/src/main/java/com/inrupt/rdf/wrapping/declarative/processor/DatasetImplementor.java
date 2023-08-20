@@ -79,7 +79,7 @@ class DatasetImplementor extends Implementor {
     }
 
     private void createDefaultGraphMethods(final JClassDef myClass, final JExpr myInstance) {
-        membersAnnotatedWith(DefaultGraph.class).forEach(method -> {
+        membersAnnotatedWithAny(DefaultGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             sourceFile._import(returnType);
             final JMethodDef myMethod = myClass
@@ -92,7 +92,7 @@ class DatasetImplementor extends Implementor {
     }
 
     private void createNamedGraphMethods(final JClassDef myClass, final JExpr myInstance) {
-        membersAnnotatedWith(NamedGraph.class).forEach(method -> {
+        membersAnnotatedWithAny(NamedGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             sourceFile._import(returnType);
             final JMethodDef myMethod = myClass

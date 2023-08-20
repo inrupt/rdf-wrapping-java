@@ -42,6 +42,14 @@ public abstract class WrapperModel extends ModelCom {
                 .orElse(null);
     }
 
+    protected <T extends RDFNode> T optionalFirstSubjectOfEither(final Class<T> view, final String... predicates) {
+        return listStatements(new EitherPredicateSelector(predicates))
+                .mapWith(Statement::getSubject)
+                .mapWith(subject -> subject.as(view))
+                .nextOptional()
+                .orElse(null);
+    }
+
     private static final class InstanceOfEitherSelector implements Selector {
         private final List<Resource> classes;
 
@@ -77,6 +85,42 @@ public abstract class WrapperModel extends ModelCom {
 
         @Override
         public Resource getSubject() {
+            return null;
+        }
+
+        @Override
+        public RDFNode getObject() {
+            return null;
+        }
+    }
+
+    private static final class EitherPredicateSelector implements Selector {
+        private final List<Property> predicates;
+
+        private EitherPredicateSelector(final String[] predicates) {
+            this.predicates = Arrays
+                    .stream(predicates)
+                    .map(ResourceFactory::createProperty)
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public boolean test(final Statement statement) {
+            return predicates.contains(statement.getPredicate());
+        }
+
+        @Override
+        public boolean isSimple() {
+            return false;
+        }
+
+        @Override
+        public Resource getSubject() {
+            return null;
+        }
+
+        @Override
+        public Property getPredicate() {
             return null;
         }
 

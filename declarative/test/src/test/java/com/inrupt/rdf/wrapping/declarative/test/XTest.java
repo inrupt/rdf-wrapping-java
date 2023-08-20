@@ -71,6 +71,14 @@ class XTest {
     }
 
     @Test
+    void graphCanGetFirstSubjectOf() {
+        final Model model = ModelFactory.createDefaultModel();
+        final X.Y y = X.Y.wrap(model);
+
+        assertDoesNotThrow(y::getResource2);
+    }
+
+    @Test
     void e2e() {
         final Dataset dataset = datasetFrom("" +
                                             "PREFIX : <urn:example:>\n" +
@@ -79,13 +87,17 @@ class XTest {
                                             "    [\n" +
                                             "        a :C ;\n" +
                                             "    ] .\n" +
+                                            "\n" +
+                                            "    [ :p 0 ] .\n" +
                                             "}\n");
 
         final X x = X.wrap(dataset);
         final X.Y y = x.getNamedGraph();
         final X.Y.Z z = y.getResource();
+        final X.Y.Z z2 = y.getResource2();
 
         System.out.println(z);
+        System.out.println(z2);
     }
 
     private static Dataset datasetFrom(final String rdf) {
