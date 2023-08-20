@@ -36,15 +36,28 @@ import org.apache.jena.enhanced.Implementation;
 import org.apache.jena.graph.Node;
 import org.jboss.jdeparser.JClassDef;
 import org.jboss.jdeparser.JMethodDef;
+import org.jboss.jdeparser.JType;
 
 class ResourceImplementor extends Implementor {
-    ResourceImplementor(final ProcessingEnvironment processingEnvironment, final TypeElement annotatedElement) {
-        super(processingEnvironment, annotatedElement);
+    static final String FACTORY = "factory";
+
+    ResourceImplementor(final ProcessingEnvironment environment, final TypeElement element) {
+        super(environment, element);
     }
 
     @Override
     protected void implementInternal() {
-        // Imports
+        addImports();
+
+        final JClassDef myClass = createClass(WrapperResource.class);
+        final JType myType = $t(myClass);
+
+        createFactoryField(myClass, myType);
+
+        createConstructor(myClass);
+    }
+
+    private void addImports() {
         sourceFile
                 ._import(UriOrBlankFactory.class)
                 ._import(WrapperResource.class)
@@ -52,26 +65,20 @@ class ResourceImplementor extends Implementor {
                 ._import(EnhGraph.class)
                 ._import(Implementation.class)
                 ._import(Node.class);
+    }
 
-        // Class
-        final JClassDef implementation = sourceFile._class(PUBLIC, implementationClass)
-                ._extends(WrapperResource.class)
-                ._implements(originalInterface);
-
-        // @Generated & Javadocs
-        annotateAndDocumentAsGenerated(implementation);
-
-        // Factory
-        implementation.field(
+    private static void createFactoryField(final JClassDef myClass, final JType myType) {
+        myClass.field(
                 STATIC | FINAL,
                 Implementation.class,
-                "factory",
-                $t(UriOrBlankFactory.class)._new().arg($t(implementationClass).methodRef("new")));
+                FACTORY,
+                $t(UriOrBlankFactory.class)._new().arg(myType.methodRef("new")));
+    }
 
-        // Constructor
-        final JMethodDef constructor = implementation.constructor(PROTECTED);
-        constructor.param(FINAL, Node.class, "node");
-        constructor.param(FINAL, EnhGraph.class, "graph");
-        constructor.body().callSuper().arg($v("node")).arg($v("graph"));
+    private static void createConstructor(final JClassDef myClass) {
+        final JMethodDef myConstructor = myClass.constructor(PROTECTED);
+        myConstructor.param(FINAL, Node.class, "node");
+        myConstructor.param(FINAL, EnhGraph.class, "graph");
+        myConstructor.body().callSuper().arg($v("node")).arg($v("graph"));
     }
 }

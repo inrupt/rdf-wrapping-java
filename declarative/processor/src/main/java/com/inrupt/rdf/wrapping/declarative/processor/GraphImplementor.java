@@ -29,7 +29,6 @@ import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.graph.Graph;
@@ -38,80 +37,79 @@ import org.apache.jena.rdf.model.impl.ModelCom;
 import org.jboss.jdeparser.*;
 
 class GraphImplementor extends Implementor {
-    GraphImplementor(final ProcessingEnvironment processingEnvironment, final TypeElement annotatedElement) {
-        super(processingEnvironment, annotatedElement);
+    GraphImplementor(final ProcessingEnvironment environment, final TypeElement element) {
+        super(environment, element);
     }
 
     @Override
     protected void implementInternal() {
-        // Imports
+        addImports();
+
+        final JClassDef myClass = createClass(WrapperModel.class);
+        final JType myType = $t(myClass);
+        final JExpr myInstance = myType._this();
+
+        final JMethodDef myConstructor = createConstructor(myClass);
+
+        addImplementationsToPersonality(myConstructor, myInstance);
+
+        createWrapMethod(myClass, myType);
+
+        createFirstInstanceOfMethods(myClass, myInstance);
+    }
+
+    private void addImports() {
         sourceFile
                 ._import(WrapperModel.class)
                 ._import(Generated.class)
                 ._import(Graph.class)
                 ._import(Model.class)
                 ._import(ModelCom.class);
+    }
 
-        // Class
-        final JClassDef implementation = sourceFile
-                ._class(PUBLIC, implementationClass)
-                ._extends(WrapperModel.class)
-                ._implements(originalInterface);
+    private static JMethodDef createConstructor(final JClassDef myClass) {
+        final JMethodDef myConstructor = myClass.constructor(PROTECTED);
+        myConstructor.param(FINAL, Graph.class, ORIGINAL);
+        myConstructor.body().callSuper().arg($v(ORIGINAL));
 
-        // @Generated & Javadocs
-        annotateAndDocumentAsGenerated(implementation);
+        return myConstructor;
+    }
 
-        // Constructor
-        final JMethodDef constructor = implementation.constructor(PROTECTED);
-        constructor.param(FINAL, Graph.class, "original");
-        constructor.body().callSuper().arg($v("original"));
-
-        // Personality
+    private void addImplementationsToPersonality(final JMethodDef myConstructor, final JExpr myInstance) {
         membersAnnotatedWith(FirstInstanceOf.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
-            final Element returnTypeElement = processingEnvironment.getTypeUtils()
-                    .asElement(method.getReturnType());
-            final String originalBinaryName = processingEnvironment
-                    .getElementUtils()
-                    .getBinaryName((TypeElement) returnTypeElement)
-                    .toString();
-            final String qualifiedName = originalBinaryName + "_$impl";
+            final JType implementationType = returnTypeAsImplementation(method);
 
             sourceFile._import(returnType);
-            constructor
+            myConstructor
                     .body()
-                    .call($t(implementationClass)._this().call("getPersonality"), "add")
-                    .arg($t(qualifiedName)._class())
-                    .arg($t(qualifiedName).field("factory"));
+                    .call(myInstance.call("getPersonality"), "add")
+                    .arg(implementationType._class())
+                    .arg(implementationType.field(ResourceImplementor.FACTORY));
         });
+    }
 
-        // Wrap method
-        final JMethodDef wrapMethod = implementation.method(PUBLIC | STATIC, originalInterface, "wrap");
-        wrapMethod.param(FINAL, Model.class, "original");
-        wrapMethod.body()._return($t(implementationClass)._new().arg($v("original").call("getGraph")));
+    private void createWrapMethod(final JClassDef myClass, final JType myType) {
+        final JMethodDef myWrap = myClass.method(PUBLIC | STATIC, originalInterface, WRAP);
+        myWrap.param(FINAL, Model.class, ORIGINAL);
+        myWrap.body()._return(myType._new().arg($v(ORIGINAL).call("getGraph")));
+    }
 
-        // @FirstInstanceOf
+    private void createFirstInstanceOfMethods(final JClassDef myClass, final JExpr myInstance) {
         membersAnnotatedWith(FirstInstanceOf.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
-            final Element returnTypeElement = processingEnvironment.getTypeUtils()
-                    .asElement(method.getReturnType());
-            final String originalBinaryName = processingEnvironment
-                    .getElementUtils()
-                    .getBinaryName((TypeElement) returnTypeElement)
-                    .toString();
-            final String qualifiedName = originalBinaryName + "_$impl";
+            final JType implementationType = returnTypeAsImplementation(method);
 
             sourceFile._import(returnType);
-            final JMethodDef namedGraphMethod = implementation
+            final JMethodDef namedGraphMethod = myClass
                     .method(PUBLIC, returnType, method.getSimpleName().toString());
             namedGraphMethod.annotate(Override.class);
             namedGraphMethod
                     .body()
-                    ._return($t(implementationClass)
-                            ._this()
+                    ._return(myInstance
                             .call("firstInstanceOf")
                             .arg(JExprs.str(method.getAnnotation(FirstInstanceOf.class).value()))
-                            .arg($t(qualifiedName)._class()));
+                            .arg(implementationType._class()));
         });
     }
 }

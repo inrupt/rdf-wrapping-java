@@ -37,68 +37,72 @@ import org.apache.jena.sparql.core.DatasetImpl;
 import org.jboss.jdeparser.*;
 
 class DatasetImplementor extends Implementor {
-    DatasetImplementor(final ProcessingEnvironment processingEnvironment, final TypeElement annotatedElement) {
-        super(processingEnvironment, annotatedElement);
+    DatasetImplementor(final ProcessingEnvironment environment, final TypeElement element) {
+        super(environment, element);
     }
 
     @Override
     protected void implementInternal() {
-        // Imports
+        addImports();
+
+        final JClassDef myClass = createClass(DatasetImpl.class);
+        final JType myType = $t(myClass);
+        final JExpr myInstance = myType._this();
+
+        createConstructor(myClass);
+
+        createWrapMethod(myClass, myType);
+
+        createDefaultGraphMethods(myClass, myInstance);
+
+        createNamedGraphMethods(myClass, myInstance);
+    }
+
+    private void addImports() {
         sourceFile
                 ._import(Generated.class)
                 ._import(Dataset.class)
                 ._import(DatasetGraph.class)
                 ._import(DatasetImpl.class);
+    }
 
-        // Class
-        final JClassDef implementation = sourceFile._class(PUBLIC, implementationClass)
-                ._extends(DatasetImpl.class)
-                ._implements(originalInterface);
+    private static void createConstructor(final JClassDef myClass) {
+        final JMethodDef myConstructor = myClass.constructor(PROTECTED);
+        myConstructor.param(FINAL, DatasetGraph.class, ORIGINAL);
+        myConstructor.body().callSuper().arg($v(ORIGINAL));
+    }
 
-        // @Generated & Javadocs
-        annotateAndDocumentAsGenerated(implementation);
+    private void createWrapMethod(final JClassDef myClass, final JType myType) {
+        final JMethodDef myWrap = myClass.method(PUBLIC | STATIC, originalInterface, WRAP);
+        myWrap.param(FINAL, Dataset.class, ORIGINAL);
+        myWrap.body()._return(myType._new().arg($v(ORIGINAL).call("asDatasetGraph")));
+    }
 
-        // Constructor
-        final JMethodDef constructor = implementation.constructor(PROTECTED);
-        constructor.param(FINAL, DatasetGraph.class, "original");
-        constructor.body().callSuper().arg($v("original"));
-
-        // Wrap method
-        final JMethodDef wrapMethod = implementation.method(PUBLIC | STATIC, originalInterface, "wrap");
-        wrapMethod.param(FINAL, Dataset.class, "original");
-        wrapMethod.body()._return($t(implementationClass)._new().arg($v("original").call("asDatasetGraph")));
-
-        // @DefaultGraph
+    private void createDefaultGraphMethods(final JClassDef myClass, final JExpr myInstance) {
         membersAnnotatedWith(DefaultGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             sourceFile._import(returnType);
-            final JMethodDef defaultGraphMethod = implementation.method(
-                    PUBLIC,
-                    returnType,
-                    method.getSimpleName().toString());
+            final JMethodDef defaultGraphMethod = myClass
+                    .method(PUBLIC, returnType, method.getSimpleName().toString());
             defaultGraphMethod.annotate(Override.class);
             defaultGraphMethod
                     .body()
-                    ._return(returnType
-                            .call("wrap")
-                            .arg($t(implementationClass)
-                                    ._this()
-                                    .call("getDefaultModel")));
+                    ._return(returnType.call(WRAP).arg(myInstance.call("getDefaultModel")));
         });
+    }
 
-        // @NamedGraph
+    private void createNamedGraphMethods(final JClassDef myClass, final JExpr myInstance) {
         membersAnnotatedWith(NamedGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             sourceFile._import(returnType);
-            final JMethodDef namedGraphMethod = implementation
+            final JMethodDef namedGraphMethod = myClass
                     .method(PUBLIC, returnType, method.getSimpleName().toString());
             namedGraphMethod.annotate(Override.class);
             namedGraphMethod
                     .body()
                     ._return(returnType
-                            .call("wrap")
-                            .arg($t(implementationClass)
-                                    ._this()
+                            .call(WRAP)
+                            .arg(myInstance
                                     .call("getNamedModel")
                                     .arg(JExprs.str(method.getAnnotation(NamedGraph.class).value()))));
         });

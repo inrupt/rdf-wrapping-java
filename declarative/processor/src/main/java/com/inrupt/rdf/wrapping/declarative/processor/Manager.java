@@ -20,6 +20,9 @@
  */
 package com.inrupt.rdf.wrapping.declarative.processor;
 
+import static com.inrupt.rdf.wrapping.declarative.processor.Implementor.WRAP;
+import static com.inrupt.rdf.wrapping.declarative.processor.Implementor.asImplementation;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -44,7 +47,7 @@ public final class Manager {
 
     private static <T> T wrap(final Object original, final Class<T> interfaceType, final Class<?> parameterType) {
         final ClassLoader classLoader = interfaceType.getClassLoader();
-        final String implTypeName = interfaceType.getName() + "_$impl";
+        final String implTypeName = asImplementation(interfaceType.getName());
 
         final Class<? extends T> implClass;
         try {
@@ -59,7 +62,7 @@ public final class Manager {
 
         final Method wrapMethod;
         try {
-            wrapMethod = implClass.getMethod("wrap", parameterType);
+            wrapMethod = implClass.getMethod(WRAP, parameterType);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("wrap method not found", e);
         }

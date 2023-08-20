@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.declarative.processor;
 
+import static org.jboss.jdeparser.JMod.PUBLIC;
 import static org.jboss.jdeparser.JTypes.$t;
 
 import java.io.IOException;
@@ -38,32 +39,30 @@ import javax.lang.model.util.ElementFilter;
 import org.jboss.jdeparser.*;
 
 abstract class Implementor {
-    protected final ProcessingEnvironment processingEnvironment;
-    protected final TypeElement annotatedElement;
+    protected static final String ORIGINAL = "original";
+    protected static final String WRAP = "wrap";
+
+    protected final ProcessingEnvironment environment;
+    protected final TypeElement element;
     protected final JSources sources;
-    protected final String implementationClass;
     protected final String originalInterface;
     protected JSourceFile sourceFile;
 
-    protected Implementor(final ProcessingEnvironment processingEnvironment, final TypeElement annotatedElement) {
-        this.processingEnvironment = processingEnvironment;
-        this.annotatedElement = annotatedElement;
+    private final String implementationClass;
 
-        originalInterface = annotatedElement.getQualifiedName().toString();
-        final String originalBinaryName = processingEnvironment
-                .getElementUtils()
-                .getBinaryName(annotatedElement)
-                .toString();
-        final String qualifiedName = originalBinaryName + "_$impl";
+    protected Implementor(final ProcessingEnvironment environment, final TypeElement element) {
+        this.environment = environment;
+        this.element = element;
+
+        originalInterface = element.getQualifiedName().toString();
+        final String originalBinaryName = environment.getElementUtils().getBinaryName(element).toString();
+        final String qualifiedName = asImplementation(originalBinaryName);
         final int lastDot = originalBinaryName.lastIndexOf('.');
         implementationClass = qualifiedName.substring(lastDot + 1);
-        final String packageName = processingEnvironment.getElementUtils()
-                .getPackageOf(annotatedElement)
-                .getQualifiedName().toString();
+        final String packageName = environment.getElementUtils().getPackageOf(element).getQualifiedName().toString();
 
-        final JFiler jFiler = JFiler.newInstance(processingEnvironment.getFiler());
-        sources = JDeparser.createSources(jFiler, new FormatPreferences());
-
+        final JFiler filer = JFiler.newInstance(environment.getFiler());
+        sources = JDeparser.createSources(filer, new FormatPreferences());
         sourceFile = sources.createSourceFile(packageName, implementationClass);
     }
 
@@ -79,39 +78,59 @@ abstract class Implementor {
 
     protected abstract void implementInternal();
 
-    static Implementor get(
-            final TypeElement annotation,
-            final ProcessingEnvironment processingEnvironment,
-            final Element annotatedElement) {
+    static Implementor get(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
 
-        final TypeElement annotatedType = (TypeElement) annotatedElement;
+        final TypeElement annotatedType = (TypeElement) element;
 
         switch (annotation.getQualifiedName().toString()) {
             case "com.inrupt.rdf.wrapping.declarative.annotation.Dataset":
-                return new DatasetImplementor(processingEnvironment, annotatedType);
+                return new DatasetImplementor(env, annotatedType);
             case "com.inrupt.rdf.wrapping.declarative.annotation.Graph":
-                return new GraphImplementor(processingEnvironment, annotatedType);
+                return new GraphImplementor(env, annotatedType);
             case "com.inrupt.rdf.wrapping.declarative.annotation.Resource":
-                return new ResourceImplementor(processingEnvironment, annotatedType);
+                return new ResourceImplementor(env, annotatedType);
             default:
                 throw new RuntimeException("unknown annotation type");
         }
     }
 
-    protected void annotateAndDocumentAsGenerated(final JClassDef implementation) {
-        implementation.docComment().text("Warning, this class consists of generated code.");
+    static String asImplementation(final String original) {
+        return original + "_$impl";
+    }
 
-        implementation
-                .annotate(Generated.class)
-                .value(this.getClass().getName()).value("date", Instant.now().toString());
+    protected JClassDef createClass(final Class<?> base) {
+        final JClassDef myClass = sourceFile
+                ._class(PUBLIC, implementationClass)
+                ._extends(base)
+                ._implements(originalInterface);
+
+        annotateAndDocumentAsGenerated(myClass);
+
+        return myClass;
     }
 
     protected Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
-        return ElementFilter.methodsIn(annotatedElement.getEnclosedElements()).stream()
+        return ElementFilter.methodsIn(element.getEnclosedElements()).stream()
                 .filter(method -> !method.isDefault()
                                   && !method.getModifiers().contains(Modifier.STATIC)
                                   && !method.getReturnType().equals($t(Void.class)))
                 .filter(method -> method.getAnnotation(annotation) != null);
     }
 
+    protected JType returnTypeAsImplementation(final ExecutableElement method) {
+        final Element returnType = environment.getTypeUtils().asElement(method.getReturnType());
+        final String originalBinaryName = environment
+                .getElementUtils()
+                .getBinaryName((TypeElement) returnType)
+                .toString();
+        return $t(asImplementation(originalBinaryName));
+    }
+
+    private void annotateAndDocumentAsGenerated(final JClassDef implementation) {
+        implementation.docComment().text("Warning, this class consists of generated code.");
+
+        implementation
+                .annotate(Generated.class)
+                .value(this.getClass().getName()).value("date", Instant.now().toString());
+    }
 }
