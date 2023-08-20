@@ -21,14 +21,14 @@
 package com.inrupt.rdf.wrapping.declarative.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.CLASS;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 @Target(METHOD)
-@Retention(CLASS)
+@Retention(SOURCE)
 @Documented
 public @interface DefaultGraph {
 }
