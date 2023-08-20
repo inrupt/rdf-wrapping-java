@@ -50,6 +50,14 @@ public abstract class WrapperModel extends ModelCom {
                 .orElse(null);
     }
 
+    protected <T extends RDFNode> T optionalFirstObjectOfEither(final Class<T> view, final String... predicates) {
+        return listStatements(new EitherPredicateSelector(predicates))
+                .mapWith(Statement::getObject)
+                .mapWith(object -> object.as(view))
+                .nextOptional()
+                .orElse(null);
+    }
+
     private static final class InstanceOfEitherSelector implements Selector {
         private final List<Resource> classes;
 
