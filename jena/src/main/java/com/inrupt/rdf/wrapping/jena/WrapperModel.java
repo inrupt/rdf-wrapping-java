@@ -20,8 +20,11 @@
  */
 package com.inrupt.rdf.wrapping.jena;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import org.apache.jena.graph.Graph;
-import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.ModelCom;
 import org.apache.jena.vocabulary.RDF;
 
@@ -30,10 +33,48 @@ public abstract class WrapperModel extends ModelCom {
         super(base);
     }
 
-    protected <T extends RDFNode> T firstInstanceOf(final String clazz, final Class<T> view) {
-        return listSubjectsWithProperty(RDF.type, createResource(clazz))
+    protected <T extends RDFNode> T optionalFirstInstanceOfEither(final Class<T> view, final String... classes) {
+        return listStatements(new InstanceOfEitherSelector(classes))
+                .mapWith(Statement::getSubject)
                 .mapWith(subject -> subject.as(view))
                 .nextOptional()
                 .orElse(null);
+    }
+
+    private static final class InstanceOfEitherSelector implements Selector {
+        private final Stream<Resource> classes;
+
+        private InstanceOfEitherSelector(final String[] classes) {
+            this.classes = Arrays.stream(classes).map(ResourceFactory::createResource);
+        }
+
+        @Override
+        public boolean test(final Statement statement) {
+            if (!getPredicate().equals(statement.getPredicate())) {
+                return false;
+            }
+
+            return classes.anyMatch(clazz -> clazz.equals(statement.getObject()));
+        }
+
+        @Override
+        public Property getPredicate() {
+            return RDF.type;
+        }
+
+        @Override
+        public boolean isSimple() {
+            return false;
+        }
+
+        @Override
+        public Resource getSubject() {
+            return null;
+        }
+
+        @Override
+        public RDFNode getObject() {
+            return null;
+        }
     }
 }

@@ -30,6 +30,6 @@ import java.lang.annotation.Target;
 @Target(METHOD)
 @Retention(CLASS)
 @Documented
-public @interface FirstInstanceOf {
-    String value();
+public @interface OptionalFirstInstanceOfEither {
+    String[] value();
 }

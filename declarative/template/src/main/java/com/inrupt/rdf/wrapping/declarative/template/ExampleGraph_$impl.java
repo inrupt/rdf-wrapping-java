@@ -51,6 +51,6 @@ public class ExampleGraph_$impl extends WrapperModel implements ExampleGraph {
 
     @Override
     public ExampleNode1 getResource() {
-        return firstInstanceOf("urn:example:C", ExampleNode1_$impl.class);
+        return optionalFirstInstanceOfEither(ExampleNode1_$impl.class, "urn:example:C");
     }
 }

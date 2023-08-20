@@ -24,7 +24,7 @@ import static org.jboss.jdeparser.JExprs.$v;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
-import com.inrupt.rdf.wrapping.declarative.annotation.FirstInstanceOf;
+import com.inrupt.rdf.wrapping.declarative.annotation.OptionalFirstInstanceOfEither;
 import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
 import javax.annotation.Generated;
@@ -55,7 +55,7 @@ class GraphImplementor extends Implementor {
 
         createWrapMethod(myClass, myType);
 
-        createFirstInstanceOfMethods(myClass, myInstance);
+        createOptionalFirstInstanceOfEitherMethods(myClass, myInstance);
     }
 
     private void addImports() {
@@ -76,7 +76,7 @@ class GraphImplementor extends Implementor {
     }
 
     private void addImplementationsToPersonality(final JMethodDef myConstructor, final JExpr myInstance) {
-        membersAnnotatedWith(FirstInstanceOf.class).forEach(method -> {
+        membersAnnotatedWith(OptionalFirstInstanceOfEither.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = returnTypeAsImplementation(method);
 
@@ -95,21 +95,26 @@ class GraphImplementor extends Implementor {
         myWrap.body()._return(myType._new().arg($v(ORIGINAL).call("getGraph")));
     }
 
-    private void createFirstInstanceOfMethods(final JClassDef myClass, final JExpr myInstance) {
-        membersAnnotatedWith(FirstInstanceOf.class).forEach(method -> {
+    private void createOptionalFirstInstanceOfEitherMethods(final JClassDef myClass, final JExpr myInstance) {
+        membersAnnotatedWith(OptionalFirstInstanceOfEither.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = returnTypeAsImplementation(method);
 
             sourceFile._import(returnType);
-            final JMethodDef namedGraphMethod = myClass
-                    .method(PUBLIC, returnType, method.getSimpleName().toString());
+            final JMethodDef namedGraphMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
             namedGraphMethod.annotate(Override.class);
-            namedGraphMethod
-                    .body()
-                    ._return(myInstance
-                            .call("firstInstanceOf")
-                            .arg(JExprs.str(method.getAnnotation(FirstInstanceOf.class).value()))
-                            .arg(implementationType._class()));
+
+            // Call model wrapper convenience method passing projection class argument
+            final JCall wrapperConvenienceCall = myInstance
+                    .call("optionalFirstInstanceOfEither")
+                    .arg(implementationType._class());
+
+            // Pass each filter class value from the annotation as additional argument
+            for (final String s : method.getAnnotation(OptionalFirstInstanceOfEither.class).value()) {
+                wrapperConvenienceCall.arg(JExprs.str(s));
+            }
+
+            namedGraphMethod.body()._return(wrapperConvenienceCall);
         });
     }
 }

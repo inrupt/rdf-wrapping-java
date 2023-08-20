@@ -43,7 +43,7 @@ public interface X {
             return Manager.wrap(original, Y.class);
         }
 
-        @FirstInstanceOf("urn:example:C")
+        @OptionalFirstInstanceOfEither({"urn:example:C", "urn:example:Other"})
         Z getResource();
 
         @Resource
