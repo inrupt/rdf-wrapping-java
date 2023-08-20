@@ -35,6 +35,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import org.jboss.jdeparser.*;
@@ -99,6 +100,16 @@ abstract class Implementor {
         return original + "_$impl";
     }
 
+    protected JType asImplementation(final TypeMirror original) {
+        final Element returnType = environment.getTypeUtils().asElement(original);
+        final String originalBinaryName = environment
+                .getElementUtils()
+                .getBinaryName((TypeElement) returnType)
+                .toString();
+
+        return $t(asImplementation(originalBinaryName));
+    }
+
     protected JClassDef createClass(final Class<?> base) {
         final JClassDef myClass = sourceFile
                 ._class(PUBLIC, implementationClass)
@@ -120,15 +131,6 @@ abstract class Implementor {
                                   && !method.getReturnType().equals($t(Void.class)))
                 .filter(method -> Arrays.stream(annotations)
                         .anyMatch(annotation -> method.getAnnotation(annotation) != null));
-    }
-
-    protected JType returnTypeAsImplementation(final ExecutableElement method) {
-        final Element returnType = environment.getTypeUtils().asElement(method.getReturnType());
-        final String originalBinaryName = environment
-                .getElementUtils()
-                .getBinaryName((TypeElement) returnType)
-                .toString();
-        return $t(asImplementation(originalBinaryName));
     }
 
     private void annotateAndDocumentAsGenerated(final JClassDef implementation) {

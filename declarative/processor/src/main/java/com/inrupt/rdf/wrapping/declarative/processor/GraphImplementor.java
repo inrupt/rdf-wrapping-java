@@ -31,6 +31,7 @@ import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.graph.Graph;
@@ -86,9 +87,10 @@ class GraphImplementor extends Implementor {
                 OptionalFirstInstanceOfEither.class,
                 OptionalFirstSubjectOfEither.class,
                 OptionalFirstObjectOfEither.class)
-                .forEach(method -> {
-                    final JType returnType = JTypes.typeOf(method.getReturnType());
-                    final JType implementationType = returnTypeAsImplementation(method);
+                .map(ExecutableElement::getReturnType)
+                .distinct()
+                .forEach(returnType -> {
+                    final JType implementationType = asImplementation(returnType);
 
                     myConstructor
                             .body()
@@ -107,7 +109,7 @@ class GraphImplementor extends Implementor {
     private void createOptionalFirstInstanceOfEitherMethods(final JClassDef myClass, final JExpr myInstance) {
         membersAnnotatedWithAny(OptionalFirstInstanceOfEither.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
-            final JType implementationType = returnTypeAsImplementation(method);
+            final JType implementationType = asImplementation(method.getReturnType());
 
             final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
@@ -129,7 +131,7 @@ class GraphImplementor extends Implementor {
     private void createOptionalFirstSubjectOfEitherMethods(final JClassDef myClass, final JExpr myInstance) {
         membersAnnotatedWithAny(OptionalFirstSubjectOfEither.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
-            final JType implementationType = returnTypeAsImplementation(method);
+            final JType implementationType = asImplementation(method.getReturnType());
 
             final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
@@ -151,7 +153,7 @@ class GraphImplementor extends Implementor {
     private void createOptionalFirstObjectOfEitherMethods(final JClassDef myClass, final JExpr myInstance) {
         membersAnnotatedWithAny(OptionalFirstObjectOfEither.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
-            final JType implementationType = returnTypeAsImplementation(method);
+            final JType implementationType = asImplementation(method.getReturnType());
 
             final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
