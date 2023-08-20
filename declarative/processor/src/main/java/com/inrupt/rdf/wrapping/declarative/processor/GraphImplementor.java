@@ -90,7 +90,6 @@ class GraphImplementor extends Implementor {
                     final JType returnType = JTypes.typeOf(method.getReturnType());
                     final JType implementationType = returnTypeAsImplementation(method);
 
-                    sourceFile._import(returnType);
                     myConstructor
                             .body()
                             .call(myInstance.call("getPersonality"), "add")
@@ -110,7 +109,6 @@ class GraphImplementor extends Implementor {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = returnTypeAsImplementation(method);
 
-            sourceFile._import(returnType);
             final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
 
@@ -133,7 +131,6 @@ class GraphImplementor extends Implementor {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = returnTypeAsImplementation(method);
 
-            sourceFile._import(returnType);
             final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
 
@@ -156,7 +153,6 @@ class GraphImplementor extends Implementor {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = returnTypeAsImplementation(method);
 
-            sourceFile._import(returnType);
             final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
 

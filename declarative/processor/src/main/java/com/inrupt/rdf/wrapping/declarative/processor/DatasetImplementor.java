@@ -81,7 +81,7 @@ class DatasetImplementor extends Implementor {
     private void createDefaultGraphMethods(final JClassDef myClass, final JExpr myInstance) {
         membersAnnotatedWithAny(DefaultGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
-            sourceFile._import(returnType);
+
             final JMethodDef myMethod = myClass
                     .method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
@@ -94,7 +94,7 @@ class DatasetImplementor extends Implementor {
     private void createNamedGraphMethods(final JClassDef myClass, final JExpr myInstance) {
         membersAnnotatedWithAny(NamedGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
-            sourceFile._import(returnType);
+
             final JMethodDef myMethod = myClass
                     .method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
