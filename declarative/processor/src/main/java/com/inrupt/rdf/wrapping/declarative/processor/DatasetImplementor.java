@@ -82,10 +82,10 @@ class DatasetImplementor extends Implementor {
         membersAnnotatedWith(DefaultGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             sourceFile._import(returnType);
-            final JMethodDef defaultGraphMethod = myClass
+            final JMethodDef myMethod = myClass
                     .method(PUBLIC, returnType, method.getSimpleName().toString());
-            defaultGraphMethod.annotate(Override.class);
-            defaultGraphMethod
+            myMethod.annotate(Override.class);
+            myMethod
                     .body()
                     ._return(returnType.call(WRAP).arg(myInstance.call("getDefaultModel")));
         });
@@ -95,10 +95,10 @@ class DatasetImplementor extends Implementor {
         membersAnnotatedWith(NamedGraph.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             sourceFile._import(returnType);
-            final JMethodDef namedGraphMethod = myClass
+            final JMethodDef myMethod = myClass
                     .method(PUBLIC, returnType, method.getSimpleName().toString());
-            namedGraphMethod.annotate(Override.class);
-            namedGraphMethod
+            myMethod.annotate(Override.class);
+            myMethod
                     .body()
                     ._return(returnType
                             .call(WRAP)

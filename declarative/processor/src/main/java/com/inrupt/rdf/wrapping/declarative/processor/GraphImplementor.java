@@ -101,8 +101,8 @@ class GraphImplementor extends Implementor {
             final JType implementationType = returnTypeAsImplementation(method);
 
             sourceFile._import(returnType);
-            final JMethodDef namedGraphMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
-            namedGraphMethod.annotate(Override.class);
+            final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
+            myMethod.annotate(Override.class);
 
             // Call model wrapper convenience method passing projection class argument
             final JCall wrapperConvenienceCall = myInstance
@@ -114,7 +114,7 @@ class GraphImplementor extends Implementor {
                 wrapperConvenienceCall.arg(JExprs.str(s));
             }
 
-            namedGraphMethod.body()._return(wrapperConvenienceCall);
+            myMethod.body()._return(wrapperConvenienceCall);
         });
     }
 }
