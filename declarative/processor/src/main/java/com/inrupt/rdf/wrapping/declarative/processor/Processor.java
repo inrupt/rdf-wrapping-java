@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.declarative.processor;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -45,10 +46,19 @@ public class Processor extends AbstractProcessor {
             return false;
         }
 
+        final ArrayList<Implementor> implementors = new ArrayList<>();
+        final ArrayList<ValidationError> validationErrors = new ArrayList<>();
         for (final TypeElement annotation : annotations) {
             for (final Element annotatedElement : roundEnv.getElementsAnnotatedWith(annotation)) {
-                Implementor.get(annotation, processingEnv, annotatedElement).implement();
+                implementors.add(Implementor.get(annotation, processingEnv, annotatedElement));
+                validationErrors.addAll(Validator.get(annotation, processingEnv, annotatedElement).validate());
             }
+        }
+
+        if (validationErrors.isEmpty()) {
+            implementors.forEach(Implementor::implement);
+        } else {
+            validationErrors.forEach(error -> error.printMessage(processingEnv.getMessager()));
         }
 
         return true;
