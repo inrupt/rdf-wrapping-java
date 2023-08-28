@@ -18,7 +18,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.declarative.test;
+package com.inrupt.rdf.wrapping.declarative.processor;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
