@@ -20,6 +20,10 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import com.inrupt.rdf.wrapping.annotation.Dataset;
+import com.inrupt.rdf.wrapping.annotation.Graph;
+import com.inrupt.rdf.wrapping.annotation.Resource;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,15 +51,14 @@ abstract class Validator {
     }
 
     static Validator get(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
-        switch (annotation.getQualifiedName().toString()) {
-            case "com.inrupt.rdf.wrapping.annotation.Dataset":
-                return new DatasetValidator(annotation, env, element);
-            case "com.inrupt.rdf.wrapping.annotation.Graph":
-                return new GraphValidator(annotation, env, element);
-            case "com.inrupt.rdf.wrapping.annotation.Resource":
-                return new ResourceValidator(annotation, env, element);
-            default:
-                throw new RuntimeException("unknown annotation type");
+        if (element.getAnnotation(Dataset.class) != null) {
+            return new DatasetValidator(annotation, env, element);
+        } else if (element.getAnnotation(Graph.class) != null) {
+            return new GraphValidator(annotation, env, element);
+        } else if (element.getAnnotation(Resource.class) != null) {
+            return new ResourceValidator(annotation, env, element);
+        } else {
+            throw new RuntimeException("unknown annotation type");
         }
     }
 

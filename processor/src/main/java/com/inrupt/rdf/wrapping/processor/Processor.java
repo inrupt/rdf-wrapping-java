@@ -20,25 +20,35 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import com.inrupt.rdf.wrapping.annotation.Dataset;
+import com.inrupt.rdf.wrapping.annotation.Graph;
+import com.inrupt.rdf.wrapping.annotation.Resource;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
-@SupportedAnnotationTypes({
-    "com.inrupt.rdf.wrapping.annotation.Dataset",
-    "com.inrupt.rdf.wrapping.annotation.Graph",
-    "com.inrupt.rdf.wrapping.annotation.Resource"
-})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class Processor extends AbstractProcessor {
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        final Set<String> annotations = new HashSet<>();
+
+        annotations.add(Dataset.class.getName());
+        annotations.add(Graph.class.getName());
+        annotations.add(Resource.class.getName());
+
+        return annotations;
+    }
+
     @Override
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         if (roundEnv.processingOver()) {
@@ -50,7 +60,7 @@ public class Processor extends AbstractProcessor {
         final ArrayList<ValidationError> validationErrors = new ArrayList<>();
         for (final TypeElement annotation : annotations) {
             for (final Element annotatedElement : roundEnv.getElementsAnnotatedWith(annotation)) {
-                implementors.add(Implementor.get(annotation, processingEnv, annotatedElement));
+                implementors.add(Implementor.get(processingEnv, annotatedElement));
                 validationErrors.addAll(Validator.get(annotation, processingEnv, annotatedElement).validate());
             }
         }

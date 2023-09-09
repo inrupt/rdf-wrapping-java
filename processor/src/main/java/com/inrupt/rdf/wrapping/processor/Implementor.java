@@ -23,6 +23,10 @@ package com.inrupt.rdf.wrapping.processor;
 import static org.jboss.jdeparser.JMod.PUBLIC;
 import static org.jboss.jdeparser.JTypes.$t;
 
+import com.inrupt.rdf.wrapping.annotation.Dataset;
+import com.inrupt.rdf.wrapping.annotation.Graph;
+import com.inrupt.rdf.wrapping.annotation.Resource;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.time.Instant;
@@ -45,19 +49,19 @@ abstract class Implementor {
     protected static final String WRAP = "wrap";
 
     protected final ProcessingEnvironment environment;
-    protected final TypeElement element;
+    protected final TypeElement type;
     protected final JSources sources;
     protected final String originalInterface;
     protected JSourceFile sourceFile;
 
     private final String implementationClass;
 
-    protected Implementor(final ProcessingEnvironment environment, final TypeElement element) {
+    protected Implementor(final ProcessingEnvironment environment, final Element element) {
         this.environment = environment;
-        this.element = element;
+        type = (TypeElement) element;
 
-        originalInterface = element.getQualifiedName().toString();
-        final String originalBinaryName = environment.getElementUtils().getBinaryName(element).toString();
+        originalInterface = type.getQualifiedName().toString();
+        final String originalBinaryName = environment.getElementUtils().getBinaryName(type).toString();
         final String qualifiedName = asImplementation(originalBinaryName);
         final int lastDot = originalBinaryName.lastIndexOf('.');
         implementationClass = qualifiedName.substring(lastDot + 1);
@@ -80,19 +84,15 @@ abstract class Implementor {
 
     protected abstract void implementInternal();
 
-    static Implementor get(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
-
-        final TypeElement annotatedType = (TypeElement) element;
-
-        switch (annotation.getQualifiedName().toString()) {
-            case "com.inrupt.rdf.wrapping.annotation.Dataset":
-                return new DatasetImplementor(env, annotatedType);
-            case "com.inrupt.rdf.wrapping.annotation.Graph":
-                return new GraphImplementor(env, annotatedType);
-            case "com.inrupt.rdf.wrapping.annotation.Resource":
-                return new ResourceImplementor(env, annotatedType);
-            default:
-                throw new RuntimeException("unknown annotation type");
+    static Implementor get(final ProcessingEnvironment env, final Element element) {
+        if (element.getAnnotation(Dataset.class) != null) {
+            return new DatasetImplementor(env, element);
+        } else if (element.getAnnotation(Graph.class) != null) {
+            return new GraphImplementor(env, element);
+        } else if (element.getAnnotation(Resource.class) != null) {
+            return new ResourceImplementor(env, element);
+        } else {
+            throw new RuntimeException("unknown annotation type");
         }
     }
 
@@ -125,7 +125,7 @@ abstract class Implementor {
     protected final Stream<ExecutableElement> membersAnnotatedWithAny(
             final Class<? extends Annotation>... annotations) {
 
-        return ElementFilter.methodsIn(element.getEnclosedElements()).stream()
+        return ElementFilter.methodsIn(type.getEnclosedElements()).stream()
                 .filter(method -> !method.isDefault()
                                   && !method.getModifiers().contains(Modifier.STATIC)
                                   && !method.getReturnType().equals($t(Void.class)))

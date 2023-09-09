@@ -30,7 +30,7 @@ import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.Element;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.sparql.core.DatasetGraph;
@@ -38,7 +38,7 @@ import org.apache.jena.sparql.core.DatasetImpl;
 import org.jboss.jdeparser.*;
 
 class DatasetImplementor extends Implementor {
-    DatasetImplementor(final ProcessingEnvironment environment, final TypeElement element) {
+    DatasetImplementor(final ProcessingEnvironment environment, final Element element) {
         super(environment, element);
     }
 

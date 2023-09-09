@@ -29,7 +29,7 @@ import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.Element;
 
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.enhanced.Implementation;
@@ -41,7 +41,7 @@ import org.jboss.jdeparser.JType;
 class ResourceImplementor extends Implementor {
     static final String FACTORY = "factory";
 
-    ResourceImplementor(final ProcessingEnvironment environment, final TypeElement element) {
+    ResourceImplementor(final ProcessingEnvironment environment, final Element element) {
         super(environment, element);
     }
 

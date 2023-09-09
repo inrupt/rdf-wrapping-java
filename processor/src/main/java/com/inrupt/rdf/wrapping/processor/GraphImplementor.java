@@ -32,8 +32,8 @@ import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
@@ -41,7 +41,7 @@ import org.apache.jena.rdf.model.impl.ModelCom;
 import org.jboss.jdeparser.*;
 
 class GraphImplementor extends Implementor {
-    GraphImplementor(final ProcessingEnvironment environment, final TypeElement element) {
+    GraphImplementor(final ProcessingEnvironment environment, final Element element) {
         super(environment, element);
     }
 
