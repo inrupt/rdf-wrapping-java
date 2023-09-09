@@ -66,12 +66,13 @@
   </properties>
 
   <modules>
+    <module>annotation</module>
     <module>commons</module>
     <module>test</module>
     <module>jena</module>
     <module>rdf4j</module>
+    <module>processor</module>
     <module>reports</module>
-    <module>declarative</module>
   </modules>
 
   <distributionManagement>
