@@ -28,9 +28,13 @@ import static org.jboss.jdeparser.JTypes.$t;
 import com.inrupt.rdf.wrapping.annotation.DefaultGraph;
 import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
+import java.lang.annotation.Annotation;
+import java.util.function.BiFunction;
+
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.sparql.core.DatasetGraph;
@@ -53,9 +57,9 @@ class DatasetImplementor extends Implementor {
 
         createWrapMethod(myClass, myType);
 
-        createDefaultGraphMethods(myClass);
+        createGraphMethods(myClass, DefaultGraph.class, DatasetImplementor::createDefaultGraphReturn);
 
-        createNamedGraphMethods(myClass);
+        createGraphMethods(myClass, NamedGraph.class, DatasetImplementor::createNamedGraphReturn);
     }
 
     private void addImports() {
@@ -78,35 +82,27 @@ class DatasetImplementor extends Implementor {
         myWrap.body()._return(myType._new().arg($v(ORIGINAL).call("asDatasetGraph")));
     }
 
-    private void createDefaultGraphMethods(final JClassDef myClass) {
-        membersAnnotatedWithAny(DefaultGraph.class).forEach(method -> {
-            final JType returnType = JTypes.typeOf(method.getReturnType());
-            final JType implementationType = asImplementation(method.getReturnType());
-
-            final JMethodDef myMethod = myClass
-                    .method(PUBLIC, returnType, method.getSimpleName().toString());
-            myMethod.annotate(Override.class);
-            myMethod
-                    .body()
-                    ._return(implementationType.call(WRAP).arg(THIS.call("getDefaultModel")));
-        });
+    private static JExpr createDefaultGraphReturn(final JType implementation, final ExecutableElement ignored) {
+        return implementation.call(WRAP).arg(THIS.call("getDefaultModel"));
     }
 
-    private void createNamedGraphMethods(final JClassDef myClass) {
-        membersAnnotatedWithAny(NamedGraph.class).forEach(method -> {
+    private static JExpr createNamedGraphReturn(final JType implementation, final ExecutableElement element) {
+        final JExpr graphName = JExprs.str(element.getAnnotation(NamedGraph.class).value());
+        return implementation.call(WRAP).arg(THIS.call("getNamedModel").arg(graphName));
+    }
+
+    private void createGraphMethods(
+            final JClassDef myClass,
+            final Class<? extends Annotation> annotation,
+            final BiFunction<JType, ExecutableElement, JExpr> returnCreator) {
+
+        membersAnnotatedWithAny(annotation).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = asImplementation(method.getReturnType());
+            final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
 
-            final JMethodDef myMethod = myClass
-                    .method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
-            myMethod
-                    .body()
-                    ._return(implementationType
-                            .call(WRAP)
-                            .arg(THIS
-                                    .call("getNamedModel")
-                                    .arg(JExprs.str(method.getAnnotation(NamedGraph.class).value()))));
+            myMethod.body()._return(returnCreator.apply(implementationType, method));
         });
     }
 }
