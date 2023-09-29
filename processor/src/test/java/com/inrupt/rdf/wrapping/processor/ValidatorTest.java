@@ -42,6 +42,7 @@ class ValidatorTest {
     private static final String MUST_BE_AN_INTERFACE = "must be an interface";
     private static final String CANNOT_BE_STATIC_OR_DEFAULT = "cannot be static or default";
     private static final String MUST_BE_STATIC_OR_DEFAULT = "must be static or default";
+    private static final String MUST_RETURN_RESOURCE_INTERFACE = "must return resource interface";
 
     private Compiler compiler;
 
@@ -74,10 +75,13 @@ class ValidatorTest {
                 arguments("graph extends unacceptable", "can only extend org.apache.jena.rdf.model.Model"),
                 arguments("graph instance of method is static", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("graph instance of method is default", CANNOT_BE_STATIC_OR_DEFAULT),
+                arguments("graph instance of method is not resource", MUST_RETURN_RESOURCE_INTERFACE),
                 arguments("graph object of method is static", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("graph object of method is default", CANNOT_BE_STATIC_OR_DEFAULT),
+                arguments("graph object of method is not resource", MUST_RETURN_RESOURCE_INTERFACE),
                 arguments("graph subject of method is static", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("graph subject of method is default", CANNOT_BE_STATIC_OR_DEFAULT),
+                arguments("graph subject of method is not resource", MUST_RETURN_RESOURCE_INTERFACE),
                 arguments("graph instance method is not annotated", MUST_BE_STATIC_OR_DEFAULT),
 
                 arguments("resource is not an interface", MUST_BE_AN_INTERFACE),
@@ -109,9 +113,9 @@ class ValidatorTest {
 
                 arguments("graph extends nothing"),
                 arguments("graph extends Model"),
-                arguments("graph instance of method is instance"),
-                arguments("graph subject of method is instance"),
-                arguments("graph object of method is instance"),
+                arguments("graph instance of method is resource instance"),
+                arguments("graph subject of method is resource instance"),
+                arguments("graph object of method is resource instance"),
                 arguments("graph unannotated method is static"),
                 arguments("graph unannotated method is default"),
 

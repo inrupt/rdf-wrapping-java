@@ -20,6 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static javax.lang.model.util.ElementFilter.methodsIn;
+
 import com.inrupt.rdf.wrapping.annotation.Dataset;
 import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.Resource;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -36,7 +39,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
 
 abstract class Validator {
     protected final TypeElement annotation;
@@ -76,7 +78,7 @@ abstract class Validator {
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
 
-        ElementFilter.methodsIn(element.getEnclosedElements()).stream()
+        getMethods()
                 .filter(isNotMember)
                 .filter(isAnnotated)
                 .forEach(method -> errors.add(new ValidationError(
@@ -95,7 +97,7 @@ abstract class Validator {
         final Predicate<ExecutableElement> isUnannotated = method ->
                 Arrays.stream(annotations).noneMatch(a -> method.getAnnotation(a) != null);
 
-        ElementFilter.methodsIn(element.getEnclosedElements()).stream()
+        getMethods()
                 .filter(isMember)
                 .filter(isUnannotated)
                 .forEach(method -> errors.add(new ValidationError(
@@ -138,5 +140,9 @@ abstract class Validator {
                 element.getSimpleName(),
                 annotation.getSimpleName(),
                 element.getKind()));
+    }
+
+    protected Stream<ExecutableElement> getMethods() {
+        return methodsIn(element.getEnclosedElements()).stream();
     }
 }
