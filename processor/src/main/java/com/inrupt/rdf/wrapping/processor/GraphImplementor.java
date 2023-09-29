@@ -30,6 +30,9 @@ import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
+import java.lang.annotation.Annotation;
+import java.util.function.Function;
+
 import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -58,11 +61,26 @@ class GraphImplementor extends Implementor {
 
         createWrapMethod(myClass, myType);
 
-        createOptionalFirstInstanceOfEitherMethods(myClass);
+        createMethods(
+                myClass,
+                OptionalFirstInstanceOfEither.class,
+                "optionalFirstInstanceOfEither",
+                m -> m.getAnnotation(OptionalFirstInstanceOfEither.class).value()
+        );
 
-        createOptionalFirstSubjectOfEitherMethods(myClass);
+        createMethods(
+                myClass,
+                OptionalFirstSubjectOfEither.class,
+                "optionalFirstSubjectOfEither",
+                m -> m.getAnnotation(OptionalFirstSubjectOfEither.class).value()
+        );
 
-        createOptionalFirstObjectOfEitherMethods(myClass);
+        createMethods(
+                myClass,
+                OptionalFirstObjectOfEither.class,
+                "optionalFirstObjectOfEither",
+                m -> m.getAnnotation(OptionalFirstObjectOfEither.class).value()
+        );
     }
 
     private void addImports() {
@@ -106,8 +124,13 @@ class GraphImplementor extends Implementor {
         myWrap.body()._return(myType._new().arg($v(ORIGINAL).call("getGraph")));
     }
 
-    private void createOptionalFirstInstanceOfEitherMethods(final JClassDef myClass) {
-        membersAnnotatedWithAny(OptionalFirstInstanceOfEither.class).forEach(method -> {
+    private void createMethods(
+            final JClassDef myClass,
+            final Class<? extends Annotation> annotation,
+            final String convenienceMethod,
+            final Function<ExecutableElement, String[]> annotationValueExtractor) {
+
+        membersAnnotatedWithAny(annotation).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
             final JType implementationType = asImplementation(method.getReturnType());
 
@@ -116,55 +139,11 @@ class GraphImplementor extends Implementor {
 
             // Call model wrapper convenience method passing projection class argument
             final JCall wrapperConvenienceCall = THIS
-                    .call("optionalFirstInstanceOfEither")
+                    .call(convenienceMethod)
                     .arg(implementationType._class());
 
-            // Pass each filter class value from the annotation as additional argument
-            for (final String s : method.getAnnotation(OptionalFirstInstanceOfEither.class).value()) {
-                wrapperConvenienceCall.arg(JExprs.str(s));
-            }
-
-            myMethod.body()._return(wrapperConvenienceCall);
-        });
-    }
-
-    private void createOptionalFirstSubjectOfEitherMethods(final JClassDef myClass) {
-        membersAnnotatedWithAny(OptionalFirstSubjectOfEither.class).forEach(method -> {
-            final JType returnType = JTypes.typeOf(method.getReturnType());
-            final JType implementationType = asImplementation(method.getReturnType());
-
-            final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
-            myMethod.annotate(Override.class);
-
-            // Call model wrapper convenience method passing projection class argument
-            final JCall wrapperConvenienceCall = THIS
-                    .call("optionalFirstSubjectOfEither")
-                    .arg(implementationType._class());
-
-            // Pass each filter predicate value from the annotation as additional argument
-            for (final String s : method.getAnnotation(OptionalFirstSubjectOfEither.class).value()) {
-                wrapperConvenienceCall.arg(JExprs.str(s));
-            }
-
-            myMethod.body()._return(wrapperConvenienceCall);
-        });
-    }
-
-    private void createOptionalFirstObjectOfEitherMethods(final JClassDef myClass) {
-        membersAnnotatedWithAny(OptionalFirstObjectOfEither.class).forEach(method -> {
-            final JType returnType = JTypes.typeOf(method.getReturnType());
-            final JType implementationType = asImplementation(method.getReturnType());
-
-            final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
-            myMethod.annotate(Override.class);
-
-            // Call model wrapper convenience method passing projection class argument
-            final JCall wrapperConvenienceCall = THIS
-                    .call("optionalFirstObjectOfEither")
-                    .arg(implementationType._class());
-
-            // Pass each filter predicate value from the annotation as additional argument
-            for (final String s : method.getAnnotation(OptionalFirstObjectOfEither.class).value()) {
+            // Pass each filter value from the annotation as additional argument
+            for (final String s : annotationValueExtractor.apply(method)) {
                 wrapperConvenienceCall.arg(JExprs.str(s));
             }
 
