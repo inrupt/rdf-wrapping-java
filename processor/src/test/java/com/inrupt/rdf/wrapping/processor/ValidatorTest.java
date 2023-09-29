@@ -42,8 +42,8 @@ class ValidatorTest {
     private static final String MUST_BE_AN_INTERFACE = "must be an interface";
     private static final String CANNOT_BE_STATIC_OR_DEFAULT = "cannot be static or default";
     private static final String MUST_BE_STATIC_OR_DEFAULT = "must be static or default";
-    private static final String MUST_RETURN_RESOURCE_INTERFACE = "must return resource interface";
-    private static final String MUST_RETURN_GRAPH_INTERFACE = "must return graph interface";
+    private static final String MUST_RETURN_RESOURCE_INTERFACE = "must return @Resource interface";
+    private static final String MUST_RETURN_GRAPH_INTERFACE = "must return @Graph interface";
 
     private Compiler compiler;
 

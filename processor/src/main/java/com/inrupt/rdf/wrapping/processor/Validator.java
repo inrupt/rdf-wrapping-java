@@ -142,6 +142,26 @@ abstract class Validator {
                 element.getKind()));
     }
 
+    protected void requireAnnotatedReturnType(
+            final Class<? extends Annotation> annotation,
+            final Class<? extends Annotation> required) {
+
+        final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
+        final Predicate<ExecutableElement> isNotResource = method ->
+                env.getTypeUtils().asElement(method.getReturnType()).getAnnotation(required) == null;
+
+        getMethods()
+                .filter(isAnnotated)
+                .filter(isNotResource)
+                .forEach(method -> errors.add(new ValidationError(
+                        method,
+                        "Method %s on interface %s annotated with @%s must return @%s interface",
+                        method.getSimpleName(),
+                        element.getSimpleName(),
+                        annotation.getSimpleName(),
+                        required.getSimpleName())));
+    }
+
     protected Stream<ExecutableElement> getMethods() {
         return methodsIn(element.getEnclosedElements()).stream();
     }

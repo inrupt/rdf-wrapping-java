@@ -25,12 +25,8 @@ import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 
-import java.lang.annotation.Annotation;
-import java.util.function.Predicate;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.rdf.model.Model;
@@ -55,24 +51,8 @@ class GraphValidator extends Validator {
                 OptionalFirstObjectOfEither.class,
                 OptionalFirstSubjectOfEither.class);
 
-        requireResourceMethods(OptionalFirstInstanceOfEither.class);
-        requireResourceMethods(OptionalFirstObjectOfEither.class);
-        requireResourceMethods(OptionalFirstSubjectOfEither.class);
-    }
-
-    protected void requireResourceMethods(final Class<? extends Annotation> annotation) {
-        final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
-        final Predicate<ExecutableElement> isNotResource = method ->
-                env.getTypeUtils().asElement(method.getReturnType()).getAnnotation(Resource.class) == null;
-
-        getMethods()
-                .filter(isAnnotated)
-                .filter(isNotResource)
-                .forEach(method -> errors.add(new ValidationError(
-                        method,
-                        "Method %s on interface %s annotated with @%s must return resource interface",
-                        method.getSimpleName(),
-                        element.getSimpleName(),
-                        annotation.getSimpleName())));
+        requireAnnotatedReturnType(OptionalFirstInstanceOfEither.class, Resource.class);
+        requireAnnotatedReturnType(OptionalFirstObjectOfEither.class, Resource.class);
+        requireAnnotatedReturnType(OptionalFirstSubjectOfEither.class, Resource.class);
     }
 }

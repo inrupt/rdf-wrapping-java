@@ -24,12 +24,8 @@ import com.inrupt.rdf.wrapping.annotation.DefaultGraph;
 import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
-import java.lang.annotation.Annotation;
-import java.util.function.Predicate;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.query.Dataset;
@@ -50,24 +46,7 @@ class DatasetValidator extends Validator {
 
         requireNonMemberMethods(DefaultGraph.class, NamedGraph.class);
 
-        requireGraphMethods(DefaultGraph.class);
-        requireGraphMethods(NamedGraph.class);
-    }
-
-
-    protected void requireGraphMethods(final Class<? extends Annotation> annotation) {
-        final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
-        final Predicate<ExecutableElement> isNotResource = method ->
-                env.getTypeUtils().asElement(method.getReturnType()).getAnnotation(Graph.class) == null;
-
-        getMethods()
-                .filter(isAnnotated)
-                .filter(isNotResource)
-                .forEach(method -> errors.add(new ValidationError(
-                        method,
-                        "Method %s on interface %s annotated with @%s must return graph interface",
-                        method.getSimpleName(),
-                        element.getSimpleName(),
-                        annotation.getSimpleName())));
+        requireAnnotatedReturnType(DefaultGraph.class, Graph.class);
+        requireAnnotatedReturnType(NamedGraph.class, Graph.class);
     }
 }
