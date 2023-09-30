@@ -31,7 +31,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class XTest {
@@ -39,7 +38,7 @@ class XTest {
     void datasetCanWrap() {
         final Dataset dataset = DatasetFactory.create();
 
-        Assertions.assertDoesNotThrow(() -> X.wrap(dataset));
+        assertDoesNotThrow(() -> X.wrap(dataset));
     }
 
     @Test
@@ -60,7 +59,7 @@ class XTest {
     void graphCanWrap() {
         final Model model = ModelFactory.createDefaultModel();
 
-        Assertions.assertDoesNotThrow(() -> X.Y.wrap(model));
+        assertDoesNotThrow(() -> X.Y.wrap(model));
     }
 
     @Test
