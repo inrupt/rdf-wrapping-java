@@ -53,6 +53,8 @@ public interface X {
 
         @Resource
         interface Z {
+            @Property("urn:example:p")
+            String getProperty();
         }
     }
 }

@@ -124,7 +124,7 @@ class ValidatorTest {
 
                 arguments("resource extends nothing"),
                 arguments("resource extends Resource"),
-                // arguments("resource property method is instance"),
+                arguments("resource property method is instance"),
                 arguments("resource unannotated method is static"),
                 arguments("resource unannotated method is default")
 

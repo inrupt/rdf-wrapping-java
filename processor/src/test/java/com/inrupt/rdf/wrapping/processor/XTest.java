@@ -88,12 +88,26 @@ class XTest {
     }
 
     @Test
+    void resourceCanGetProperty() {
+        final Model model = modelFrom("PREFIX : <urn:example:>\n" +
+                                      "\n" +
+                                      "[\n" +
+                                      "    a :C ;\n" +
+                                      "] .\n");
+        final X.Y y = X.Y.wrap(model);
+        final X.Y.Z z = y.getResource();
+
+        assertDoesNotThrow(z::getProperty);
+    }
+
+    @Test
     void e2e() {
         final Dataset dataset = datasetFrom("PREFIX : <urn:example:>\n" +
                                             "\n" +
                                             "GRAPH <urn:example:g1> {\n" +
                                             "    [\n" +
                                             "        a :C ;\n" +
+                                            "        :p :VALUE ;\n" +
                                             "    ] .\n" +
                                             "\n" +
                                             "    [ :p [] ] .\n" +
@@ -104,10 +118,12 @@ class XTest {
         final X.Y.Z z = y.getResource();
         final X.Y.Z z2 = y.getResource2();
         final X.Y.Z z3 = y.getResource3();
+        final String p = z.getProperty();
 
         System.out.println(z);
         System.out.println(z2);
         System.out.println(z3);
+        System.out.println(p);
     }
 
     private static Dataset datasetFrom(final String rdf) {

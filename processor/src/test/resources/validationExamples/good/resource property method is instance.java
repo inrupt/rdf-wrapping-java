@@ -7,7 +7,5 @@ import com.inrupt.rdf.wrapping.annotation.Resource;
 @Resource
 interface X {
     @Property("x")
-    default Object x() {
-        return null;
-    }
+    Object x();
 }

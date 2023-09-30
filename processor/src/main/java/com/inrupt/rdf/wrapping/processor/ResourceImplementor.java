@@ -20,11 +20,15 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static org.jboss.jdeparser.JExpr.THIS;
 import static org.jboss.jdeparser.JExprs.$v;
+import static org.jboss.jdeparser.JExprs.str;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
+import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
+import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
 import javax.annotation.Generated;
@@ -34,9 +38,7 @@ import javax.lang.model.element.Element;
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.enhanced.Implementation;
 import org.apache.jena.graph.Node;
-import org.jboss.jdeparser.JClassDef;
-import org.jboss.jdeparser.JMethodDef;
-import org.jboss.jdeparser.JType;
+import org.jboss.jdeparser.*;
 
 class ResourceImplementor extends Implementor {
     static final String FACTORY = "factory";
@@ -55,6 +57,8 @@ class ResourceImplementor extends Implementor {
         createFactoryField(myClass, myType);
 
         createConstructor(myClass);
+
+        createPropertyMethod(myClass);
     }
 
     private void addImports() {
@@ -64,7 +68,8 @@ class ResourceImplementor extends Implementor {
                 ._import(Generated.class)
                 ._import(EnhGraph.class)
                 ._import(Implementation.class)
-                ._import(Node.class);
+                ._import(Node.class)
+                ._import(ValueMappings.class);
     }
 
     private static void createFactoryField(final JClassDef myClass, final JType myType) {
@@ -80,5 +85,28 @@ class ResourceImplementor extends Implementor {
         myConstructor.param(FINAL, Node.class, "node");
         myConstructor.param(FINAL, EnhGraph.class, "graph");
         myConstructor.body().callSuper().arg($v("node")).arg($v("graph"));
+    }
+
+    private void createPropertyMethod(final JClassDef myClass) {
+        membersAnnotatedWithAny(Property.class).forEach(method -> {
+            final JType returnType = JTypes.typeOf(method.getReturnType());
+
+            final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
+            myMethod.annotate(Override.class);
+
+            final JExpr mapping = $t(ValueMappings.class).methodRef("iriAsString"); // TODO: Dynamic mapping
+            final String predicateFromAnnotation = method.getAnnotation(Property.class).value();
+            final JCall predicate = THIS
+                    .call("getModel")
+                    .call("createProperty")
+                    .arg(str(predicateFromAnnotation));
+
+            myMethod.body()._return(
+                    THIS
+                            .call("anyOrNull") // TODO: Dynamic cardniality
+                            .arg(predicate)
+                            .arg(mapping));
+        });
+
     }
 }

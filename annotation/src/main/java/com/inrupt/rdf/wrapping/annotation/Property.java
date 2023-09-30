@@ -31,4 +31,5 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Documented
 public @interface Property {
+    String value();
 }
