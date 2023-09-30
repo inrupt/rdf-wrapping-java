@@ -57,7 +57,7 @@ class GraphImplementor extends Implementor {
 
         final JMethodDef myConstructor = createConstructor(myClass);
 
-        addImplementationsToPersonality(myConstructor);
+        addImplementationsToPersonality(myConstructor); // TODO: Also add return types of properties of resources
 
         createWrapMethod(myClass, myType);
 
