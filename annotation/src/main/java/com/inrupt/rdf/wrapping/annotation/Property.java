@@ -31,5 +31,22 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Documented
 public @interface Property {
-    String value();
+    String predicate();
+
+    Mapping mapping();
+
+    enum Mapping {
+        IRI_AS_STRING("iriAsString"),
+        IRI_AS_URI("iriAsUri");
+
+        private final String methodName;
+
+        Mapping(final String methodName) {
+            this.methodName = methodName;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+    }
 }

@@ -20,7 +20,12 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.IRI_AS_STRING;
+import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.IRI_AS_URI;
+
 import com.inrupt.rdf.wrapping.annotation.*;
+
+import java.net.URI;
 
 import org.apache.jena.rdf.model.Model;
 
@@ -53,8 +58,11 @@ public interface X {
 
         @Resource
         interface Z {
-            @Property("urn:example:p")
+            @Property(predicate = "urn:example:p", mapping = IRI_AS_STRING)
             String getProperty();
+
+            @Property(predicate = "urn:example:p", mapping = IRI_AS_URI)
+            URI getProperty2();
         }
     }
 }

@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.github.jsonldjava.shaded.com.google.common.base.Charsets;
 
+import java.net.URI;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
@@ -118,11 +120,13 @@ class XTest {
         final X.Y.Z z2 = y.getResource2();
         final X.Y.Z z3 = y.getResource3();
         final String p = z.getProperty();
+        final URI p2 = z.getProperty2();
 
         System.out.println(z);
         System.out.println(z2);
         System.out.println(z3);
         System.out.println(p);
+        System.out.println(p2);
     }
 
     private static Dataset datasetFrom(final String rdf) {

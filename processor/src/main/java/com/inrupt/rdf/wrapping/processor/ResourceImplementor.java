@@ -58,7 +58,7 @@ class ResourceImplementor extends Implementor {
 
         createConstructor(myClass);
 
-        createPropertyMethod(myClass);
+        createPropertyMethods(myClass);
     }
 
     private void addImports() {
@@ -87,15 +87,16 @@ class ResourceImplementor extends Implementor {
         myConstructor.body().callSuper().arg($v("node")).arg($v("graph"));
     }
 
-    private void createPropertyMethod(final JClassDef myClass) {
+    private void createPropertyMethods(final JClassDef myClass) {
         membersAnnotatedWithAny(Property.class).forEach(method -> {
             final JType returnType = JTypes.typeOf(method.getReturnType());
 
             final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
 
-            final JExpr mapping = $t(ValueMappings.class).methodRef("iriAsString"); // TODO: Dynamic mapping
-            final String predicateFromAnnotation = method.getAnnotation(Property.class).value();
+            final String methodName = method.getAnnotation(Property.class).mapping().getMethodName();
+            final JExpr mapping = $t(ValueMappings.class).methodRef(methodName); // TODO: Validate return types match
+            final String predicateFromAnnotation = method.getAnnotation(Property.class).predicate();
             final JCall predicate = THIS
                     .call("getModel")
                     .call("createProperty")
