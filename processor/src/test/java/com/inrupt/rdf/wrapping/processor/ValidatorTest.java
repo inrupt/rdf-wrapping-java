@@ -91,7 +91,8 @@ class ValidatorTest {
                 arguments("resource extends unacceptable", "can only extend org.apache.jena.rdf.model.Resource"),
                 arguments("resource property method is static", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("resource property method is default", CANNOT_BE_STATIC_OR_DEFAULT),
-                arguments("resource instance method is not annotated", MUST_BE_STATIC_OR_DEFAULT)
+                arguments("resource instance method is not annotated", MUST_BE_STATIC_OR_DEFAULT),
+                arguments("resource property method return type not assignable", "must be assignable from return type")
         );
     }
 
@@ -124,7 +125,7 @@ class ValidatorTest {
 
                 arguments("resource extends nothing"),
                 arguments("resource extends Resource"),
-                arguments("resource property method is instance"),
+                arguments("resource property method is assignable instance"),
                 arguments("resource unannotated method is static"),
                 arguments("resource unannotated method is default")
 

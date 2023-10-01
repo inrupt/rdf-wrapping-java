@@ -20,11 +20,16 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static javax.lang.model.util.ElementFilter.methodsIn;
+
 import com.inrupt.rdf.wrapping.annotation.Property;
+import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 import org.apache.jena.rdf.model.Resource;
 
@@ -42,5 +47,39 @@ class ResourceValidator extends Validator {
         requireMemberMethods(Property.class);
 
         requireNonMemberMethods(Property.class);
+
+        requireCompatibleReturnType();
+    }
+
+    private void requireCompatibleReturnType() {
+        for (final ExecutableElement method : methodsIn(element.getEnclosedElements())) {
+            final Property propertyAnnotation = method.getAnnotation(Property.class);
+            if (propertyAnnotation != null) {
+                final String mappingMethod = propertyAnnotation.mapping().getMethodName();
+                final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
+
+                if (!env.getTypeUtils().isAssignable(mappingMethodReturnType, method.getReturnType())) {
+                    errors.add(new ValidationError(
+                            method,
+                            "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
+                            method.getReturnType(),
+                            method.getSimpleName(),
+                            mappingMethodReturnType,
+                            mappingMethod));
+                }
+            }
+        }
+    }
+
+    private TypeMirror returnTypeOfMapper(final String mappingMethod) {
+        final TypeElement valueMappings = env.getElementUtils().getTypeElement(ValueMappings.class.getCanonicalName());
+
+        for (final ExecutableElement m : methodsIn(valueMappings.getEnclosedElements())) {
+            if (m.getSimpleName().contentEquals(mappingMethod)) {
+                return m.getReturnType();
+            }
+        }
+
+        return null;
     }
 }

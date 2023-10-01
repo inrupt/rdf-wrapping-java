@@ -95,7 +95,7 @@ class ResourceImplementor extends Implementor {
             myMethod.annotate(Override.class);
 
             final String methodName = method.getAnnotation(Property.class).mapping().getMethodName();
-            final JExpr mapping = $t(ValueMappings.class).methodRef(methodName); // TODO: Validate return types match
+            final JExpr mapping = $t(ValueMappings.class).methodRef(methodName);
             final String predicateFromAnnotation = method.getAnnotation(Property.class).predicate();
             final JCall predicate = THIS
                     .call("getModel")
