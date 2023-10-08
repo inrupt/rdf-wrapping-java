@@ -20,8 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.jboss.jdeparser.JExpr.THIS;
 import static org.jboss.jdeparser.JExprs.$v;
+import static org.jboss.jdeparser.JExprs.call;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
@@ -112,7 +112,7 @@ class GraphImplementor extends Implementor {
 
                     myConstructor
                             .body()
-                            .call(THIS.call("getPersonality"), "add")
+                            .call(call("getPersonality"), "add")
                             .arg(implementationType._class())
                             .arg(implementationType.field(ResourceImplementor.FACTORY));
                 });
@@ -138,9 +138,7 @@ class GraphImplementor extends Implementor {
             myMethod.annotate(Override.class);
 
             // Call model wrapper convenience method passing projection class argument
-            final JCall wrapperConvenienceCall = THIS
-                    .call(convenienceMethod)
-                    .arg(implementationType._class());
+            final JCall wrapperConvenienceCall = call(convenienceMethod).arg(implementationType._class());
 
             // Pass each filter value from the annotation as additional argument
             for (final String s : annotationValueExtractor.apply(method)) {

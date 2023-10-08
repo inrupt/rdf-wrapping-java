@@ -20,9 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.jboss.jdeparser.JExpr.THIS;
-import static org.jboss.jdeparser.JExprs.$v;
-import static org.jboss.jdeparser.JExprs.str;
+import static org.jboss.jdeparser.JExprs.*;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
@@ -97,16 +95,10 @@ class ResourceImplementor extends Implementor {
             final String mappingMethodName = method.getAnnotation(Property.class).mapping().getMethodName();
             final JExpr mapping = $t(ValueMappings.class).methodRef(mappingMethodName);
             final String predicateFromAnnotation = method.getAnnotation(Property.class).predicate();
-            final JCall predicate = THIS
-                    .call("getModel")
-                    .call("createProperty")
-                    .arg(str(predicateFromAnnotation));
+            final JCall predicate = call("getModel").call("createProperty").arg(str(predicateFromAnnotation));
 
-            myMethod.body()._return(
-                    THIS
-                            .call("anyOrNull") // TODO: Dynamic cardniality
-                            .arg(predicate)
-                            .arg(mapping));
+            // TODO: Dynamic cardniality
+            myMethod.body()._return(call("anyOrNull").arg(predicate).arg(mapping));
         });
     }
 }

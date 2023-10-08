@@ -20,8 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.jboss.jdeparser.JExpr.THIS;
 import static org.jboss.jdeparser.JExprs.$v;
+import static org.jboss.jdeparser.JExprs.call;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
@@ -83,12 +83,12 @@ class DatasetImplementor extends Implementor {
     }
 
     private static JExpr createDefaultGraphReturn(final JType implementation, final ExecutableElement ignored) {
-        return implementation.call(WRAP).arg(THIS.call("getDefaultModel"));
+        return implementation.call(WRAP).arg(call("getDefaultModel"));
     }
 
     private static JExpr createNamedGraphReturn(final JType implementation, final ExecutableElement element) {
         final JExpr graphName = JExprs.str(element.getAnnotation(NamedGraph.class).value());
-        return implementation.call(WRAP).arg(THIS.call("getNamedModel").arg(graphName));
+        return implementation.call(WRAP).arg(call("getNamedModel").arg(graphName));
     }
 
     private void createGraphMethods(
