@@ -40,7 +40,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
 
 import org.jboss.jdeparser.*;
 
@@ -48,16 +47,16 @@ abstract class Implementor {
     protected static final String ORIGINAL = "original";
     protected static final String WRAP = "wrap";
 
-    protected final ProcessingEnvironment environment;
+    protected final EnvironmentHelper environment;
     protected final TypeElement type;
     protected final JSources sources;
     protected final String originalInterface;
-    protected JSourceFile sourceFile;
+    protected final JSourceFile sourceFile;
 
     private final String implementationClass;
 
     protected Implementor(final ProcessingEnvironment environment, final Element element) {
-        this.environment = environment;
+        this.environment = new EnvironmentHelper(environment);
         type = (TypeElement) element;
 
         originalInterface = type.getQualifiedName().toString();
@@ -125,10 +124,10 @@ abstract class Implementor {
     protected final Stream<ExecutableElement> membersAnnotatedWithAny(
             final Class<? extends Annotation>... annotations) {
 
-        return ElementFilter.methodsIn(type.getEnclosedElements()).stream()
+        return environment.methodsOf(type).stream()
                 .filter(method -> !method.isDefault()
                                   && !method.getModifiers().contains(Modifier.STATIC)
-                                  && !method.getReturnType().equals($t(Void.class)))
+                                  && !environment.isVoid(method.getReturnType()))
                 .filter(method -> Arrays.stream(annotations)
                         .anyMatch(annotation -> method.getAnnotation(annotation) != null));
     }

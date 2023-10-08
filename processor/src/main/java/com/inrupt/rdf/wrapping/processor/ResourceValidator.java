@@ -20,8 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static javax.lang.model.util.ElementFilter.methodsIn;
-
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
@@ -52,7 +50,7 @@ class ResourceValidator extends Validator {
     }
 
     private void requireCompatibleReturnType() {
-        for (final ExecutableElement method : methodsIn(element.getEnclosedElements())) {
+        for (final ExecutableElement method : env.methodsOf(element)) {
             final Property propertyAnnotation = method.getAnnotation(Property.class);
             if (propertyAnnotation != null) {
                 final String mappingMethod = propertyAnnotation.mapping().getMethodName();
@@ -72,9 +70,7 @@ class ResourceValidator extends Validator {
     }
 
     private TypeMirror returnTypeOfMapper(final String mappingMethod) {
-        final TypeElement valueMappings = env.getElementUtils().getTypeElement(ValueMappings.class.getCanonicalName());
-
-        for (final ExecutableElement m : methodsIn(valueMappings.getEnclosedElements())) {
+        for (final ExecutableElement m : env.methodsOf(ValueMappings.class)) {
             if (m.getSimpleName().contentEquals(mappingMethod)) {
                 return m.getReturnType();
             }

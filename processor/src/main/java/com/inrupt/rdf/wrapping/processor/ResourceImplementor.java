@@ -94,8 +94,8 @@ class ResourceImplementor extends Implementor {
             final JMethodDef myMethod = myClass.method(PUBLIC, returnType, method.getSimpleName().toString());
             myMethod.annotate(Override.class);
 
-            final String methodName = method.getAnnotation(Property.class).mapping().getMethodName();
-            final JExpr mapping = $t(ValueMappings.class).methodRef(methodName);
+            final String mappingMethodName = method.getAnnotation(Property.class).mapping().getMethodName();
+            final JExpr mapping = $t(ValueMappings.class).methodRef(mappingMethodName);
             final String predicateFromAnnotation = method.getAnnotation(Property.class).predicate();
             final JCall predicate = THIS
                     .call("getModel")
@@ -108,6 +108,5 @@ class ResourceImplementor extends Implementor {
                             .arg(predicate)
                             .arg(mapping));
         });
-
     }
 }

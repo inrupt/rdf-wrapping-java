@@ -20,8 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static javax.lang.model.util.ElementFilter.methodsIn;
-
 import com.inrupt.rdf.wrapping.annotation.Dataset;
 import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.Resource;
@@ -42,13 +40,13 @@ import javax.lang.model.type.TypeMirror;
 
 abstract class Validator {
     protected final TypeElement annotation;
-    protected final ProcessingEnvironment env;
+    protected final EnvironmentHelper env;
     protected final Element element;
     protected final Collection<ValidationError> errors = new ArrayList<>();
 
     protected Validator(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
         this.annotation = annotation;
-        this.env = env;
+        this.env = new EnvironmentHelper(env);
         this.element = element;
     }
 
@@ -107,16 +105,15 @@ abstract class Validator {
                         element.getSimpleName())));
     }
 
-    protected void limitBaseInterfaces(final Class<?> clazz) {
+    protected void limitBaseInterfaces(final Class<?> allowed) {
         if (!element.getKind().isInterface()) {
             return;
         }
 
         final TypeElement type = (TypeElement) element;
-        final TypeMirror allowed = env.getElementUtils().getTypeElement(clazz.getName()).asType();
 
         for (final TypeMirror implemented : type.getInterfaces()) {
-            if (env.getTypeUtils().isSameType(implemented, allowed)) {
+            if (env.isSameType(implemented, allowed)) {
                 continue;
             }
 
@@ -125,7 +122,7 @@ abstract class Validator {
                     "Interface %s annotated with @%s can only extend %s or nothing",
                     element.getSimpleName(),
                     annotation.getSimpleName(),
-                    clazz.getName()));
+                    allowed.getName()));
         }
     }
 
@@ -163,6 +160,6 @@ abstract class Validator {
     }
 
     protected Stream<ExecutableElement> getMethods() {
-        return methodsIn(element.getEnclosedElements()).stream();
+        return env.methodsOf(element).stream();
     }
 }
