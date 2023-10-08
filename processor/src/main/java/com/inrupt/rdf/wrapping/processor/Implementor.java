@@ -22,6 +22,7 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static org.jboss.jdeparser.JMod.PUBLIC;
 import static org.jboss.jdeparser.JTypes.$t;
+import static org.jboss.jdeparser.JTypes.typeOf;
 
 import com.inrupt.rdf.wrapping.annotation.Dataset;
 import com.inrupt.rdf.wrapping.annotation.Graph;
@@ -50,7 +51,7 @@ abstract class Implementor {
     protected final EnvironmentHelper environment;
     protected final TypeElement type;
     protected final JSources sources;
-    protected final String originalInterface;
+    protected final JType originalInterface;
     protected final JSourceFile sourceFile;
 
     private final String implementationClass;
@@ -59,7 +60,7 @@ abstract class Implementor {
         this.environment = new EnvironmentHelper(environment);
         type = (TypeElement) element;
 
-        originalInterface = type.getQualifiedName().toString();
+        originalInterface = typeOf(type.asType());
         final String originalBinaryName = environment.getElementUtils().getBinaryName(type).toString();
         final String qualifiedName = asImplementation(originalBinaryName);
         final int lastDot = originalBinaryName.lastIndexOf('.');
