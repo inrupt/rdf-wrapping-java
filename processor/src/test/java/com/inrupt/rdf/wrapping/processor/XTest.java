@@ -121,12 +121,14 @@ class XTest {
         final X.Y.Z z3 = y.getResource3();
         final String p = z.getProperty();
         final URI p2 = z.getProperty2();
+        final X.Y.Z2 p3 = z.getProperty3();
 
         System.out.println(z);
         System.out.println(z2);
         System.out.println(z3);
         System.out.println(p);
         System.out.println(p2);
+        System.out.println(p3);
     }
 
     private static Dataset datasetFrom(final String rdf) {

@@ -37,7 +37,8 @@ public @interface Property {
 
     enum Mapping {
         IRI_AS_STRING("iriAsString"),
-        IRI_AS_URI("iriAsUri");
+        IRI_AS_URI("iriAsUri"),
+        AS("as");
 
         private final String methodName;
 

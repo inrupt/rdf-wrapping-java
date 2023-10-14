@@ -20,13 +20,13 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static org.jboss.jdeparser.JTypes.typeOf;
+
 import com.inrupt.rdf.wrapping.annotation.Property;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-
-import org.jboss.jdeparser.JTypes;
 
 class ResourceImplementor extends Implementor {
     ResourceImplementor(final ProcessingEnvironment environment, final Element element) {
@@ -44,12 +44,21 @@ class ResourceImplementor extends Implementor {
         myClass.annotateAndDocument();
         myClass.addConstructor();
 
-        for (final ExecutableElement method : myInterface.propertyMethods()) {
-            myClass.addPropertyMethod(
-                    JTypes.typeOf(method.getReturnType()),
+        for (final ExecutableElement method : myInterface.primitivePropertyMethods()) {
+            myClass.addPrimitivePropertyMethod(
+                    typeOf(method.getReturnType()),
                     method.getSimpleName().toString(),
                     method.getAnnotation(Property.class).mapping().getMethodName(),
                     method.getAnnotation(Property.class).predicate()
+            );
+        }
+
+        for (final ExecutableElement method : myInterface.resourcePropertyMethods()) {
+            myClass.addResourcePropertyMethod(
+                    typeOf(method.getReturnType()),
+                    method.getSimpleName().toString(),
+                    method.getAnnotation(Property.class).predicate(),
+                    asImplementation(method.getReturnType())
             );
         }
     }

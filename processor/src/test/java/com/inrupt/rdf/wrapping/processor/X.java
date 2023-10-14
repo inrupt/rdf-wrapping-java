@@ -20,8 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.IRI_AS_STRING;
-import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.IRI_AS_URI;
+import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.*;
 
 import com.inrupt.rdf.wrapping.annotation.*;
 
@@ -63,6 +62,13 @@ public interface X {
 
             @Property(predicate = "urn:example:p", mapping = IRI_AS_URI)
             URI getProperty2();
+
+            @Property(predicate = "urn:example:p", mapping = AS)
+            Z2 getProperty3();
+        }
+
+        @Resource
+        interface Z2 {
         }
     }
 }

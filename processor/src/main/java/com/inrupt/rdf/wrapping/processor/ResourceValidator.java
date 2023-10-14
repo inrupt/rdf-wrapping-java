@@ -53,6 +53,11 @@ class ResourceValidator extends Validator {
         for (final ExecutableElement method : env.methodsOf(element)) {
             final Property propertyAnnotation = method.getAnnotation(Property.class);
             if (propertyAnnotation != null) {
+                // TODO: Validate otherwise
+                if (propertyAnnotation.mapping() == Property.Mapping.AS){
+                    continue;
+                }
+
                 final String mappingMethod = propertyAnnotation.mapping().getMethodName();
                 final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
 

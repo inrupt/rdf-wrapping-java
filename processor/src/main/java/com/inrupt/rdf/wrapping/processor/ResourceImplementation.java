@@ -79,16 +79,41 @@ class ResourceImplementation {
         myConstructor.body().callSuper().arg($v("node")).arg($v("graph"));
     }
 
-    void addPropertyMethod(
+    void addPrimitivePropertyMethod(
             final JType returnType,
             final String name,
             final String mappingMethodName,
-            final String predicateFromAnnotation) {
+            final String predicate) {
+
+        addPropertyMethod(
+                returnType,
+                name,
+                predicate,
+                $t(ValueMappings.class).methodRef(mappingMethodName));
+    }
+
+    void addResourcePropertyMethod(
+            final JType returnType,
+            final String name,
+            final String predicate,
+            final JType implementation) {
+
+        addPropertyMethod(
+                returnType,
+                name,
+                predicate,
+                $t(ValueMappings.class).call("as").arg(implementation._class()));
+    }
+
+    private void addPropertyMethod(
+            final JType returnType,
+            final String name,
+            final String predicateFromAnnotation,
+            final JExpr mapping) {
 
         final JMethodDef myMethod = target.method(PUBLIC, returnType, name);
         myMethod.annotate(Override.class);
 
-        final JExpr mapping = $t(ValueMappings.class).methodRef(mappingMethodName);
         final JCall predicate = call("getModel").call("createProperty").arg(str(predicateFromAnnotation));
 
         // TODO: Dynamic cardniality

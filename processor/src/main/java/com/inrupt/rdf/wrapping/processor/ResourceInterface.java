@@ -21,8 +21,11 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import com.inrupt.rdf.wrapping.annotation.Property;
+import com.inrupt.rdf.wrapping.annotation.Resource;
 
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -32,7 +35,19 @@ class ResourceInterface extends Interface {
         super(environment, type);
     }
 
-    List<ExecutableElement> propertyMethods() {
-        return membersAnnotatedWithAny(Property.class);
+    List<ExecutableElement> primitivePropertyMethods() {
+        return membersAnnotatedWithAny(Property.class).stream()
+                .filter(returnTypeIsResource().negate())
+                .collect(Collectors.toList());
+    }
+
+    List<ExecutableElement> resourcePropertyMethods() {
+        return membersAnnotatedWithAny(Property.class).stream()
+                .filter(returnTypeIsResource())
+                .collect(Collectors.toList());
+    }
+
+    private Predicate<ExecutableElement> returnTypeIsResource() {
+        return method -> environment.type(method.getReturnType()).getAnnotation(Resource.class) != null;
     }
 }

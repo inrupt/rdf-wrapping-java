@@ -30,7 +30,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 class Interface {
-    private final EnvironmentHelper environment;
+    protected final EnvironmentHelper environment;
     private final TypeElement type;
 
     Interface(final EnvironmentHelper environment, final TypeElement type) {
