@@ -92,10 +92,10 @@ abstract class Implementor {
     }
 
     protected JType asImplementation(final TypeMirror original) {
-        final Element returnType = environment.getTypeUtils().asElement(original);
+        final TypeElement returnType = environment.type(original);
         final String originalBinaryName = environment
                 .getElementUtils()
-                .getBinaryName((TypeElement) returnType)
+                .getBinaryName(returnType)
                 .toString();
 
         return $t(asImplementation(originalBinaryName));

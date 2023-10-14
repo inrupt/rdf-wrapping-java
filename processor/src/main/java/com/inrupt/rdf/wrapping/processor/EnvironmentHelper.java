@@ -27,6 +27,10 @@ class EnvironmentHelper implements ProcessingEnvironment {
         return getElementUtils().getTypeElement(clazz.getCanonicalName());
     }
 
+    TypeElement type(final TypeMirror mirror) {
+        return (TypeElement) getTypeUtils().asElement(mirror);
+    }
+
     boolean isVoid(final TypeMirror type) {
         return isSameType(type, Void.class);
     }

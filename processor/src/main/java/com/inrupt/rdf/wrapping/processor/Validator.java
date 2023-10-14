@@ -146,7 +146,7 @@ abstract class Validator {
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
         final Predicate<ExecutableElement> isNotResource = method ->
-                env.getTypeUtils().asElement(method.getReturnType()).getAnnotation(required) == null;
+                env.type(method.getReturnType()).getAnnotation(required) == null;
 
         getMethods()
                 .filter(isAnnotated)
