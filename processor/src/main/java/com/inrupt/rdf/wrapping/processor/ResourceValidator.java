@@ -54,7 +54,7 @@ class ResourceValidator extends Validator {
             final Property propertyAnnotation = method.getAnnotation(Property.class);
             if (propertyAnnotation != null) {
                 // TODO: Validate otherwise
-                if (propertyAnnotation.mapping() == Property.Mapping.AS){
+                if (propertyAnnotation.mapping() == Property.Mapping.AS) {
                     continue;
                 }
 

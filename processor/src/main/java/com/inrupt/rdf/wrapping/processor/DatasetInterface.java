@@ -29,7 +29,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
 class DatasetInterface extends Interface {
-    DatasetInterface(EnvironmentHelper environment, TypeElement type) {
+    DatasetInterface(final EnvironmentHelper environment, final TypeElement type) {
         super(environment, type);
     }
 
