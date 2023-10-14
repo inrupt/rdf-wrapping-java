@@ -20,7 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.jboss.jdeparser.JMod.PUBLIC;
 import static org.jboss.jdeparser.JTypes.$t;
 import static org.jboss.jdeparser.JTypes.typeOf;
 
@@ -29,24 +28,16 @@ import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
-import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 import org.jboss.jdeparser.*;
 
 abstract class Implementor {
-    protected static final String ORIGINAL = "original";
-    protected static final String WRAP = "wrap";
+    protected static final String WRAP = "wrap"; // TODO: Sunset
 
     protected final EnvironmentHelper environment;
     protected final TypeElement type;
@@ -54,7 +45,7 @@ abstract class Implementor {
     protected final JType originalInterface;
     protected final JSourceFile sourceFile;
 
-    private final String implementationClass;
+    protected final String implementationClass;
 
     protected Implementor(final ProcessingEnvironment environment, final Element element) {
         this.environment = new EnvironmentHelper(environment);
@@ -108,36 +99,5 @@ abstract class Implementor {
                 .toString();
 
         return $t(asImplementation(originalBinaryName));
-    }
-
-    protected JClassDef createClass(final Class<?> base) {
-        final JClassDef myClass = sourceFile
-                ._class(PUBLIC, implementationClass)
-                ._extends(base)
-                ._implements(originalInterface);
-
-        annotateAndDocumentAsGenerated(myClass);
-
-        return myClass;
-    }
-
-    @SafeVarargs
-    protected final Stream<ExecutableElement> membersAnnotatedWithAny(
-            final Class<? extends Annotation>... annotations) {
-
-        return environment.methodsOf(type).stream()
-                .filter(method -> !method.isDefault()
-                                  && !method.getModifiers().contains(Modifier.STATIC)
-                                  && !environment.isVoid(method.getReturnType()))
-                .filter(method -> Arrays.stream(annotations)
-                        .anyMatch(annotation -> method.getAnnotation(annotation) != null));
-    }
-
-    private void annotateAndDocumentAsGenerated(final JClassDef implementation) {
-        implementation.docComment().text("Warning, this class consists of generated code.");
-
-        implementation
-                .annotate(Generated.class)
-                .value(this.getClass().getName()).value("date", Instant.now().toString());
     }
 }

@@ -38,6 +38,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
+// TODO: Use interfaces in validators
 abstract class Validator {
     protected final TypeElement annotation;
     protected final EnvironmentHelper env;
