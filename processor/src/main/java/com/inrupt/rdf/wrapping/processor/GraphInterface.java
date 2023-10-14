@@ -20,12 +20,14 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static java.util.stream.Stream.concat;
+
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -36,15 +38,15 @@ class GraphInterface extends Interface {
         super(environment, type);
     }
 
-    List<TypeMirror> resourceMethodTypes() {
-        return membersAnnotatedWithAny(
-                OptionalFirstInstanceOfEither.class,
-                OptionalFirstSubjectOfEither.class,
-                OptionalFirstObjectOfEither.class)
-                .stream()
-                .map(ExecutableElement::getReturnType)
-                .distinct()
-                .collect(Collectors.toList());
+    Stream<TypeMirror> transitiveResourceTypes() {
+        final Stream<TypeMirror> children = resourceMethodTypes();
+        final Stream<TypeMirror> descendants = resourceMethodTypes()
+                .map(environment::type)
+                .map(type -> new ResourceInterface(environment, type))
+                .flatMap(ResourceInterface::transitiveResourceTypes);
+
+        return concat(children, descendants)
+                .distinct();
     }
 
     List<ExecutableElement> instanceMethods() {
@@ -57,5 +59,15 @@ class GraphInterface extends Interface {
 
     List<ExecutableElement> objectMethods() {
         return membersAnnotatedWithAny(OptionalFirstObjectOfEither.class);
+    }
+
+    private Stream<TypeMirror> resourceMethodTypes() {
+        return membersAnnotatedWithAny(
+                OptionalFirstInstanceOfEither.class,
+                OptionalFirstSubjectOfEither.class,
+                OptionalFirstObjectOfEither.class)
+                .stream()
+                .map(ExecutableElement::getReturnType)
+                .distinct();
     }
 }

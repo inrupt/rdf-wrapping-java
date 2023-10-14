@@ -29,7 +29,6 @@ import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeMirror;
 
 class GraphImplementor extends Implementor {
     GraphImplementor(final ProcessingEnvironment environment, final Element element) {
@@ -47,10 +46,7 @@ class GraphImplementor extends Implementor {
         myClass.addConstructor();
         myClass.addWrap(originalInterface);
 
-        // TODO: Also add return types of properties of resources
-        for (final TypeMirror type : myInterface.resourceMethodTypes()) {
-            myClass.addToPersonality(asImplementation(type));
-        }
+        myInterface.transitiveResourceTypes().map(this::asImplementation).forEach(myClass::addToPersonality);
 
         for (final ExecutableElement method : myInterface.instanceMethods()) {
             myClass.addResourceMethod(

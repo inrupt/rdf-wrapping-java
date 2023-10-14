@@ -69,6 +69,12 @@ public interface X {
 
         @Resource
         interface Z2 {
+            @Property(predicate = "urn:example:p", mapping = AS)
+            Z3 getProperty();
+        }
+
+        @Resource
+        interface Z3 {
         }
     }
 }

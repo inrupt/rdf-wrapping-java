@@ -20,15 +20,19 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static java.util.stream.Stream.concat;
+
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 class ResourceInterface extends Interface {
     ResourceInterface(final EnvironmentHelper environment, final TypeElement type) {
@@ -45,6 +49,19 @@ class ResourceInterface extends Interface {
         return membersAnnotatedWithAny(Property.class).stream()
                 .filter(returnTypeIsResource())
                 .collect(Collectors.toList());
+    }
+
+    Stream<TypeMirror> transitiveResourceTypes() {
+        final Stream<TypeMirror> children = resourcePropertyMethods().stream()
+                .map(ExecutableElement::getReturnType);
+
+        final Stream<TypeMirror> descendants = resourcePropertyMethods().stream()
+                .map(ExecutableElement::getReturnType)
+                .map(environment::type)
+                .map(type -> new ResourceInterface(environment, type))
+                .flatMap(ResourceInterface::transitiveResourceTypes);
+
+        return concat(children, descendants).distinct();
     }
 
     private Predicate<ExecutableElement> returnTypeIsResource() {
