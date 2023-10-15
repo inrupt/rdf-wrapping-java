@@ -20,12 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import com.inrupt.rdf.wrapping.annotation.NamedGraph;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-
-import org.jboss.jdeparser.JTypes;
 
 class DatasetImplementor extends Implementor {
     DatasetImplementor(final ProcessingEnvironment environment, final Element element) {
@@ -35,23 +31,14 @@ class DatasetImplementor extends Implementor {
     @Override
     protected void implementInternal() {
         final DatasetInterface myInterface = new DatasetInterface(environment, type);
-        final DatasetImplementation myClass = new DatasetImplementation();
+        final DatasetImplementation myClass = new DatasetImplementation(environment);
 
         myClass.addImports(sourceFile);
         myClass.addClass(sourceFile, implementationClass, originalInterface);
-        myClass.annotateAndDocument();
         myClass.addConstructor();
         myClass.addWrap(originalInterface);
 
-        myInterface.defaultGraphMethods().forEach(method -> myClass.addDefaultGraph(
-                asImplementation(method.getReturnType()),
-                method.getSimpleName().toString(),
-                JTypes.typeOf(method.getReturnType())));
-
-        myInterface.namedGraphMethods().forEach(method -> myClass.addNamedGraph(
-                asImplementation(method.getReturnType()),
-                method.getSimpleName().toString(),
-                method.getAnnotation(NamedGraph.class).value(),
-                JTypes.typeOf(method.getReturnType())));
+        myInterface.defaultGraphMethods().forEach(myClass::addDefaultGraph);
+        myInterface.namedGraphMethods().forEach(myClass::addNamedGraph);
     }
 }

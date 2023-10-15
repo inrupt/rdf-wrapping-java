@@ -20,8 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.jboss.jdeparser.JTypes.typeOf;
-
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
@@ -37,35 +35,28 @@ class GraphImplementor extends Implementor {
     @Override
     protected void implementInternal() {
         final GraphInterface myInterface = new GraphInterface(environment, type);
-        final GraphImplementation myClass = new GraphImplementation();
+        final GraphImplementation myClass = new GraphImplementation(environment);
 
         myClass.addImports(sourceFile);
         myClass.addClass(sourceFile, implementationClass, originalInterface);
-        myClass.annotateAndDocument();
         myClass.addConstructor();
         myClass.addWrap(originalInterface);
 
-        myInterface.transitiveResourceTypes().map(this::asImplementation).forEach(myClass::addToPersonality);
+        myInterface.transitiveResourceTypes().forEach(myClass::addToPersonality);
 
         myInterface.instanceMethods().forEach(method -> myClass.addResourceMethod(
-                typeOf(method.getReturnType()),
-                method.getSimpleName().toString(),
+                method,
                 "optionalFirstInstanceOfEither",
-                asImplementation(method.getReturnType()),
                 method.getAnnotation(OptionalFirstInstanceOfEither.class).value()));
 
         myInterface.subjectMethods().forEach(method -> myClass.addResourceMethod(
-                typeOf(method.getReturnType()),
-                method.getSimpleName().toString(),
+                method,
                 "optionalFirstSubjectOfEither",
-                asImplementation(method.getReturnType()),
                 method.getAnnotation(OptionalFirstSubjectOfEither.class).value()));
 
         myInterface.objectMethods().forEach(method -> myClass.addResourceMethod(
-                typeOf(method.getReturnType()),
-                method.getSimpleName().toString(),
+                method,
                 "optionalFirstObjectOfEither",
-                asImplementation(method.getReturnType()),
                 method.getAnnotation(OptionalFirstObjectOfEither.class).value()));
     }
 }

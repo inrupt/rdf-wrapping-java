@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.processor.ResourceImplementation.FACTORY;
 import static org.jboss.jdeparser.JExprs.$v;
 import static org.jboss.jdeparser.JExprs.call;
 import static org.jboss.jdeparser.JMod.*;
@@ -27,21 +28,23 @@ import static org.jboss.jdeparser.JTypes.$t;
 
 import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
-import java.time.Instant;
-
 import javax.annotation.Generated;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.impl.ModelCom;
 import org.jboss.jdeparser.*;
 
-class GraphImplementation {
+class GraphImplementation extends Implementation {
     private static final String ORIGINAL = "original";
-    private static final String WRAP = "wrap";
 
-    private JClassDef target;
     private JMethodDef constructor;
+
+    GraphImplementation(final EnvironmentHelper environment) {
+        super(environment);
+    }
 
     void addImports(final JSourceFile source) {
         source
@@ -53,14 +56,7 @@ class GraphImplementation {
     }
 
     void addClass(final JSourceFile source, final String name, final JType originalInterface) {
-        target = source._class(PUBLIC, name);
-        target._extends(WrapperModel.class);
-        target._implements(originalInterface);
-    }
-
-    void annotateAndDocument() {
-        target.docComment().text("Warning, this class consists of generated code.");
-        target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
+        addClass(source, name, originalInterface, WrapperModel.class);
     }
 
     void addConstructor() {
@@ -75,32 +71,27 @@ class GraphImplementation {
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("getGraph")));
     }
 
-    void addToPersonality(final JType implementationType) {
+    void addToPersonality(final TypeMirror type) {
+        final JType implementation = asImplementation(type);
+
         constructor
                 .body()
                 .call(call("getPersonality"), "add")
-                .arg(implementationType._class())
-                .arg(implementationType.field(ResourceImplementation.FACTORY));
+                .arg(implementation._class())
+                .arg(implementation.field(FACTORY));
     }
 
-    void addResourceMethod(
-            final JType returnType,
-            final String name,
-            final String convenience,
-            final JType implementationType,
-            final String[] values) {
-
-        final JMethodDef myMethod = target.method(PUBLIC, returnType, name);
-        myMethod.annotate(Override.class);
+    void addResourceMethod(final ExecutableElement method, final String convenience, final String[] values) {
+        final JType implementation = asImplementation(method.getReturnType());
 
         // Call model wrapper convenience method passing projection class argument
-        final JCall wrapperConvenienceCall = call(convenience).arg(implementationType._class());
+        final JCall convenienceCall = call(convenience).arg(implementation._class());
 
         // Pass each filter value from the annotation as additional argument
         for (final String value : values) {
-            wrapperConvenienceCall.arg(JExprs.str(value));
+            convenienceCall.arg(JExprs.str(value));
         }
 
-        myMethod.body()._return(wrapperConvenienceCall);
+        addMethod(method).body()._return(convenienceCall);
     }
 }

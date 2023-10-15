@@ -20,7 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.jboss.jdeparser.JTypes.$t;
+import static com.inrupt.rdf.wrapping.processor.Implementation.asImplementation;
 import static org.jboss.jdeparser.JTypes.typeOf;
 
 import com.inrupt.rdf.wrapping.annotation.Dataset;
@@ -32,13 +32,10 @@ import java.io.IOException;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 
 import org.jboss.jdeparser.*;
 
 abstract class Implementor {
-    protected static final String WRAP = "wrap"; // TODO: Sunset
-
     protected final EnvironmentHelper environment;
     protected final TypeElement type;
     protected final JSources sources;
@@ -85,19 +82,5 @@ abstract class Implementor {
         } else {
             throw new RuntimeException("unknown annotation type");
         }
-    }
-
-    static String asImplementation(final String original) {
-        return original + "_$impl";
-    }
-
-    protected JType asImplementation(final TypeMirror original) {
-        final TypeElement returnType = environment.type(original);
-        final String originalBinaryName = environment
-                .getElementUtils()
-                .getBinaryName(returnType)
-                .toString();
-
-        return $t(asImplementation(originalBinaryName));
     }
 }

@@ -24,24 +24,25 @@ import static org.jboss.jdeparser.JExprs.*;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
-import java.time.Instant;
+import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
 import javax.annotation.Generated;
+import javax.lang.model.element.ExecutableElement;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.sparql.core.DatasetImpl;
-import org.jboss.jdeparser.JClassDef;
+import org.jboss.jdeparser.JExpr;
 import org.jboss.jdeparser.JMethodDef;
 import org.jboss.jdeparser.JSourceFile;
 import org.jboss.jdeparser.JType;
 
-class DatasetImplementation {
+class DatasetImplementation extends Implementation {
     private static final String ORIGINAL = "original";
 
-    static final String WRAP = "wrap"; // TODO: reuse in Manager
-
-    private JClassDef target;
+    public DatasetImplementation(final EnvironmentHelper environment) {
+        super(environment);
+    }
 
     void addImports(final JSourceFile source) {
         source
@@ -52,14 +53,7 @@ class DatasetImplementation {
     }
 
     void addClass(final JSourceFile source, final String name, final JType originalInterface) {
-        target = source._class(PUBLIC, name);
-        target._extends(DatasetImpl.class);
-        target._implements(originalInterface);
-    }
-
-    void annotateAndDocument() {
-        target.docComment().text("Warning, this class consists of generated code.");
-        target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
+        addClass(source, name, originalInterface, DatasetImpl.class);
     }
 
     void addConstructor() {
@@ -74,15 +68,19 @@ class DatasetImplementation {
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("asDatasetGraph")));
     }
 
-    void addDefaultGraph(final JType implementation, final String name, final JType returnType) {
-        final JMethodDef myMethod = target.method(PUBLIC, returnType, name);
-        myMethod.annotate(Override.class);
-        myMethod.body()._return(implementation.call(WRAP).arg(call("getDefaultModel")));
+    void addDefaultGraph(final ExecutableElement method) {
+        addGraph(method, call("getDefaultModel"));
     }
 
-    void addNamedGraph(final JType implementation, final String name, final String graph, final JType returnType) {
-        final JMethodDef myMethod = target.method(PUBLIC, returnType, name);
-        myMethod.annotate(Override.class);
-        myMethod.body()._return(implementation.call(WRAP).arg(call("getNamedModel").arg(str(graph))));
+    void addNamedGraph(final ExecutableElement method) {
+        final String graph = method.getAnnotation(NamedGraph.class).value();
+
+        addGraph(method, call("getNamedModel").arg(str(graph)));
+    }
+
+    private void addGraph(final ExecutableElement method, final JExpr expr) {
+        final JType implementation = asImplementation(method.getReturnType());
+
+        addMethod(method).body()._return(implementation.call(WRAP).arg(expr));
     }
 }

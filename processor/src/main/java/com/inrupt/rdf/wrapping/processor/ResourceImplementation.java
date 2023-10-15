@@ -24,23 +24,25 @@ import static org.jboss.jdeparser.JExprs.*;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
+import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
-import java.time.Instant;
-
 import javax.annotation.Generated;
+import javax.lang.model.element.ExecutableElement;
 
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.enhanced.Implementation;
 import org.apache.jena.graph.Node;
 import org.jboss.jdeparser.*;
 
-class ResourceImplementation {
+class ResourceImplementation extends com.inrupt.rdf.wrapping.processor.Implementation {
     static final String FACTORY = "factory";
 
-    private JClassDef target;
+    ResourceImplementation(final EnvironmentHelper environment) {
+        super(environment);
+    }
 
     void addImports(final JSourceFile source) {
         source
@@ -54,9 +56,7 @@ class ResourceImplementation {
     }
 
     void addClass(final JSourceFile source, final String name, final JType originalInterface) {
-        target = source._class(PUBLIC, name);
-        target._extends(WrapperResource.class);
-        target._implements(originalInterface);
+        addClass(source, name, originalInterface, WrapperResource.class);
     }
 
     void addFactoryField() {
@@ -67,56 +67,35 @@ class ResourceImplementation {
                 $t(UriOrBlankFactory.class)._new().arg($t(target).methodRef("new")));
     }
 
-    void annotateAndDocument() {
-        target.docComment().text("Warning, this class consists of generated code.");
-        target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
-    }
-
     void addConstructor() {
+        final String node = "node";
+        final String graph = "graph";
+
         final JMethodDef myConstructor = target.constructor(PROTECTED);
-        myConstructor.param(FINAL, Node.class, "node");
-        myConstructor.param(FINAL, EnhGraph.class, "graph");
-        myConstructor.body().callSuper().arg($v("node")).arg($v("graph"));
+        myConstructor.param(FINAL, Node.class, node);
+        myConstructor.param(FINAL, EnhGraph.class, graph);
+        myConstructor.body().callSuper().arg($v(node)).arg($v(graph));
     }
 
-    void addPrimitivePropertyMethod(
-            final JType returnType,
-            final String name,
-            final String mappingMethodName,
-            final String predicate) {
+    void addPrimitivePropertyMethod(final ExecutableElement method) {
+        final String mappingMethodName = method.getAnnotation(Property.class).mapping().getMethodName();
+        final JExpr mapping = $t(ValueMappings.class).methodRef(mappingMethodName);
 
-        addPropertyMethod(
-                returnType,
-                name,
-                predicate,
-                $t(ValueMappings.class).methodRef(mappingMethodName));
+        addPropertyMethod(method, mapping);
     }
 
-    void addResourcePropertyMethod(
-            final JType returnType,
-            final String name,
-            final String predicate,
-            final JType implementation) {
+    void addResourcePropertyMethod(final ExecutableElement method) {
+        final JType implementation = asImplementation(method.getReturnType());
+        final JCall mapping = $t(ValueMappings.class).call("as").arg(implementation._class());
 
-        addPropertyMethod(
-                returnType,
-                name,
-                predicate,
-                $t(ValueMappings.class).call("as").arg(implementation._class()));
+        addPropertyMethod(method, mapping);
     }
 
-    private void addPropertyMethod(
-            final JType returnType,
-            final String name,
-            final String predicateFromAnnotation,
-            final JExpr mapping) {
-
-        final JMethodDef myMethod = target.method(PUBLIC, returnType, name);
-        myMethod.annotate(Override.class);
-
+    private void addPropertyMethod(final ExecutableElement method, final JExpr mapping) {
+        final String predicateFromAnnotation = method.getAnnotation(Property.class).predicate();
         final JCall predicate = call("getModel").call("createProperty").arg(str(predicateFromAnnotation));
 
         // TODO: Dynamic cardniality
-        myMethod.body()._return(call("anyOrNull").arg(predicate).arg(mapping));
+        addMethod(method).body()._return(call("anyOrNull").arg(predicate).arg(mapping));
     }
 }

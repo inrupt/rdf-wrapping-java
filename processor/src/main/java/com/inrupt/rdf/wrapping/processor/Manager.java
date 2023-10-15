@@ -20,8 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.processor.Implementor.WRAP;
-import static com.inrupt.rdf.wrapping.processor.Implementor.asImplementation;
+import static com.inrupt.rdf.wrapping.processor.Implementation.WRAP;
+import static com.inrupt.rdf.wrapping.processor.Implementation.asImplementation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

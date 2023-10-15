@@ -20,10 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.jboss.jdeparser.JTypes.typeOf;
-
-import com.inrupt.rdf.wrapping.annotation.Property;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 
@@ -35,24 +31,14 @@ class ResourceImplementor extends Implementor {
     @Override
     protected void implementInternal() {
         final ResourceInterface myInterface = new ResourceInterface(environment, type);
-        final ResourceImplementation myClass = new ResourceImplementation();
+        final ResourceImplementation myClass = new ResourceImplementation(environment);
 
         myClass.addImports(sourceFile);
         myClass.addClass(sourceFile, implementationClass, originalInterface);
         myClass.addFactoryField();
-        myClass.annotateAndDocument();
         myClass.addConstructor();
 
-        myInterface.primitivePropertyMethods().forEach(method -> myClass.addPrimitivePropertyMethod(
-                typeOf(method.getReturnType()),
-                method.getSimpleName().toString(),
-                method.getAnnotation(Property.class).mapping().getMethodName(),
-                method.getAnnotation(Property.class).predicate()));
-
-        myInterface.resourcePropertyMethods().forEach(method -> myClass.addResourcePropertyMethod(
-                typeOf(method.getReturnType()),
-                method.getSimpleName().toString(),
-                method.getAnnotation(Property.class).predicate(),
-                asImplementation(method.getReturnType())));
+        myInterface.primitivePropertyMethods().forEach(myClass::addPrimitivePropertyMethod);
+        myInterface.resourcePropertyMethods().forEach(myClass::addResourcePropertyMethod);
     }
 }
