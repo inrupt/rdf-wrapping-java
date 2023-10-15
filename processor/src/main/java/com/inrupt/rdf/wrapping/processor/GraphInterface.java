@@ -26,7 +26,6 @@ import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
@@ -49,24 +48,20 @@ class GraphInterface extends Interface {
                 .distinct();
     }
 
-    List<ExecutableElement> instanceMethods() {
-        return membersAnnotatedWithAny(OptionalFirstInstanceOfEither.class);
+    Stream<ExecutableElement> instanceMethods() {
+        return membersAnnotatedWith(OptionalFirstInstanceOfEither.class);
     }
 
-    List<ExecutableElement> subjectMethods() {
-        return membersAnnotatedWithAny(OptionalFirstSubjectOfEither.class);
+    Stream<ExecutableElement> subjectMethods() {
+        return membersAnnotatedWith(OptionalFirstSubjectOfEither.class);
     }
 
-    List<ExecutableElement> objectMethods() {
-        return membersAnnotatedWithAny(OptionalFirstObjectOfEither.class);
+    Stream<ExecutableElement> objectMethods() {
+        return membersAnnotatedWith(OptionalFirstObjectOfEither.class);
     }
 
     private Stream<TypeMirror> resourceMethodTypes() {
-        return membersAnnotatedWithAny(
-                OptionalFirstInstanceOfEither.class,
-                OptionalFirstSubjectOfEither.class,
-                OptionalFirstObjectOfEither.class)
-                .stream()
+        return concat(concat(instanceMethods(), subjectMethods()), objectMethods())
                 .map(ExecutableElement::getReturnType)
                 .distinct();
     }

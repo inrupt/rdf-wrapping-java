@@ -24,7 +24,6 @@ import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 
 import org.jboss.jdeparser.JTypes;
 
@@ -44,19 +43,15 @@ class DatasetImplementor extends Implementor {
         myClass.addConstructor();
         myClass.addWrap(originalInterface);
 
-        for (final ExecutableElement method : myInterface.defaultGraphMethods()) {
-            myClass.addDefaultGraph(
-                    asImplementation(method.getReturnType()),
-                    method.getSimpleName().toString(),
-                    JTypes.typeOf(method.getReturnType()));
-        }
+        myInterface.defaultGraphMethods().forEach(method -> myClass.addDefaultGraph(
+                asImplementation(method.getReturnType()),
+                method.getSimpleName().toString(),
+                JTypes.typeOf(method.getReturnType())));
 
-        for (ExecutableElement method : myInterface.namedGraphMethods()) {
-            myClass.addNamedGraph(
-                    asImplementation(method.getReturnType()),
-                    method.getSimpleName().toString(),
-                    method.getAnnotation(NamedGraph.class).value(),
-                    JTypes.typeOf(method.getReturnType()));
-        }
+        myInterface.namedGraphMethods().forEach(method -> myClass.addNamedGraph(
+                asImplementation(method.getReturnType()),
+                method.getSimpleName().toString(),
+                method.getAnnotation(NamedGraph.class).value(),
+                JTypes.typeOf(method.getReturnType())));
     }
 }

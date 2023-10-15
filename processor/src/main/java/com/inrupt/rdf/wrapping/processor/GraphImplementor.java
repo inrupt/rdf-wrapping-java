@@ -28,7 +28,6 @@ import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 
 class GraphImplementor extends Implementor {
     GraphImplementor(final ProcessingEnvironment environment, final Element element) {
@@ -48,31 +47,25 @@ class GraphImplementor extends Implementor {
 
         myInterface.transitiveResourceTypes().map(this::asImplementation).forEach(myClass::addToPersonality);
 
-        for (final ExecutableElement method : myInterface.instanceMethods()) {
-            myClass.addResourceMethod(
-                    typeOf(method.getReturnType()),
-                    method.getSimpleName().toString(),
-                    "optionalFirstInstanceOfEither",
-                    asImplementation(method.getReturnType()),
-                    method.getAnnotation(OptionalFirstInstanceOfEither.class).value());
-        }
+        myInterface.instanceMethods().forEach(method -> myClass.addResourceMethod(
+                typeOf(method.getReturnType()),
+                method.getSimpleName().toString(),
+                "optionalFirstInstanceOfEither",
+                asImplementation(method.getReturnType()),
+                method.getAnnotation(OptionalFirstInstanceOfEither.class).value()));
 
-        for (final ExecutableElement method : myInterface.subjectMethods()) {
-            myClass.addResourceMethod(
-                    typeOf(method.getReturnType()),
-                    method.getSimpleName().toString(),
-                    "optionalFirstSubjectOfEither",
-                    asImplementation(method.getReturnType()),
-                    method.getAnnotation(OptionalFirstSubjectOfEither.class).value());
-        }
+        myInterface.subjectMethods().forEach(method -> myClass.addResourceMethod(
+                typeOf(method.getReturnType()),
+                method.getSimpleName().toString(),
+                "optionalFirstSubjectOfEither",
+                asImplementation(method.getReturnType()),
+                method.getAnnotation(OptionalFirstSubjectOfEither.class).value()));
 
-        for (final ExecutableElement method : myInterface.objectMethods()) {
-            myClass.addResourceMethod(
-                    typeOf(method.getReturnType()),
-                    method.getSimpleName().toString(),
-                    "optionalFirstObjectOfEither",
-                    asImplementation(method.getReturnType()),
-                    method.getAnnotation(OptionalFirstObjectOfEither.class).value());
-        }
+        myInterface.objectMethods().forEach(method -> myClass.addResourceMethod(
+                typeOf(method.getReturnType()),
+                method.getSimpleName().toString(),
+                "optionalFirstObjectOfEither",
+                asImplementation(method.getReturnType()),
+                method.getAnnotation(OptionalFirstObjectOfEither.class).value()));
     }
 }

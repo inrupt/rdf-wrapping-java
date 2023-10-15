@@ -23,7 +23,7 @@ package com.inrupt.rdf.wrapping.processor;
 import com.inrupt.rdf.wrapping.annotation.DefaultGraph;
 import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -33,11 +33,11 @@ class DatasetInterface extends Interface {
         super(environment, type);
     }
 
-    List<ExecutableElement> defaultGraphMethods() {
-        return membersAnnotatedWithAny(DefaultGraph.class);
+    Stream<ExecutableElement> defaultGraphMethods() {
+        return membersAnnotatedWith(DefaultGraph.class);
     }
 
-    List<ExecutableElement> namedGraphMethods() {
-        return membersAnnotatedWithAny(NamedGraph.class);
+    Stream<ExecutableElement> namedGraphMethods() {
+        return membersAnnotatedWith(NamedGraph.class);
     }
 }

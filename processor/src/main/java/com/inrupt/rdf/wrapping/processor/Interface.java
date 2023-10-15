@@ -21,9 +21,7 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -38,15 +36,11 @@ class Interface {
         this.type = type;
     }
 
-    @SafeVarargs
-    protected final List<ExecutableElement> membersAnnotatedWithAny(
-            final Class<? extends Annotation>... annotations) {
-
+    protected final Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
         return environment.methodsOf(type).stream()
                 .filter(method -> !method.isDefault())
                 .filter(method -> !method.getModifiers().contains(Modifier.STATIC))
                 .filter(method -> !environment.isVoid(method.getReturnType()))
-                .filter(method -> Arrays.stream(annotations).anyMatch(a -> method.getAnnotation(a) != null))
-                .collect(Collectors.toList());
+                .filter(method -> method.getAnnotation(annotation) != null);
     }
 }

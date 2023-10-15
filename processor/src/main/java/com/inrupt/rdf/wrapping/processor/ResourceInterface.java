@@ -25,9 +25,7 @@ import static java.util.stream.Stream.concat;
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 
-import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
@@ -39,23 +37,18 @@ class ResourceInterface extends Interface {
         super(environment, type);
     }
 
-    List<ExecutableElement> primitivePropertyMethods() {
-        return membersAnnotatedWithAny(Property.class).stream()
-                .filter(returnTypeIsResource().negate())
-                .collect(Collectors.toList());
+    Stream<ExecutableElement> primitivePropertyMethods() {
+        return membersAnnotatedWith(Property.class).filter(returnTypeIsResource().negate());
     }
 
-    List<ExecutableElement> resourcePropertyMethods() {
-        return membersAnnotatedWithAny(Property.class).stream()
-                .filter(returnTypeIsResource())
-                .collect(Collectors.toList());
+    Stream<ExecutableElement> resourcePropertyMethods() {
+        return membersAnnotatedWith(Property.class).filter(returnTypeIsResource());
     }
 
     Stream<TypeMirror> transitiveResourceTypes() {
-        final Stream<TypeMirror> children = resourcePropertyMethods().stream()
-                .map(ExecutableElement::getReturnType);
+        final Stream<TypeMirror> children = resourcePropertyMethods().map(ExecutableElement::getReturnType);
 
-        final Stream<TypeMirror> descendants = resourcePropertyMethods().stream()
+        final Stream<TypeMirror> descendants = resourcePropertyMethods()
                 .map(ExecutableElement::getReturnType)
                 .map(environment::type)
                 .map(type -> new ResourceInterface(environment, type))
