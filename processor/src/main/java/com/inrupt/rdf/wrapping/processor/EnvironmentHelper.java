@@ -63,7 +63,7 @@ class EnvironmentHelper implements ProcessingEnvironment {
         return ElementFilter.methodsIn(element.getEnclosedElements());
     }
 
-    public List<ExecutableElement> methodsOf(final Class<ValueMappings> clazz) {
+    List<ExecutableElement> methodsOf(final Class<ValueMappings> clazz) {
         return methodsOf(type(clazz));
     }
 

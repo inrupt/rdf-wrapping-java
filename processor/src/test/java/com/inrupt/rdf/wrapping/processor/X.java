@@ -29,7 +29,7 @@ import java.net.URI;
 import org.apache.jena.rdf.model.Model;
 
 @Dataset
-public interface X {
+interface X {
     static X wrap(final org.apache.jena.query.Dataset original) {
         return Manager.wrap(original, X.class);
     }
