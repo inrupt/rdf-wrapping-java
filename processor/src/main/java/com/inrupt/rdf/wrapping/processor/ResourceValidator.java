@@ -21,6 +21,7 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import com.inrupt.rdf.wrapping.annotation.Property;
+import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -28,8 +29,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-
-import org.apache.jena.rdf.model.Resource;
 
 class ResourceValidator extends Validator {
     ResourceValidator(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
@@ -40,20 +39,20 @@ class ResourceValidator extends Validator {
     protected void validateInternal() {
         requireInterface();
 
-        limitBaseInterfaces(Resource.class);
+        limitBaseInterfaces(org.apache.jena.rdf.model.Resource.class);
 
         requireMemberMethods(Property.class);
 
         requireNonMemberMethods(Property.class);
 
-        requireCompatibleReturnType();
+        requireCompatiblePrimitiveReturnType();
+        requireCompatibleComplexReturnType();
     }
 
-    private void requireCompatibleReturnType() {
+    private void requireCompatiblePrimitiveReturnType() {
         for (final ExecutableElement method : env.methodsOf(element)) {
             final Property propertyAnnotation = method.getAnnotation(Property.class);
             if (propertyAnnotation != null) {
-                // TODO: Validate otherwise
                 if (propertyAnnotation.mapping() == Property.Mapping.AS) {
                     continue;
                 }
@@ -74,13 +73,31 @@ class ResourceValidator extends Validator {
         }
     }
 
-    private TypeMirror returnTypeOfMapper(final String mappingMethod) {
-        for (final ExecutableElement m : env.methodsOf(ValueMappings.class)) {
-            if (m.getSimpleName().contentEquals(mappingMethod)) {
-                return m.getReturnType();
+    private void requireCompatibleComplexReturnType() {
+        for (final ExecutableElement method : env.methodsOf(element)) {
+            final Property propertyAnnotation = method.getAnnotation(Property.class);
+            if (propertyAnnotation != null) {
+                if (propertyAnnotation.mapping() != Property.Mapping.AS) {
+                    continue;
+                }
+
+                if (env.type(method.getReturnType()).getAnnotation(Resource.class) == null) {
+                    errors.add(new ValidationError(
+                            method,
+                            "Method %s on interface %s annotated with @%s must return @Resource interface",
+                            method.getSimpleName(),
+                            element.getSimpleName(),
+                            annotation.getSimpleName()));
+                }
             }
         }
+    }
 
-        return null;
+    private TypeMirror returnTypeOfMapper(final String mappingMethod) {
+        return env.methodsOf(ValueMappings.class).stream()
+                .filter(method -> method.getSimpleName().contentEquals(mappingMethod))
+                .map(ExecutableElement::getReturnType)
+                .findFirst()
+                .orElse(null);
     }
 }
