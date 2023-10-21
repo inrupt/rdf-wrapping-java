@@ -9,7 +9,7 @@ import com.inrupt.rdf.wrapping.annotation.Resource;
 @Resource
 interface X {
     @Property(predicate = "x", mapping = IRI_AS_STRING)
-    default Object x() {
+    static Object x() {
         return null;
     }
 }
