@@ -21,36 +21,19 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import javax.annotation.processing.Messager;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
 class ValidationError {
     private final Element element;
-    private final AnnotationMirror annotation;
     private final String msg;
 
-    ValidationError(final Element element, final AnnotationMirror annotation, final String msg, final Object... args) {
+    ValidationError(final Element element, final String msg, final Object... args) {
         this.element = element;
-        this.annotation = annotation;
         this.msg = String.format(msg, args);
     }
 
-    ValidationError(final Element element, final String msg, final Object... args) {
-        this(element, null, msg, args);
-    }
-
     void printMessage(final Messager messager) {
-        if (element == null) {
-            messager.printMessage(Diagnostic.Kind.ERROR, msg);
-            return;
-        }
-
-        if (annotation == null) {
-            messager.printMessage(Diagnostic.Kind.ERROR, msg, element);
-            return;
-        }
-
-        messager.printMessage(Diagnostic.Kind.ERROR, msg, element, annotation);
+        messager.printMessage(Diagnostic.Kind.ERROR, msg, element);
     }
 }
