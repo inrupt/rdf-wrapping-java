@@ -22,9 +22,9 @@ package com.inrupt.rdf.wrapping.processor;
 
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -59,11 +59,11 @@ class EnvironmentHelper implements ProcessingEnvironment {
         return getTypeUtils().isSameType(t1, mirror(t2));
     }
 
-    List<ExecutableElement> methodsOf(final Element element) {
-        return ElementFilter.methodsIn(element.getEnclosedElements());
+    Stream<ExecutableElement> methodsOf(final Element element) {
+        return ElementFilter.methodsIn(element.getEnclosedElements()).stream();
     }
 
-    List<ExecutableElement> methodsOf(final Class<ValueMappings> clazz) {
+    Stream<ExecutableElement> methodsOf(final Class<ValueMappings> clazz) {
         return methodsOf(type(clazz));
     }
 

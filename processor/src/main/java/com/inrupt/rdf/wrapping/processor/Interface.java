@@ -37,7 +37,7 @@ class Interface {
     }
 
     protected final Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
-        return environment.methodsOf(type).stream()
+        return environment.methodsOf(type)
                 .filter(method -> !method.isDefault())
                 .filter(method -> !method.getModifiers().contains(Modifier.STATIC))
                 .filter(method -> !environment.isVoid(method.getReturnType()))

@@ -50,51 +50,43 @@ class ResourceValidator extends Validator {
     }
 
     private void requireCompatiblePrimitiveReturnType() {
-        for (final ExecutableElement method : env.methodsOf(element)) {
-            final Property propertyAnnotation = method.getAnnotation(Property.class);
-            if (propertyAnnotation != null) {
-                if (propertyAnnotation.mapping() == Property.Mapping.AS) {
-                    continue;
-                }
+        env.methodsOf(element)
+                .filter(method -> method.getAnnotation(Property.class) != null)
+                .filter(method -> method.getAnnotation(Property.class).mapping() != Property.Mapping.AS)
+                .forEach(method -> {
+                    final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
+                    final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
 
-                final String mappingMethod = propertyAnnotation.mapping().getMethodName();
-                final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
-
-                if (!env.getTypeUtils().isAssignable(mappingMethodReturnType, method.getReturnType())) {
-                    errors.add(new ValidationError(
-                            method,
-                            "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
-                            method.getReturnType(),
-                            method.getSimpleName(),
-                            mappingMethodReturnType,
-                            mappingMethod));
-                }
-            }
-        }
+                    if (!env.getTypeUtils().isAssignable(mappingMethodReturnType, method.getReturnType())) {
+                        errors.add(new ValidationError(
+                                method,
+                                "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
+                                method.getReturnType(),
+                                method.getSimpleName(),
+                                mappingMethodReturnType,
+                                mappingMethod));
+                    }
+                });
     }
 
     private void requireCompatibleComplexReturnType() {
-        for (final ExecutableElement method : env.methodsOf(element)) {
-            final Property propertyAnnotation = method.getAnnotation(Property.class);
-            if (propertyAnnotation != null) {
-                if (propertyAnnotation.mapping() != Property.Mapping.AS) {
-                    continue;
-                }
-
-                if (env.type(method.getReturnType()).getAnnotation(Resource.class) == null) {
-                    errors.add(new ValidationError(
-                            method,
-                            "Method %s on interface %s annotated with @%s must return @Resource interface",
-                            method.getSimpleName(),
-                            element.getSimpleName(),
-                            annotation.getSimpleName()));
-                }
-            }
-        }
+        env.methodsOf(element)
+                .filter(method -> method.getAnnotation(Property.class) != null)
+                .filter(method -> method.getAnnotation(Property.class).mapping() == Property.Mapping.AS)
+                .forEach(method -> {
+                    if (env.type(method.getReturnType()).getAnnotation(Resource.class) == null) {
+                        errors.add(new ValidationError(
+                                method,
+                                "Method %s on interface %s annotated with @%s must return @Resource interface",
+                                method.getSimpleName(),
+                                element.getSimpleName(),
+                                annotation.getSimpleName()));
+                    }
+                });
     }
 
     private TypeMirror returnTypeOfMapper(final String mappingMethod) {
-        return env.methodsOf(ValueMappings.class).stream()
+        return env.methodsOf(ValueMappings.class)
                 .filter(method -> method.getSimpleName().contentEquals(mappingMethod))
                 .map(ExecutableElement::getReturnType)
                 .findFirst()

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -77,7 +76,7 @@ abstract class Validator {
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
 
-        getMethods()
+        env.methodsOf(element)
                 .filter(isNotMember)
                 .filter(isAnnotated)
                 .forEach(method -> errors.add(new ValidationError(
@@ -96,7 +95,7 @@ abstract class Validator {
         final Predicate<ExecutableElement> isUnannotated = method ->
                 Arrays.stream(annotations).noneMatch(a -> method.getAnnotation(a) != null);
 
-        getMethods()
+        env.methodsOf(element)
                 .filter(isMember)
                 .filter(isUnannotated)
                 .forEach(method -> errors.add(new ValidationError(
@@ -148,7 +147,7 @@ abstract class Validator {
         final Predicate<ExecutableElement> isNotResource = method ->
                 env.type(method.getReturnType()).getAnnotation(required) == null;
 
-        getMethods()
+        env.methodsOf(element)
                 .filter(isAnnotated)
                 .filter(isNotResource)
                 .forEach(method -> errors.add(new ValidationError(
@@ -158,9 +157,5 @@ abstract class Validator {
                         element.getSimpleName(),
                         annotation.getSimpleName(),
                         required.getSimpleName())));
-    }
-
-    protected Stream<ExecutableElement> getMethods() {
-        return env.methodsOf(element).stream();
     }
 }
