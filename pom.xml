@@ -534,6 +534,7 @@
           </execution>
         </executions>
         <configuration>
+          <cveValidForHours>24</cveValidForHours>
           <failBuildOnCVSS>7</failBuildOnCVSS>
           <formats>
             <format>HTML</format>
