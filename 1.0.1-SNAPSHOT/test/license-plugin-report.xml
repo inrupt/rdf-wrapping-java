@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<licensePluginReport goal="CHECK" timestamp="1702915252548">
+<licensePluginReport goal="CHECK" timestamp="1704793263075">
     <module artifactId="inrupt-rdf-wrapping-test" groupId="com.inrupt.rdf" version="1.0.1-SNAPSHOT"/>
     <files/>
 </licensePluginReport>
