@@ -289,7 +289,7 @@ public abstract class WrapperResource extends ResourceImpl {
         v.forEach(Objects::requireNonNull);
 
         removeAll(p);
-        v.forEach(value -> add(p, v, m));
+        v.forEach(value -> add(p, value, m));
     }
 
     /**
