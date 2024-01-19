@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<licensePluginReport goal="CHECK" timestamp="1704793284597">
+<licensePluginReport goal="CHECK" timestamp="1705679943383">
     <module artifactId="inrupt-rdf-wrapping-jena" groupId="com.inrupt.rdf" version="1.0.1-SNAPSHOT"/>
     <files>
         <file path="src/main/java/com/inrupt/rdf/wrapping/jena/NodeMapping.java" result="PRESENT"/>
