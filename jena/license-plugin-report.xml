@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<licensePluginReport goal="CHECK" timestamp="1705937675410">
+    <module artifactId="inrupt-rdf-wrapping-jena" groupId="com.inrupt.rdf" version="1.1.0"/>
+    <files>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/jena/NodeMapping.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/jena/NodeMappings.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/jena/ObjectSet.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/jena/UriOrBlankFactory.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/jena/ValueMapping.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/jena/ValueMappings.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/jena/WrapperResource.java" result="PRESENT"/>
+        <file path="src/main/java/com/inrupt/rdf/wrapping/jena/package-info.java" result="PRESENT"/>
+        <file path="src/test/java/com/inrupt/rdf/wrapping/jena/NodeMappingsTest.java" result="PRESENT"/>
+        <file path="src/test/java/com/inrupt/rdf/wrapping/jena/ObjectSetTest.java" result="PRESENT"/>
+        <file path="src/test/java/com/inrupt/rdf/wrapping/jena/UriOrBlankFactoryTest.java" result="PRESENT"/>
+        <file path="src/test/java/com/inrupt/rdf/wrapping/jena/ValueMappingsTest.java" result="PRESENT"/>
+        <file path="src/test/java/com/inrupt/rdf/wrapping/jena/WrapperResourceTest.java" result="PRESENT"/>
+    </files>
+</licensePluginReport>
