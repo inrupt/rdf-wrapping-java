@@ -152,6 +152,17 @@ class NodeMappingsTest extends HasSameMethods {
     }
 
     @Test
+    void asTypedLiteralIntegerTest() {
+        assertThrows(NullPointerException.class, () -> asTypedLiteral((Integer) null, null));
+        assertThrows(NullPointerException.class, () -> asTypedLiteral(1, null));
+
+        assertThat(asTypedLiteral(1, MODEL), both(
+                instanceOf(Literal.class)).and(
+                hasProperty("lexicalForm", is("1"))).and(
+                hasProperty("datatypeURI", is(XSD.xint.getURI()))));
+    }
+
+    @Test
     void identityTest() {
         final Resource blank = MODEL.createResource();
 

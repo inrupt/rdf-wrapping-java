@@ -128,6 +128,24 @@ public final class TermMappings {
     }
 
     /**
+     * Maps a integer value to a literal term.
+     *
+     * @param value the value to map
+     * @param graph ignored
+     *
+     * @return an xsd:int typed literal node with the integer value as its lexical value
+     *
+     * @throws NullPointerException if the value is null
+     * @throws NullPointerException if the model is null
+     */
+    public static Literal asTypedLiteral(final Integer value, final Graph graph) {
+        Objects.requireNonNull(value, VALUE_REQUIRED);
+        Objects.requireNonNull(graph, GRAPH_REQUIRED);
+
+        return FACTORY.createLiteral(value.toString(), FACTORY.createIRI("http://www.w3.org/2001/XMLSchema#int"));
+    }
+
+    /**
      * Maps a term to itself.
      *
      * @param value the value to map
