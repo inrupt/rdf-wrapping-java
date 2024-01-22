@@ -104,6 +104,19 @@ public class TermMappingsBase {
     }
 
     @Test
+    void asTypedLiteralIntegerTest() {
+        final IRI xsdInt = FACTORY.createIRI("http://www.w3.org/2001/XMLSchema#int");
+
+        assertThrows(NullPointerException.class, () -> asTypedLiteral((Integer) null, null));
+        assertThrows(NullPointerException.class, () -> asTypedLiteral(1, null));
+
+        assertThat(asTypedLiteral(1, GRAPH), both(
+                instanceOf(Literal.class)).and(
+                hasProperty("lexicalForm", is("1"))).and(
+                hasProperty("datatype", is(xsdInt))));
+    }
+
+    @Test
     void identityTest() {
         final BlankNode blank = FACTORY.createBlankNode();
 

@@ -131,6 +131,24 @@ public final class RdfValueMappings {
     }
 
     /**
+     * Maps a integer value to a literal term.
+     *
+     * @param value the value to map
+     * @param model ignored
+     *
+     * @return an xsd:int typed literal node with the integer value as its lexical value
+     *
+     * @throws NullPointerException if the value is null
+     * @throws NullPointerException if the model is null
+     */
+    public static Literal asTypedLiteral(final Integer value, final Model model) {
+        Objects.requireNonNull(value, VALUE_REQUIRED);
+        Objects.requireNonNull(model, GRAPH_REQUIRED);
+
+        return FACTORY.createLiteral(value.toString(), XSD.INT);
+    }
+
+    /**
      * Maps a term to itself.
      *
      * @param value the value to map
