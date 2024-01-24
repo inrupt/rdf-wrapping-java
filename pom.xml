@@ -4,7 +4,7 @@
 
   <groupId>com.inrupt.rdf</groupId>
   <artifactId>inrupt-rdf-wrapping</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.1.1-SNAPSHOT</version>
   <name>Inrupt RDF Wrapping Java</name>
   <url>https://inrupt.github.io/rdf-wrapping-java/</url>
   <description>Inrupt RDF Wrapping Java libraries</description>
@@ -57,7 +57,7 @@
 
     <!-- disable by default (enabled by profile in CI) -->
     <dependency-check.skip>true</dependency-check.skip>
-    <nvd.api.key/>
+    <nvd.api.key />
     <nvd.api.datafeed />
 
     <!-- sonar -->
