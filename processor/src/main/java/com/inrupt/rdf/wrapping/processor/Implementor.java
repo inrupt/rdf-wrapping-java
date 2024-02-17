@@ -60,7 +60,8 @@ abstract class Implementor<T extends Interface> {
     }
 
     private String getImplementationClass() {
-        final String originalBinaryName = myInterface.getEnv().getElementUtils().getBinaryName(myInterface.getType()).toString();
+        final String originalBinaryName =
+                myInterface.getEnv().getElementUtils().getBinaryName(myInterface.getType()).toString();
         final String qualifiedName = asImplementation(originalBinaryName);
         final int lastDot = originalBinaryName.lastIndexOf('.');
         return qualifiedName.substring(lastDot + 1);

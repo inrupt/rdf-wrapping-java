@@ -34,7 +34,6 @@ import com.inrupt.rdf.wrapping.jena.WrapperModel;
 import javax.annotation.Generated;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
@@ -54,9 +53,8 @@ class GraphImplementor extends Implementor<GraphInterface> {
         addImports();
         addClass();
         final JMethodDef constructor = addConstructor();
+        addToPersonality(constructor);
         addWrap();
-
-        myInterface.transitiveResourceTypes().forEach(type -> addToPersonality(type, constructor));
 
         myInterface.instanceMethods().forEach(method -> addResourceMethod(
                 method,
@@ -101,14 +99,16 @@ class GraphImplementor extends Implementor<GraphInterface> {
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("getGraph")));
     }
 
-    private void addToPersonality(final TypeMirror type, final JMethodDef constructor) {
-        final JType implementation = asImplementation(type);
+    private void addToPersonality(final JMethodDef constructor) {
+        myInterface.transitiveResourceTypes().forEach(type -> {
+            final JType implementation = asImplementation(type);
 
-        constructor
-                .body()
-                .call(call("getPersonality"), "add")
-                .arg(implementation._class())
-                .arg(implementation.field(FACTORY));
+            constructor
+                    .body()
+                    .call(call("getPersonality"), "add")
+                    .arg(implementation._class())
+                    .arg(implementation.field(FACTORY));
+        });
     }
 
     private void addResourceMethod(final ExecutableElement method, final String convenience, final String[] values) {

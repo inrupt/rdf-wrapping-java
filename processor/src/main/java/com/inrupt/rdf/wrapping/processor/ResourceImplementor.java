@@ -53,9 +53,8 @@ class ResourceImplementor extends Implementor<ResourceInterface> {
         addClass();
         addFactoryField();
         addConstructor();
-
-        myInterface.primitivePropertyMethods().forEach(this::addPrimitivePropertyMethod); // TODO: fold
-        myInterface.resourcePropertyMethods().forEach(this::addResourcePropertyMethod); // TODO: fold
+        addPrimitivePropertyMethods();
+        addResourcePropertyMethods();
     }
 
     private void addImports() {
@@ -91,18 +90,22 @@ class ResourceImplementor extends Implementor<ResourceInterface> {
         myConstructor.body().callSuper().arg($v(node)).arg($v(graph));
     }
 
-    private void addPrimitivePropertyMethod(final ExecutableElement method) {
-        final String mappingMethodName = method.getAnnotation(Property.class).mapping().getMethodName();
-        final JExpr mapping = $t(ValueMappings.class).methodRef(mappingMethodName);
+    private void addPrimitivePropertyMethods() {
+        myInterface.primitivePropertyMethods().forEach(method -> {
+            final String mappingMethodName = method.getAnnotation(Property.class).mapping().getMethodName();
+            final JExpr mapping = $t(ValueMappings.class).methodRef(mappingMethodName);
 
-        addPropertyMethod(method, mapping);
+            addPropertyMethod(method, mapping);
+        });
     }
 
-    private void addResourcePropertyMethod(final ExecutableElement method) {
-        final JType implementation = asImplementation(method.getReturnType());
-        final JCall mapping = $t(ValueMappings.class).call("as").arg(implementation._class());
+    private void addResourcePropertyMethods() {
+        myInterface.resourcePropertyMethods().forEach(method -> {
+            final JType implementation = asImplementation(method.getReturnType());
+            final JCall mapping = $t(ValueMappings.class).call("as").arg(implementation._class());
 
-        addPropertyMethod(method, mapping);
+            addPropertyMethod(method, mapping);
+        });
     }
 
     private void addPropertyMethod(final ExecutableElement method, final JExpr mapping) {

@@ -53,7 +53,9 @@ class ResourceValidator extends Validator<ResourceInterface> {
                     final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
                     final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
 
-                    if (!myInterface.getEnv().getTypeUtils().isAssignable(mappingMethodReturnType, method.getReturnType())) {
+                    if (!myInterface.getEnv().getTypeUtils().isAssignable(
+                            mappingMethodReturnType,
+                            method.getReturnType())) {
                         errors.add(new ValidationError(
                                 method,
                                 "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
