@@ -34,9 +34,9 @@ class GraphImplementor extends Implementor<GraphInterface, GraphImplementation> 
     @Override
     protected void implementInternal() {
         myClass.addImports(sourceFile);
-        myClass.addClass(sourceFile, implementationClass, originalInterface);
+        myClass.addClass(sourceFile, myInterface);
         myClass.addConstructor();
-        myClass.addWrap(originalInterface);
+        myClass.addWrap(myInterface.getOriginalInterface());
 
         myInterface.transitiveResourceTypes().forEach(myClass::addToPersonality);
 

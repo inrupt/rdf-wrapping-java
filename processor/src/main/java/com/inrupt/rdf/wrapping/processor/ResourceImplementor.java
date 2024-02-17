@@ -30,7 +30,7 @@ class ResourceImplementor extends Implementor<ResourceInterface, ResourceImpleme
     @Override
     protected void implementInternal() {
         myClass.addImports(sourceFile);
-        myClass.addClass(sourceFile, implementationClass, originalInterface);
+        myClass.addClass(sourceFile, myInterface);
         myClass.addFactoryField();
         myClass.addConstructor();
 

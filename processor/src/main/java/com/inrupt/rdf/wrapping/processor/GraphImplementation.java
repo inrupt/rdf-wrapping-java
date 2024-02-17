@@ -55,8 +55,8 @@ class GraphImplementation extends Implementation {
                 ._import(ModelCom.class);
     }
 
-    void addClass(final JSourceFile source, final String name, final JType originalInterface) {
-        addClass(source, name, originalInterface, WrapperModel.class);
+    void addClass(final JSourceFile source, final Interface myInterface) {
+        addClass(source, myInterface, WrapperModel.class);
     }
 
     void addConstructor() {

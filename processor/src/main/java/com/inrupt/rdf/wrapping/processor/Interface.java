@@ -20,12 +20,17 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.processor.Implementation.asImplementation;
+import static org.jboss.jdeparser.JTypes.typeOf;
+
 import java.lang.annotation.Annotation;
 import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+
+import org.jboss.jdeparser.JType;
 
 class Interface {
     private final TypeElement type;
@@ -42,6 +47,17 @@ class Interface {
 
     protected Environment getEnv() {
         return env;
+    }
+
+    protected JType getOriginalInterface() {
+        return typeOf(type.asType());
+    }
+
+    protected String getImplementationClass() {
+        final String originalBinaryName = env.getElementUtils().getBinaryName(type).toString();
+        final String qualifiedName = asImplementation(originalBinaryName);
+        final int lastDot = originalBinaryName.lastIndexOf('.');
+        return qualifiedName.substring(lastDot + 1);
     }
 
     protected final Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {

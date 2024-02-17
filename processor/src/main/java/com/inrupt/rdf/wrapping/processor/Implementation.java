@@ -46,10 +46,10 @@ abstract class Implementation {
         this.env = env;
     }
 
-    protected void addClass(final JSourceFile source, final String name, final JType original, final Class<?> clazz) {
-        target = source._class(PUBLIC, name);
+    protected void addClass(final JSourceFile source, final Interface myInterface, final Class<?> clazz) {
+        target = source._class(PUBLIC, myInterface.getImplementationClass());
         target._extends(clazz);
-        target._implements(original);
+        target._implements(myInterface.getOriginalInterface());
 
         target.docComment().text("Warning, this class consists of generated code.");
         target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());

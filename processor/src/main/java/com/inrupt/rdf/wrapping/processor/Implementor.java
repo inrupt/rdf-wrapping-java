@@ -20,9 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.processor.Implementation.asImplementation;
-import static org.jboss.jdeparser.JTypes.typeOf;
-
 import com.inrupt.rdf.wrapping.annotation.Dataset;
 import com.inrupt.rdf.wrapping.annotation.Graph;
 
@@ -34,9 +31,7 @@ import org.jboss.jdeparser.*;
 
 abstract class Implementor<T extends Interface, U extends Implementation> {
     protected final JSources sources;
-    protected final JType originalInterface;
     protected final JSourceFile sourceFile;
-    protected final String implementationClass;
     protected final T myInterface;
     protected final U myClass;
 
@@ -47,16 +42,11 @@ abstract class Implementor<T extends Interface, U extends Implementation> {
         final TypeElement type = myInterface.getType();
         final Environment env = myInterface.getEnv();
 
-        originalInterface = typeOf(type.asType());
-        final String originalBinaryName = env.getElementUtils().getBinaryName(type).toString();
-        final String qualifiedName = asImplementation(originalBinaryName);
-        final int lastDot = originalBinaryName.lastIndexOf('.');
-        implementationClass = qualifiedName.substring(lastDot + 1);
         final String packageName = env.getElementUtils().getPackageOf(type).getQualifiedName().toString();
 
         final JFiler filer = JFiler.newInstance(env.getFiler());
         sources = JDeparser.createSources(filer, new FormatPreferences());
-        sourceFile = sources.createSourceFile(packageName, implementationClass);
+        sourceFile = sources.createSourceFile(packageName, myInterface.getImplementationClass());
     }
 
     void implement() {

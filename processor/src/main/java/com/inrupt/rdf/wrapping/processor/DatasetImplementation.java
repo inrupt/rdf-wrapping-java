@@ -52,8 +52,8 @@ class DatasetImplementation extends Implementation {
                 ._import(DatasetImpl.class);
     }
 
-    void addClass(final JSourceFile source, final String name, final JType originalInterface) {
-        addClass(source, name, originalInterface, DatasetImpl.class);
+    void addClass(final JSourceFile source, final Interface myInterface) {
+        addClass(source, myInterface, DatasetImpl.class);
     }
 
     void addConstructor() {

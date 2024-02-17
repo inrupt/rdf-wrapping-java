@@ -55,8 +55,8 @@ class ResourceImplementation extends com.inrupt.rdf.wrapping.processor.Implement
                 ._import(ValueMappings.class);
     }
 
-    void addClass(final JSourceFile source, final String name, final JType originalInterface) {
-        addClass(source, name, originalInterface, WrapperResource.class);
+    void addClass(final JSourceFile source, final Interface myInterface) {
+        addClass(source, myInterface, WrapperResource.class);
     }
 
     void addFactoryField() {

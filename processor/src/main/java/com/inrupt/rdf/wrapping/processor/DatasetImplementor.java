@@ -30,9 +30,9 @@ class DatasetImplementor extends Implementor<DatasetInterface, DatasetImplementa
     @Override
     protected void implementInternal() {
         myClass.addImports(sourceFile);
-        myClass.addClass(sourceFile, implementationClass, originalInterface);
+        myClass.addClass(sourceFile, myInterface);
         myClass.addConstructor();
-        myClass.addWrap(originalInterface);
+        myClass.addWrap(myInterface.getOriginalInterface());
 
         myInterface.defaultGraphMethods().forEach(myClass::addDefaultGraph);
         myInterface.namedGraphMethods().forEach(myClass::addNamedGraph);
