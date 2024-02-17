@@ -29,9 +29,9 @@ import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.rdf.model.Model;
 
-class GraphValidator extends Validator {
+class GraphValidator extends Validator<GraphInterface> {
     GraphValidator(final TypeElement type, final Environment env) {
-        super(type, env);
+        super(new GraphInterface(type, env));
     }
 
     @Override

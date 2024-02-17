@@ -45,6 +45,14 @@ class ResourceInterface extends Interface {
         return membersAnnotatedWith(Property.class).filter(returnTypeIsResource());
     }
 
+    Stream<ExecutableElement> complexMappingPropertyMethods() {
+        return membersAnnotatedWith(Property.class).filter(isComplexMapping());
+    }
+
+    Stream<ExecutableElement> primitiveMappingPropertyMethods() {
+        return membersAnnotatedWith(Property.class).filter(isComplexMapping().negate());
+    }
+
     Stream<TypeMirror> transitiveResourceTypes() {
         final Stream<TypeMirror> children = resourcePropertyMethods().map(ExecutableElement::getReturnType);
 
@@ -59,5 +67,9 @@ class ResourceInterface extends Interface {
 
     private Predicate<ExecutableElement> returnTypeIsResource() {
         return method -> env.type(method.getReturnType()).getAnnotation(Resource.class) != null;
+    }
+
+    private Predicate<ExecutableElement> isComplexMapping() {
+        return method -> method.getAnnotation(Property.class).mapping() == Property.Mapping.AS;
     }
 }

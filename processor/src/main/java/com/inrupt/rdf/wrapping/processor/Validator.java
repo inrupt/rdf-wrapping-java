@@ -36,18 +36,15 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
-// TODO: Use interfaces in validators
-abstract class Validator {
-    protected final TypeElement type;
-    protected final Environment env;
+abstract class Validator<T extends Interface> {
+    protected final T myInterface;
     protected final Collection<ValidationError> errors = new ArrayList<>();
 
-    protected Validator(final TypeElement type, final ProcessingEnvironment env) {
-        this.env = new Environment(env);
-        this.type = type;
+    protected Validator(final T myInterface) {
+        this.myInterface = myInterface;
     }
 
-    static Validator validator(final TypeElement type, final Environment env) {
+    static Validator<? extends Interface> validator(final TypeElement type, final Environment env) {
         if (type.getAnnotation(Dataset.class) != null) {
             return new DatasetValidator(type, env);
 
@@ -74,14 +71,14 @@ abstract class Validator {
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
 
-        env.methodsOf(type)
+        myInterface.env.methodsOf(myInterface.type)
                 .filter(isNotMember)
                 .filter(isAnnotated)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Method %s on interface %s annotated with @%s cannot be static or default",
                         method.getSimpleName(),
-                        type.getSimpleName(),
+                        myInterface.type.getSimpleName(),
                         annotation.getSimpleName())));
     }
 
@@ -93,44 +90,44 @@ abstract class Validator {
         final Predicate<ExecutableElement> isUnannotated = method ->
                 Arrays.stream(annotations).noneMatch(a -> method.getAnnotation(a) != null);
 
-        env.methodsOf(type)
+        myInterface.env.methodsOf(myInterface.type)
                 .filter(isMember)
                 .filter(isUnannotated)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Unannotated method %s on interface %s must be static or default",
                         method.getSimpleName(),
-                        type.getSimpleName())));
+                        myInterface.type.getSimpleName())));
     }
 
     protected void limitBaseInterfaces(final Class<?> allowed) {
-        if (!type.getKind().isInterface()) {
+        if (!myInterface.type.getKind().isInterface()) {
             return;
         }
 
-        for (final TypeMirror implemented : type.getInterfaces()) {
-            if (env.isSameType(implemented, allowed)) {
+        for (final TypeMirror implemented : myInterface.type.getInterfaces()) {
+            if (myInterface.env.isSameType(implemented, allowed)) {
                 continue;
             }
 
             errors.add(new ValidationError(
-                    type,
+                    myInterface.type,
                     "Interface %s can only extend %s or nothing",
-                    type.getSimpleName(),
+                    myInterface.type.getSimpleName(),
                     allowed.getName()));
         }
     }
 
     protected void requireInterface() {
-        if (type.getKind().isInterface()) {
+        if (myInterface.type.getKind().isInterface()) {
             return;
         }
 
         errors.add(new ValidationError(
-                type,
+                myInterface.type,
                 "Element %s must be an interface but was a %s",
-                type.getSimpleName(),
-                type.getKind()));
+                myInterface.type.getSimpleName(),
+                myInterface.type.getKind()));
     }
 
     protected void requireAnnotatedReturnType(
@@ -139,16 +136,16 @@ abstract class Validator {
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
         final Predicate<ExecutableElement> isNotResource = method ->
-                env.type(method.getReturnType()).getAnnotation(required) == null;
+                myInterface.env.type(method.getReturnType()).getAnnotation(required) == null;
 
-        env.methodsOf(type)
+        myInterface.env.methodsOf(myInterface.type)
                 .filter(isAnnotated)
                 .filter(isNotResource)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Method %s on interface %s annotated with @%s must return @%s interface",
                         method.getSimpleName(),
-                        type.getSimpleName(),
+                        myInterface.type.getSimpleName(),
                         annotation.getSimpleName(),
                         required.getSimpleName())));
     }

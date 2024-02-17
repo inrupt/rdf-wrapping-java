@@ -28,7 +28,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 class Interface {
-    private final TypeElement type;
+    protected final TypeElement type;
     protected final Environment env;
 
     Interface(final TypeElement type, final Environment env) {

@@ -28,9 +28,9 @@ import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.query.Dataset;
 
-class DatasetValidator extends Validator {
+class DatasetValidator extends Validator<DatasetInterface> {
     DatasetValidator(final TypeElement type, final Environment env) {
-        super(type, env);
+        super(new DatasetInterface(type, env));
     }
 
     @Override

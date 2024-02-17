@@ -28,9 +28,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
-class ResourceValidator extends Validator {
+class ResourceValidator extends Validator<ResourceInterface> {
     ResourceValidator(final TypeElement type, final Environment env) {
-        super(type, env);
+        super(new ResourceInterface(type, env));
     }
 
     @Override
@@ -48,14 +48,12 @@ class ResourceValidator extends Validator {
     }
 
     private void requireCompatiblePrimitiveReturnType() {
-        env.methodsOf(type)
-                .filter(method -> method.getAnnotation(Property.class) != null)
-                .filter(method -> method.getAnnotation(Property.class).mapping() != Property.Mapping.AS)
+        myInterface.primitiveMappingPropertyMethods()
                 .forEach(method -> {
                     final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
                     final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
 
-                    if (!env.getTypeUtils().isAssignable(mappingMethodReturnType, method.getReturnType())) {
+                    if (!myInterface.env.getTypeUtils().isAssignable(mappingMethodReturnType, method.getReturnType())) {
                         errors.add(new ValidationError(
                                 method,
                                 "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
@@ -68,22 +66,20 @@ class ResourceValidator extends Validator {
     }
 
     private void requireCompatibleComplexReturnType() {
-        env.methodsOf(type)
-                .filter(method -> method.getAnnotation(Property.class) != null)
-                .filter(method -> method.getAnnotation(Property.class).mapping() == Property.Mapping.AS)
+        myInterface.complexMappingPropertyMethods()
                 .forEach(method -> {
-                    if (env.type(method.getReturnType()).getAnnotation(Resource.class) == null) {
+                    if (myInterface.env.type(method.getReturnType()).getAnnotation(Resource.class) == null) {
                         errors.add(new ValidationError(
                                 method,
                                 "Method %s on interface %s must return @Resource interface",
                                 method.getSimpleName(),
-                                type.getSimpleName()));
+                                myInterface.type.getSimpleName()));
                     }
                 });
     }
 
     private TypeMirror returnTypeOfMapper(final String mappingMethod) {
-        return env.methodsOf(ValueMappings.class)
+        return myInterface.env.methodsOf(ValueMappings.class)
                 .filter(method -> method.getSimpleName().contentEquals(mappingMethod))
                 .map(ExecutableElement::getReturnType)
                 .findFirst()
