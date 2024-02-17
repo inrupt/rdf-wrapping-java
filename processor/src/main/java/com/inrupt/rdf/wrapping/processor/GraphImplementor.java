@@ -28,7 +28,7 @@ import javax.lang.model.element.TypeElement;
 
 class GraphImplementor extends Implementor<GraphInterface, GraphImplementation> {
     GraphImplementor(final TypeElement type, final Environment env) {
-        super(type, new GraphInterface(type, env), new GraphImplementation(env), env);
+        super(new GraphInterface(type, env), new GraphImplementation(env));
     }
 
     @Override

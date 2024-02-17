@@ -53,7 +53,7 @@ class ResourceValidator extends Validator<ResourceInterface> {
                     final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
                     final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
 
-                    if (!myInterface.env.getTypeUtils().isAssignable(mappingMethodReturnType, method.getReturnType())) {
+                    if (!myInterface.getEnv().getTypeUtils().isAssignable(mappingMethodReturnType, method.getReturnType())) {
                         errors.add(new ValidationError(
                                 method,
                                 "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
@@ -68,18 +68,18 @@ class ResourceValidator extends Validator<ResourceInterface> {
     private void requireCompatibleComplexReturnType() {
         myInterface.complexMappingPropertyMethods()
                 .forEach(method -> {
-                    if (myInterface.env.type(method.getReturnType()).getAnnotation(Resource.class) == null) {
+                    if (myInterface.getEnv().type(method.getReturnType()).getAnnotation(Resource.class) == null) {
                         errors.add(new ValidationError(
                                 method,
                                 "Method %s on interface %s must return @Resource interface",
                                 method.getSimpleName(),
-                                myInterface.type.getSimpleName()));
+                                myInterface.getType().getSimpleName()));
                     }
                 });
     }
 
     private TypeMirror returnTypeOfMapper(final String mappingMethod) {
-        return myInterface.env.methodsOf(ValueMappings.class)
+        return myInterface.getEnv().methodsOf(ValueMappings.class)
                 .filter(method -> method.getSimpleName().contentEquals(mappingMethod))
                 .map(ExecutableElement::getReturnType)
                 .findFirst()

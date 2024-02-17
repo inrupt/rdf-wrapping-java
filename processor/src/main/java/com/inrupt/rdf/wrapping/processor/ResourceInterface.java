@@ -58,15 +58,15 @@ class ResourceInterface extends Interface {
 
         final Stream<TypeMirror> descendants = resourcePropertyMethods()
                 .map(ExecutableElement::getReturnType)
-                .map(env::type)
-                .map(type -> new ResourceInterface(type, env))
+                .map(getEnv()::type)
+                .map(type -> new ResourceInterface(type, getEnv()))
                 .flatMap(ResourceInterface::transitiveResourceTypes);
 
         return concat(children, descendants).distinct();
     }
 
     private Predicate<ExecutableElement> returnTypeIsResource() {
-        return method -> env.type(method.getReturnType()).getAnnotation(Resource.class) != null;
+        return method -> getEnv().type(method.getReturnType()).getAnnotation(Resource.class) != null;
     }
 
     private Predicate<ExecutableElement> isComplexMapping() {

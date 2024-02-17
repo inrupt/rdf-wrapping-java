@@ -28,19 +28,27 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 class Interface {
-    protected final TypeElement type;
-    protected final Environment env;
+    private final TypeElement type;
+    private final Environment env;
 
     Interface(final TypeElement type, final Environment env) {
         this.env = env;
         this.type = type;
     }
 
+    protected TypeElement getType() {
+        return type;
+    }
+
+    protected Environment getEnv() {
+        return env;
+    }
+
     protected final Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
-        return env.methodsOf(type)
+        return getEnv().methodsOf(getType())
                 .filter(method -> !method.isDefault())
                 .filter(method -> !method.getModifiers().contains(Modifier.STATIC))
-                .filter(method -> !env.isVoid(method.getReturnType()))
+                .filter(method -> !getEnv().isVoid(method.getReturnType()))
                 .filter(method -> method.getAnnotation(annotation) != null);
     }
 }

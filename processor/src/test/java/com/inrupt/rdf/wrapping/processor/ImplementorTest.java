@@ -42,6 +42,7 @@ class ImplementorTest {
     @Test
     void x() throws IOException {
         final TypeElement type = mock(TypeElement.class);
+        final Interface myInterface = mock(Interface.class);
         final TypeMirror mirror = mock(NoType.class);
         final Environment env = mock(Environment.class);
         final Elements elementUtils = mock(Elements.class);
@@ -50,6 +51,8 @@ class ImplementorTest {
         final Filer filer = mock(Filer.class);
         when(mirror.getKind()).thenReturn(VOID);
         when(type.asType()).thenReturn(mirror);
+        when(myInterface.getType()).thenReturn(type);
+        when(myInterface.getEnv()).thenReturn(env);
 
         when(elementUtils.getBinaryName(any())).thenReturn(name);
         when(packageElement.getQualifiedName()).thenReturn(name);
@@ -58,7 +61,7 @@ class ImplementorTest {
         when(env.getElementUtils()).thenReturn(elementUtils);
         when(env.getFiler()).thenReturn(filer);
 
-        final Implementor mock = new Implementor(type, null, null, env) {
+        final Implementor mock = new Implementor(myInterface, null) {
             @Override
             protected void implementInternal() {
             }

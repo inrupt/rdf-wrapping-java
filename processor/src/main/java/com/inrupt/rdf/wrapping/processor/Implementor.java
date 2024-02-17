@@ -40,9 +40,12 @@ abstract class Implementor<T extends Interface, U extends Implementation> {
     protected final T myInterface;
     protected final U myClass;
 
-    protected Implementor(final TypeElement type, final T myInterface, final U myClass, final Environment env) {
+    protected Implementor(final T myInterface, final U myClass) {
         this.myInterface = myInterface;
         this.myClass = myClass;
+
+        final TypeElement type = myInterface.getType();
+        final Environment env = myInterface.getEnv();
 
         originalInterface = typeOf(type.asType());
         final String originalBinaryName = env.getElementUtils().getBinaryName(type).toString();

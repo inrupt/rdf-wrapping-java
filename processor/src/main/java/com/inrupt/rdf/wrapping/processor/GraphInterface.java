@@ -40,8 +40,8 @@ class GraphInterface extends Interface {
     Stream<TypeMirror> transitiveResourceTypes() {
         final Stream<TypeMirror> children = resourceMethodTypes();
         final Stream<TypeMirror> descendants = resourceMethodTypes()
-                .map(env::type)
-                .map(type -> new ResourceInterface(type, env))
+                .map(getEnv()::type)
+                .map(type -> new ResourceInterface(type, getEnv()))
                 .flatMap(ResourceInterface::transitiveResourceTypes);
 
         return concat(children, descendants)

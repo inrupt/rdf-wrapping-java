@@ -24,7 +24,7 @@ import javax.lang.model.element.TypeElement;
 
 class ResourceImplementor extends Implementor<ResourceInterface, ResourceImplementation> {
     ResourceImplementor(final TypeElement type, final Environment env) {
-        super(type, new ResourceInterface(type, env), new ResourceImplementation(env), env);
+        super(new ResourceInterface(type, env), new ResourceImplementation(env));
     }
 
     @Override

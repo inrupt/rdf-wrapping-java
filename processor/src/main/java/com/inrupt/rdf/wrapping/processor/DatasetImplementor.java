@@ -24,7 +24,7 @@ import javax.lang.model.element.TypeElement;
 
 class DatasetImplementor extends Implementor<DatasetInterface, DatasetImplementation> {
     DatasetImplementor(final TypeElement type, final Environment env) {
-        super(type, new DatasetInterface(type, env), new DatasetImplementation(env), env);
+        super(new DatasetInterface(type, env), new DatasetImplementation(env));
     }
 
     @Override
