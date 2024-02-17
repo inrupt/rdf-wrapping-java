@@ -22,19 +22,19 @@ package com.inrupt.rdf.wrapping.processor;
 
 import javax.lang.model.element.TypeElement;
 
-class ResourceImplementor extends Implementor<ResourceInterface, ResourceImplementation> {
+class ResourceImplementor extends Implementor<ResourceImplementation> {
     ResourceImplementor(final TypeElement type, final Environment env) {
-        super(new ResourceInterface(type, env), new ResourceImplementation(env));
+        super(new ResourceImplementation(new ResourceInterface(type, env)));
     }
 
     @Override
     protected void implementInternal() {
         myClass.addImports(sourceFile);
-        myClass.addClass(sourceFile, myInterface);
+        myClass.addClass(sourceFile);
         myClass.addFactoryField();
         myClass.addConstructor();
 
-        myInterface.primitivePropertyMethods().forEach(myClass::addPrimitivePropertyMethod);
-        myInterface.resourcePropertyMethods().forEach(myClass::addResourcePropertyMethod);
+        myClass.getMyInterface().primitivePropertyMethods().forEach(myClass::addPrimitivePropertyMethod);
+        myClass.getMyInterface().resourcePropertyMethods().forEach(myClass::addResourcePropertyMethod);
     }
 }

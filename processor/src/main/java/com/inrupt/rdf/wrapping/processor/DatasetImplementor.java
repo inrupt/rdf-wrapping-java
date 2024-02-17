@@ -22,19 +22,19 @@ package com.inrupt.rdf.wrapping.processor;
 
 import javax.lang.model.element.TypeElement;
 
-class DatasetImplementor extends Implementor<DatasetInterface, DatasetImplementation> {
+class DatasetImplementor extends Implementor<DatasetImplementation> {
     DatasetImplementor(final TypeElement type, final Environment env) {
-        super(new DatasetInterface(type, env), new DatasetImplementation(env));
+        super(new DatasetImplementation(new DatasetInterface(type, env)));
     }
 
     @Override
     protected void implementInternal() {
         myClass.addImports(sourceFile);
-        myClass.addClass(sourceFile, myInterface);
+        myClass.addClass(sourceFile);
         myClass.addConstructor();
-        myClass.addWrap(myInterface.getOriginalInterface());
+        myClass.addWrap();
 
-        myInterface.defaultGraphMethods().forEach(myClass::addDefaultGraph);
-        myInterface.namedGraphMethods().forEach(myClass::addNamedGraph);
+        myClass.getMyInterface().defaultGraphMethods().forEach(myClass::addDefaultGraph);
+        myClass.getMyInterface().namedGraphMethods().forEach(myClass::addNamedGraph);
     }
 }

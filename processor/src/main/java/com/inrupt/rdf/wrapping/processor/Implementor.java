@@ -29,24 +29,22 @@ import javax.lang.model.element.TypeElement;
 
 import org.jboss.jdeparser.*;
 
-abstract class Implementor<T extends Interface, U extends Implementation> {
+abstract class Implementor<T extends Implementation<?>> {
     protected final JSources sources;
     protected final JSourceFile sourceFile;
-    protected final T myInterface;
-    protected final U myClass;
+    protected final T myClass;
 
-    protected Implementor(final T myInterface, final U myClass) {
-        this.myInterface = myInterface;
+    protected Implementor(final T myClass) {
         this.myClass = myClass;
 
-        final TypeElement type = myInterface.getType();
-        final Environment env = myInterface.getEnv();
+        final TypeElement type = myClass.getMyInterface().getType();
+        final Environment env = myClass.getMyInterface().getEnv();
 
         final String packageName = env.getElementUtils().getPackageOf(type).getQualifiedName().toString();
 
         final JFiler filer = JFiler.newInstance(env.getFiler());
         sources = JDeparser.createSources(filer, new FormatPreferences());
-        sourceFile = sources.createSourceFile(packageName, myInterface.getImplementationClass());
+        sourceFile = sources.createSourceFile(packageName, myClass.getMyInterface().getImplementationClass());
     }
 
     void implement() {
@@ -61,7 +59,7 @@ abstract class Implementor<T extends Interface, U extends Implementation> {
 
     protected abstract void implementInternal();
 
-    static Implementor<? extends Interface, ? extends Implementation> implementor(final Environment env, final TypeElement e) {
+    static Implementor<?> implementor(final Environment env, final TypeElement e) {
         if (e.getAnnotation(Dataset.class) != null) {
             return new DatasetImplementor(e, env);
 

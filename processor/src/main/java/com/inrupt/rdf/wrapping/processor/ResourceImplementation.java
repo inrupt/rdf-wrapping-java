@@ -33,15 +33,14 @@ import javax.annotation.Generated;
 import javax.lang.model.element.ExecutableElement;
 
 import org.apache.jena.enhanced.EnhGraph;
-import org.apache.jena.enhanced.Implementation;
 import org.apache.jena.graph.Node;
 import org.jboss.jdeparser.*;
 
-class ResourceImplementation extends com.inrupt.rdf.wrapping.processor.Implementation {
+class ResourceImplementation extends Implementation<ResourceInterface> {
     static final String FACTORY = "factory";
 
-    ResourceImplementation(final Environment env) {
-        super(env);
+    ResourceImplementation(final ResourceInterface myInterface) {
+        super(myInterface);
     }
 
     void addImports(final JSourceFile source) {
@@ -50,19 +49,19 @@ class ResourceImplementation extends com.inrupt.rdf.wrapping.processor.Implement
                 ._import(WrapperResource.class)
                 ._import(Generated.class)
                 ._import(EnhGraph.class)
-                ._import(Implementation.class)
+                ._import(org.apache.jena.enhanced.Implementation.class)
                 ._import(Node.class)
                 ._import(ValueMappings.class);
     }
 
-    void addClass(final JSourceFile source, final Interface myInterface) {
-        addClass(source, myInterface, WrapperResource.class);
+    void addClass(final JSourceFile source) {
+        addClass(source, WrapperResource.class);
     }
 
     void addFactoryField() {
         target.field(
                 STATIC | FINAL,
-                Implementation.class,
+                org.apache.jena.enhanced.Implementation.class,
                 FACTORY,
                 $t(UriOrBlankFactory.class)._new().arg($t(target).methodRef("new")));
     }

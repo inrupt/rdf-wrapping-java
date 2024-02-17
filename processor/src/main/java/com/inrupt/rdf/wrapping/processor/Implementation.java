@@ -36,20 +36,24 @@ import org.jboss.jdeparser.JMethodDef;
 import org.jboss.jdeparser.JSourceFile;
 import org.jboss.jdeparser.JType;
 
-abstract class Implementation {
+abstract class Implementation<T extends Interface> {
     static final String WRAP = "wrap";
 
-    private final Environment env;
+    private final T myInterface;
     protected JClassDef target;
 
-    Implementation(final Environment env) {
-        this.env = env;
+    Implementation(final T myInterface) {
+        this.myInterface = myInterface;
     }
 
-    protected void addClass(final JSourceFile source, final Interface myInterface, final Class<?> clazz) {
-        target = source._class(PUBLIC, myInterface.getImplementationClass());
+    protected T getMyInterface() {
+        return myInterface;
+    }
+
+    protected void addClass(final JSourceFile source, final Class<?> clazz) {
+        target = source._class(PUBLIC, getMyInterface().getImplementationClass());
         target._extends(clazz);
-        target._implements(myInterface.getOriginalInterface());
+        target._implements(getMyInterface().getOriginalInterface());
 
         target.docComment().text("Warning, this class consists of generated code.");
         target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
@@ -66,8 +70,8 @@ abstract class Implementation {
     }
 
     protected JType asImplementation(final TypeMirror original) {
-        final TypeElement returnType = env.type(original);
-        final String originalBinaryName = env
+        final TypeElement returnType = getMyInterface().getEnv().type(original);
+        final String originalBinaryName = getMyInterface().getEnv()
                 .getElementUtils()
                 .getBinaryName(returnType)
                 .toString();

@@ -37,11 +37,11 @@ import org.jboss.jdeparser.JMethodDef;
 import org.jboss.jdeparser.JSourceFile;
 import org.jboss.jdeparser.JType;
 
-class DatasetImplementation extends Implementation {
+class DatasetImplementation extends Implementation<DatasetInterface> {
     private static final String ORIGINAL = "original";
 
-    DatasetImplementation(final Environment env) {
-        super(env);
+    DatasetImplementation(final DatasetInterface myInterface) {
+        super(myInterface);
     }
 
     void addImports(final JSourceFile source) {
@@ -52,8 +52,8 @@ class DatasetImplementation extends Implementation {
                 ._import(DatasetImpl.class);
     }
 
-    void addClass(final JSourceFile source, final Interface myInterface) {
-        addClass(source, myInterface, DatasetImpl.class);
+    void addClass(final JSourceFile source) {
+        addClass(source, DatasetImpl.class);
     }
 
     void addConstructor() {
@@ -62,8 +62,8 @@ class DatasetImplementation extends Implementation {
         myConstructor.body().callSuper().arg($v(ORIGINAL));
     }
 
-    void addWrap(final JType originalInterface) {
-        final JMethodDef myWrap = target.method(PUBLIC | STATIC, originalInterface, WRAP);
+    void addWrap() {
+        final JMethodDef myWrap = target.method(PUBLIC | STATIC, getMyInterface().getOriginalInterface(), WRAP);
         myWrap.param(FINAL, Dataset.class, ORIGINAL);
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("asDatasetGraph")));
     }

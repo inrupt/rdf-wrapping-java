@@ -26,31 +26,31 @@ import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 
 import javax.lang.model.element.TypeElement;
 
-class GraphImplementor extends Implementor<GraphInterface, GraphImplementation> {
+class GraphImplementor extends Implementor<GraphImplementation> {
     GraphImplementor(final TypeElement type, final Environment env) {
-        super(new GraphInterface(type, env), new GraphImplementation(env));
+        super(new GraphImplementation(new GraphInterface(type, env)));
     }
 
     @Override
     protected void implementInternal() {
         myClass.addImports(sourceFile);
-        myClass.addClass(sourceFile, myInterface);
+        myClass.addClass(sourceFile);
         myClass.addConstructor();
-        myClass.addWrap(myInterface.getOriginalInterface());
+        myClass.addWrap();
 
-        myInterface.transitiveResourceTypes().forEach(myClass::addToPersonality);
+        myClass.getMyInterface().transitiveResourceTypes().forEach(myClass::addToPersonality);
 
-        myInterface.instanceMethods().forEach(method -> myClass.addResourceMethod(
+        myClass.getMyInterface().instanceMethods().forEach(method -> myClass.addResourceMethod(
                 method,
                 "optionalFirstInstanceOfEither",
                 method.getAnnotation(OptionalFirstInstanceOfEither.class).value()));
 
-        myInterface.subjectMethods().forEach(method -> myClass.addResourceMethod(
+        myClass.getMyInterface().subjectMethods().forEach(method -> myClass.addResourceMethod(
                 method,
                 "optionalFirstSubjectOfEither",
                 method.getAnnotation(OptionalFirstSubjectOfEither.class).value()));
 
-        myInterface.objectMethods().forEach(method -> myClass.addResourceMethod(
+        myClass.getMyInterface().objectMethods().forEach(method -> myClass.addResourceMethod(
                 method,
                 "optionalFirstObjectOfEither",
                 method.getAnnotation(OptionalFirstObjectOfEither.class).value()));

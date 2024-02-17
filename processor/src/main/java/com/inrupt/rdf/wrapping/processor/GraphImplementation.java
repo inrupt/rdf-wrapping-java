@@ -37,13 +37,13 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.impl.ModelCom;
 import org.jboss.jdeparser.*;
 
-class GraphImplementation extends Implementation {
+class GraphImplementation extends Implementation<GraphInterface> {
     private static final String ORIGINAL = "original";
 
     private JMethodDef constructor;
 
-    GraphImplementation(final Environment env) {
-        super(env);
+    GraphImplementation(final GraphInterface myInterface) {
+        super(myInterface);
     }
 
     void addImports(final JSourceFile source) {
@@ -55,8 +55,8 @@ class GraphImplementation extends Implementation {
                 ._import(ModelCom.class);
     }
 
-    void addClass(final JSourceFile source, final Interface myInterface) {
-        addClass(source, myInterface, WrapperModel.class);
+    void addClass(final JSourceFile source) {
+        addClass(source, WrapperModel.class);
     }
 
     void addConstructor() {
@@ -65,8 +65,8 @@ class GraphImplementation extends Implementation {
         constructor.body().callSuper().arg($v(ORIGINAL));
     }
 
-    void addWrap(final JType originalInterface) {
-        final JMethodDef myWrap = target.method(PUBLIC | STATIC, originalInterface, WRAP);
+    void addWrap() {
+        final JMethodDef myWrap = target.method(PUBLIC | STATIC, getMyInterface().getOriginalInterface(), WRAP);
         myWrap.param(FINAL, Model.class, ORIGINAL);
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("getGraph")));
     }

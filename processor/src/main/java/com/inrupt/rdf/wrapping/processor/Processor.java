@@ -55,7 +55,7 @@ public class Processor extends AbstractProcessor {
             return false;
         }
 
-        final Collection<Implementor<?, ?>> implementors = new ArrayList<>();
+        final Collection<Implementor<?>> implementors = new ArrayList<>();
         final Collection<ValidationError> validationErrors = new ArrayList<>();
         final Environment env = new Environment(processingEnv);
 
