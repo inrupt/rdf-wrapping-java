@@ -20,47 +20,48 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import com.inrupt.rdf.wrapping.jena.ValueMappings;
+import java.util.Locale;
+import java.util.Map;
 
-import java.util.stream.Stream;
-
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
-class Environment extends WrapperProcessingEnvironment {
-    Environment(final ProcessingEnvironment env) {
-        super(env);
+class WrapperProcessingEnvironment implements ProcessingEnvironment {
+    protected final ProcessingEnvironment env;
+
+    public WrapperProcessingEnvironment(final ProcessingEnvironment env) {
+        this.env = env;
     }
 
-    TypeElement type(final Class<?> clazz) {
-        return getElementUtils().getTypeElement(clazz.getCanonicalName());
+    public Map<String, String> getOptions() {
+        return env.getOptions();
     }
 
-    TypeElement type(final TypeMirror mirror) {
-        return (TypeElement) getTypeUtils().asElement(mirror);
+    public Messager getMessager() {
+        return env.getMessager();
     }
 
-    boolean isVoid(final TypeMirror type) {
-        return isSameType(type, Void.class);
+    public Filer getFiler() {
+        return env.getFiler();
     }
 
-    boolean isSameType(final TypeMirror t1, final Class<?> t2) {
-        return getTypeUtils().isSameType(t1, mirror(t2));
+    public Elements getElementUtils() {
+        return env.getElementUtils();
     }
 
-    Stream<ExecutableElement> methodsOf(final Element element) {
-        return ElementFilter.methodsIn(element.getEnclosedElements()).stream();
+    public Types getTypeUtils() {
+        return env.getTypeUtils();
     }
 
-    Stream<ExecutableElement> methodsOf(final Class<ValueMappings> clazz) {
-        return methodsOf(type(clazz));
+    public SourceVersion getSourceVersion() {
+        return env.getSourceVersion();
     }
 
-    private TypeMirror mirror(final Class<?> clazz) {
-        return type(clazz).asType();
+    public Locale getLocale() {
+        return env.getLocale();
     }
 }
