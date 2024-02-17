@@ -46,17 +46,13 @@ abstract class Implementation {
         this.env = env;
     }
 
-    protected void annotateAndDocument() {
-        target.docComment().text("Warning, this class consists of generated code.");
-        target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
-    }
-
     protected void addClass(final JSourceFile source, final String name, final JType original, final Class<?> clazz) {
         target = source._class(PUBLIC, name);
         target._extends(clazz);
         target._implements(original);
 
-        annotateAndDocument();
+        target.docComment().text("Warning, this class consists of generated code.");
+        target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
     }
 
     protected JMethodDef addMethod(final ExecutableElement method) {
