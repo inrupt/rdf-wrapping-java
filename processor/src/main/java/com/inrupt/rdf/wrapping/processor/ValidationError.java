@@ -20,9 +20,10 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static javax.tools.Diagnostic.Kind.ERROR;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
-import javax.tools.Diagnostic;
 
 class ValidationError {
     private final Element element;
@@ -34,6 +35,6 @@ class ValidationError {
     }
 
     void printMessage(final Messager messager) {
-        messager.printMessage(Diagnostic.Kind.ERROR, msg, element);
+        messager.printMessage(ERROR, msg, element);
     }
 }

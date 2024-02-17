@@ -29,8 +29,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
 class DatasetInterface extends Interface {
-    DatasetInterface(final EnvironmentHelper environment, final TypeElement type) {
-        super(environment, type);
+    DatasetInterface(final TypeElement type, final Environment env) {
+        super(type, env);
     }
 
     Stream<ExecutableElement> defaultGraphMethods() {

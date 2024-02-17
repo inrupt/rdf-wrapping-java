@@ -20,48 +20,52 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.processor.Implementor.implementor;
+import static com.inrupt.rdf.wrapping.processor.Validator.validator;
+import static java.util.stream.Collectors.toSet;
+import static javax.lang.model.SourceVersion.RELEASE_8;
+import static javax.tools.Diagnostic.Kind.NOTE;
+
 import com.inrupt.rdf.wrapping.annotation.Dataset;
 import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(RELEASE_8)
 public class Processor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        final Set<String> annotations = new HashSet<>();
-
-        annotations.add(Dataset.class.getName());
-        annotations.add(Graph.class.getName());
-        annotations.add(Resource.class.getName());
-
-        return annotations;
+        return Stream.of(Dataset.class, Graph.class, Resource.class).map(Class::getName).collect(toSet());
     }
 
     @Override
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         if (roundEnv.processingOver()) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "processing over");
+            processingEnv.getMessager().printMessage(NOTE, "processing over");
             return false;
         }
 
-        final ArrayList<Implementor> implementors = new ArrayList<>();
-        final ArrayList<ValidationError> validationErrors = new ArrayList<>();
+        final Collection<Implementor<?, ?>> implementors = new ArrayList<>();
+        final Collection<ValidationError> validationErrors = new ArrayList<>();
+        final Environment env = new Environment(processingEnv);
+
         for (final TypeElement annotation : annotations) {
-            for (final Element annotatedElement : roundEnv.getElementsAnnotatedWith(annotation)) {
-                implementors.add(Implementor.get(processingEnv, annotatedElement));
-                validationErrors.addAll(Validator.get(annotation, processingEnv, annotatedElement).validate());
+            for (final Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
+                // All our annotations are @Target(TYPE), so they're all TypeElements
+                final TypeElement type = (TypeElement) element;
+
+                implementors.add(implementor(env, type));
+                validationErrors.addAll(validator(type, env).validate());
             }
         }
 

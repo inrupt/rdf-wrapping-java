@@ -20,9 +20,10 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static javax.lang.model.element.Modifier.STATIC;
+
 import com.inrupt.rdf.wrapping.annotation.Dataset;
 import com.inrupt.rdf.wrapping.annotation.Graph;
-import com.inrupt.rdf.wrapping.annotation.Resource;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -31,34 +32,31 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 // TODO: Use interfaces in validators
 abstract class Validator {
-    protected final TypeElement annotation;
-    protected final EnvironmentHelper env;
-    protected final Element element;
+    protected final TypeElement type;
+    protected final Environment env;
     protected final Collection<ValidationError> errors = new ArrayList<>();
 
-    protected Validator(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
-        this.annotation = annotation;
-        this.env = new EnvironmentHelper(env);
-        this.element = element;
+    protected Validator(final TypeElement type, final ProcessingEnvironment env) {
+        this.env = new Environment(env);
+        this.type = type;
     }
 
-    static Validator get(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
-        if (element.getAnnotation(Dataset.class) != null) {
-            return new DatasetValidator(annotation, env, element);
-        } else if (element.getAnnotation(Graph.class) != null) {
-            return new GraphValidator(annotation, env, element);
-        } else if (element.getAnnotation(Resource.class) != null) {
-            return new ResourceValidator(annotation, env, element);
-        } else {
-            throw new RuntimeException("unknown annotation type");
+    static Validator validator(final TypeElement type, final Environment env) {
+        if (type.getAnnotation(Dataset.class) != null) {
+            return new DatasetValidator(type, env);
+
+        } else if (type.getAnnotation(Graph.class) != null) {
+            return new GraphValidator(type, env);
+
+        } else { // Resource
+            // Processor's supported annotations are finite
+            return new ResourceValidator(type, env);
         }
     }
 
@@ -72,45 +70,43 @@ abstract class Validator {
 
     protected void requireMemberMethods(final Class<? extends Annotation> annotation) {
         final Predicate<ExecutableElement> isNotMember = method ->
-                method.isDefault() || method.getModifiers().contains(Modifier.STATIC);
+                method.isDefault() || method.getModifiers().contains(STATIC);
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
 
-        env.methodsOf(element)
+        env.methodsOf(type)
                 .filter(isNotMember)
                 .filter(isAnnotated)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Method %s on interface %s annotated with @%s cannot be static or default",
                         method.getSimpleName(),
-                        element.getSimpleName(),
+                        type.getSimpleName(),
                         annotation.getSimpleName())));
     }
 
     @SafeVarargs
     protected final void requireNonMemberMethods(final Class<? extends Annotation>... annotations) {
         final Predicate<ExecutableElement> isMember = method ->
-                !method.isDefault() && !method.getModifiers().contains(Modifier.STATIC);
+                !method.isDefault() && !method.getModifiers().contains(STATIC);
 
         final Predicate<ExecutableElement> isUnannotated = method ->
                 Arrays.stream(annotations).noneMatch(a -> method.getAnnotation(a) != null);
 
-        env.methodsOf(element)
+        env.methodsOf(type)
                 .filter(isMember)
                 .filter(isUnannotated)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Unannotated method %s on interface %s must be static or default",
                         method.getSimpleName(),
-                        element.getSimpleName())));
+                        type.getSimpleName())));
     }
 
     protected void limitBaseInterfaces(final Class<?> allowed) {
-        if (!element.getKind().isInterface()) {
+        if (!type.getKind().isInterface()) {
             return;
         }
-
-        final TypeElement type = (TypeElement) element;
 
         for (final TypeMirror implemented : type.getInterfaces()) {
             if (env.isSameType(implemented, allowed)) {
@@ -118,25 +114,23 @@ abstract class Validator {
             }
 
             errors.add(new ValidationError(
-                    element,
-                    "Interface %s annotated with @%s can only extend %s or nothing",
-                    element.getSimpleName(),
-                    annotation.getSimpleName(),
+                    type,
+                    "Interface %s can only extend %s or nothing",
+                    type.getSimpleName(),
                     allowed.getName()));
         }
     }
 
     protected void requireInterface() {
-        if (element.getKind().isInterface()) {
+        if (type.getKind().isInterface()) {
             return;
         }
 
         errors.add(new ValidationError(
-                element,
-                "Element %s annotated with @%s must be an interface but was a %s",
-                element.getSimpleName(),
-                annotation.getSimpleName(),
-                element.getKind()));
+                type,
+                "Element %s must be an interface but was a %s",
+                type.getSimpleName(),
+                type.getKind()));
     }
 
     protected void requireAnnotatedReturnType(
@@ -147,14 +141,14 @@ abstract class Validator {
         final Predicate<ExecutableElement> isNotResource = method ->
                 env.type(method.getReturnType()).getAnnotation(required) == null;
 
-        env.methodsOf(element)
+        env.methodsOf(type)
                 .filter(isAnnotated)
                 .filter(isNotResource)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Method %s on interface %s annotated with @%s must return @%s interface",
                         method.getSimpleName(),
-                        element.getSimpleName(),
+                        type.getSimpleName(),
                         annotation.getSimpleName(),
                         required.getSimpleName())));
     }

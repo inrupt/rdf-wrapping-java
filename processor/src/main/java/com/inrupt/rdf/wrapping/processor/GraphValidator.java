@@ -25,15 +25,13 @@ import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.rdf.model.Model;
 
 class GraphValidator extends Validator {
-    GraphValidator(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
-        super(annotation, env, element);
+    GraphValidator(final TypeElement type, final Environment env) {
+        super(type, env);
     }
 
     @Override

@@ -39,11 +39,11 @@ import org.jboss.jdeparser.JType;
 abstract class Implementation {
     static final String WRAP = "wrap";
 
-    private final EnvironmentHelper environment;
+    private final Environment env;
     protected JClassDef target;
 
-    Implementation(final EnvironmentHelper environment) {
-        this.environment = environment;
+    Implementation(final Environment env) {
+        this.env = env;
     }
 
     protected void annotateAndDocument() {
@@ -70,8 +70,8 @@ abstract class Implementation {
     }
 
     protected JType asImplementation(final TypeMirror original) {
-        final TypeElement returnType = environment.type(original);
-        final String originalBinaryName = environment
+        final TypeElement returnType = env.type(original);
+        final String originalBinaryName = env
                 .getElementUtils()
                 .getBinaryName(returnType)
                 .toString();

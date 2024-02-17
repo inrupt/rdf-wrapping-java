@@ -25,37 +25,33 @@ import static org.jboss.jdeparser.JTypes.typeOf;
 
 import com.inrupt.rdf.wrapping.annotation.Dataset;
 import com.inrupt.rdf.wrapping.annotation.Graph;
-import com.inrupt.rdf.wrapping.annotation.Resource;
 
 import java.io.IOException;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.jboss.jdeparser.*;
 
-abstract class Implementor {
-    protected final EnvironmentHelper environment;
-    protected final TypeElement type;
+abstract class Implementor<T extends Interface, U extends Implementation> {
     protected final JSources sources;
     protected final JType originalInterface;
     protected final JSourceFile sourceFile;
-
     protected final String implementationClass;
+    protected final T myInterface;
+    protected final U myClass;
 
-    protected Implementor(final ProcessingEnvironment environment, final Element element) {
-        this.environment = new EnvironmentHelper(environment);
-        type = (TypeElement) element;
+    protected Implementor(final TypeElement type, final T myInterface, final U myClass, final Environment env) {
+        this.myInterface = myInterface;
+        this.myClass = myClass;
 
         originalInterface = typeOf(type.asType());
-        final String originalBinaryName = environment.getElementUtils().getBinaryName(type).toString();
+        final String originalBinaryName = env.getElementUtils().getBinaryName(type).toString();
         final String qualifiedName = asImplementation(originalBinaryName);
         final int lastDot = originalBinaryName.lastIndexOf('.');
         implementationClass = qualifiedName.substring(lastDot + 1);
-        final String packageName = environment.getElementUtils().getPackageOf(element).getQualifiedName().toString();
+        final String packageName = env.getElementUtils().getPackageOf(type).getQualifiedName().toString();
 
-        final JFiler filer = JFiler.newInstance(environment.getFiler());
+        final JFiler filer = JFiler.newInstance(env.getFiler());
         sources = JDeparser.createSources(filer, new FormatPreferences());
         sourceFile = sources.createSourceFile(packageName, implementationClass);
     }
@@ -72,15 +68,16 @@ abstract class Implementor {
 
     protected abstract void implementInternal();
 
-    static Implementor get(final ProcessingEnvironment env, final Element element) {
-        if (element.getAnnotation(Dataset.class) != null) {
-            return new DatasetImplementor(env, element);
-        } else if (element.getAnnotation(Graph.class) != null) {
-            return new GraphImplementor(env, element);
-        } else if (element.getAnnotation(Resource.class) != null) {
-            return new ResourceImplementor(env, element);
-        } else {
-            throw new RuntimeException("unknown annotation type");
+    static Implementor<? extends Interface, ? extends Implementation> implementor(final Environment env, final TypeElement e) {
+        if (e.getAnnotation(Dataset.class) != null) {
+            return new DatasetImplementor(e, env);
+
+        } else if (e.getAnnotation(Graph.class) != null) {
+            return new GraphImplementor(e, env);
+
+        } else { // Resource
+            // Processor's supported annotations are finite
+            return new ResourceImplementor(e, env);
         }
     }
 }

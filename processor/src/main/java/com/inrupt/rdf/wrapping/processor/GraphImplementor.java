@@ -24,19 +24,15 @@ import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 
-class GraphImplementor extends Implementor {
-    GraphImplementor(final ProcessingEnvironment environment, final Element element) {
-        super(environment, element);
+class GraphImplementor extends Implementor<GraphInterface, GraphImplementation> {
+    GraphImplementor(final TypeElement type, final Environment env) {
+        super(type, new GraphInterface(type, env), new GraphImplementation(env), env);
     }
 
     @Override
     protected void implementInternal() {
-        final GraphInterface myInterface = new GraphInterface(environment, type);
-        final GraphImplementation myClass = new GraphImplementation(environment);
-
         myClass.addImports(sourceFile);
         myClass.addClass(sourceFile, implementationClass, originalInterface);
         myClass.addConstructor();

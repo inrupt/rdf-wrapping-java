@@ -20,19 +20,15 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 
-class ResourceImplementor extends Implementor {
-    ResourceImplementor(final ProcessingEnvironment environment, final Element element) {
-        super(environment, element);
+class ResourceImplementor extends Implementor<ResourceInterface, ResourceImplementation> {
+    ResourceImplementor(final TypeElement type, final Environment env) {
+        super(type, new ResourceInterface(type, env), new ResourceImplementation(env), env);
     }
 
     @Override
     protected void implementInternal() {
-        final ResourceInterface myInterface = new ResourceInterface(environment, type);
-        final ResourceImplementation myClass = new ResourceImplementation(environment);
-
         myClass.addImports(sourceFile);
         myClass.addClass(sourceFile, implementationClass, originalInterface);
         myClass.addFactoryField();

@@ -33,8 +33,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 class ResourceInterface extends Interface {
-    ResourceInterface(final EnvironmentHelper environment, final TypeElement type) {
-        super(environment, type);
+    ResourceInterface(final TypeElement type, final Environment env) {
+        super(type, env);
     }
 
     Stream<ExecutableElement> primitivePropertyMethods() {
@@ -50,14 +50,14 @@ class ResourceInterface extends Interface {
 
         final Stream<TypeMirror> descendants = resourcePropertyMethods()
                 .map(ExecutableElement::getReturnType)
-                .map(environment::type)
-                .map(type -> new ResourceInterface(environment, type))
+                .map(env::type)
+                .map(type -> new ResourceInterface(type, env))
                 .flatMap(ResourceInterface::transitiveResourceTypes);
 
         return concat(children, descendants).distinct();
     }
 
     private Predicate<ExecutableElement> returnTypeIsResource() {
-        return method -> environment.type(method.getReturnType()).getAnnotation(Resource.class) != null;
+        return method -> env.type(method.getReturnType()).getAnnotation(Resource.class) != null;
     }
 }

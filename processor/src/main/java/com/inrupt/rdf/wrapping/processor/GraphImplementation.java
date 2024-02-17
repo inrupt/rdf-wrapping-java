@@ -42,8 +42,8 @@ class GraphImplementation extends Implementation {
 
     private JMethodDef constructor;
 
-    GraphImplementation(final EnvironmentHelper environment) {
-        super(environment);
+    GraphImplementation(final Environment env) {
+        super(env);
     }
 
     void addImports(final JSourceFile source) {

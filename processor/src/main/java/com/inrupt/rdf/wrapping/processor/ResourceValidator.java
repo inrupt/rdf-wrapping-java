@@ -24,15 +24,13 @@ import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 class ResourceValidator extends Validator {
-    ResourceValidator(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
-        super(annotation, env, element);
+    ResourceValidator(final TypeElement type, final Environment env) {
+        super(type, env);
     }
 
     @Override
@@ -50,7 +48,7 @@ class ResourceValidator extends Validator {
     }
 
     private void requireCompatiblePrimitiveReturnType() {
-        env.methodsOf(element)
+        env.methodsOf(type)
                 .filter(method -> method.getAnnotation(Property.class) != null)
                 .filter(method -> method.getAnnotation(Property.class).mapping() != Property.Mapping.AS)
                 .forEach(method -> {
@@ -70,17 +68,16 @@ class ResourceValidator extends Validator {
     }
 
     private void requireCompatibleComplexReturnType() {
-        env.methodsOf(element)
+        env.methodsOf(type)
                 .filter(method -> method.getAnnotation(Property.class) != null)
                 .filter(method -> method.getAnnotation(Property.class).mapping() == Property.Mapping.AS)
                 .forEach(method -> {
                     if (env.type(method.getReturnType()).getAnnotation(Resource.class) == null) {
                         errors.add(new ValidationError(
                                 method,
-                                "Method %s on interface %s annotated with @%s must return @Resource interface",
+                                "Method %s on interface %s must return @Resource interface",
                                 method.getSimpleName(),
-                                element.getSimpleName(),
-                                annotation.getSimpleName()));
+                                type.getSimpleName()));
                     }
                 });
     }

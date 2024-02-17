@@ -24,15 +24,13 @@ import com.inrupt.rdf.wrapping.annotation.DefaultGraph;
 import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.query.Dataset;
 
 class DatasetValidator extends Validator {
-    DatasetValidator(final TypeElement annotation, final ProcessingEnvironment env, final Element element) {
-        super(annotation, env, element);
+    DatasetValidator(final TypeElement type, final Environment env) {
+        super(type, env);
     }
 
     @Override

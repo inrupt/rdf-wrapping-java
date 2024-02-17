@@ -40,8 +40,8 @@ import org.jboss.jdeparser.*;
 class ResourceImplementation extends com.inrupt.rdf.wrapping.processor.Implementation {
     static final String FACTORY = "factory";
 
-    ResourceImplementation(final EnvironmentHelper environment) {
-        super(environment);
+    ResourceImplementation(final Environment env) {
+        super(env);
     }
 
     void addImports(final JSourceFile source) {

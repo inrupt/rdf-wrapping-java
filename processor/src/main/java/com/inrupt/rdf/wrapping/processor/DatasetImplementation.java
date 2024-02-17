@@ -40,8 +40,8 @@ import org.jboss.jdeparser.JType;
 class DatasetImplementation extends Implementation {
     private static final String ORIGINAL = "original";
 
-    DatasetImplementation(final EnvironmentHelper environment) {
-        super(environment);
+    DatasetImplementation(final Environment env) {
+        super(env);
     }
 
     void addImports(final JSourceFile source) {

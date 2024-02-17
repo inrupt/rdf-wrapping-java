@@ -20,19 +20,15 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 
-class DatasetImplementor extends Implementor {
-    DatasetImplementor(final ProcessingEnvironment environment, final Element element) {
-        super(environment, element);
+class DatasetImplementor extends Implementor<DatasetInterface, DatasetImplementation> {
+    DatasetImplementor(final TypeElement type, final Environment env) {
+        super(type, new DatasetInterface(type, env), new DatasetImplementation(env), env);
     }
 
     @Override
     protected void implementInternal() {
-        final DatasetInterface myInterface = new DatasetInterface(environment, type);
-        final DatasetImplementation myClass = new DatasetImplementation(environment);
-
         myClass.addImports(sourceFile);
         myClass.addClass(sourceFile, implementationClass, originalInterface);
         myClass.addConstructor();

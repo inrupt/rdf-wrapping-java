@@ -38,7 +38,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-class EnvironmentHelper implements ProcessingEnvironment {
+class Environment implements ProcessingEnvironment {
     TypeMirror mirror(final Class<?> clazz) {
         return type(clazz).asType();
     }
@@ -68,45 +68,45 @@ class EnvironmentHelper implements ProcessingEnvironment {
     }
 
     // region pass-through
-    private final ProcessingEnvironment original;
+    private final ProcessingEnvironment env;
 
-    EnvironmentHelper(final ProcessingEnvironment original) {
-        this.original = original;
+    Environment(final ProcessingEnvironment env) {
+        this.env = env;
     }
 
     @Override
     public Map<String, String> getOptions() {
-        return original.getOptions();
+        return env.getOptions();
     }
 
     @Override
     public Messager getMessager() {
-        return original.getMessager();
+        return env.getMessager();
     }
 
     @Override
     public Filer getFiler() {
-        return original.getFiler();
+        return env.getFiler();
     }
 
     @Override
     public Elements getElementUtils() {
-        return original.getElementUtils();
+        return env.getElementUtils();
     }
 
     @Override
     public Types getTypeUtils() {
-        return original.getTypeUtils();
+        return env.getTypeUtils();
     }
 
     @Override
     public SourceVersion getSourceVersion() {
-        return original.getSourceVersion();
+        return env.getSourceVersion();
     }
 
     @Override
     public Locale getLocale() {
-        return original.getLocale();
+        return env.getLocale();
     }
     // endregion
 }
