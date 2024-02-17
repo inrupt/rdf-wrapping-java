@@ -43,7 +43,7 @@ abstract class Validator<T extends Interface> {
         this.myInterface = myInterface;
     }
 
-    static Validator<? extends Interface> validator(final TypeElement type, final Environment env) {
+    static Validator<?> validator(final TypeElement type, final Environment env) {
         if (type.getAnnotation(Dataset.class) != null) {
             return new DatasetValidator(type, env);
 

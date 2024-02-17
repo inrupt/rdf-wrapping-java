@@ -20,7 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.processor.Implementation.asImplementation;
 import static org.jboss.jdeparser.JTypes.typeOf;
 
 import java.lang.annotation.Annotation;
@@ -50,14 +49,7 @@ class Interface {
     }
 
     protected JType getOriginalInterface() {
-        return typeOf(type.asType());
-    }
-
-    protected String getImplementationClass() {
-        final String originalBinaryName = env.getElementUtils().getBinaryName(type).toString();
-        final String qualifiedName = asImplementation(originalBinaryName);
-        final int lastDot = originalBinaryName.lastIndexOf('.');
-        return qualifiedName.substring(lastDot + 1);
+        return typeOf(getType().asType());
     }
 
     protected final Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {

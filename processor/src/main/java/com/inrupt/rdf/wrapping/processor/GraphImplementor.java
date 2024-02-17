@@ -20,39 +20,108 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.processor.ResourceImplementor.FACTORY;
+import static org.jboss.jdeparser.JExprs.$v;
+import static org.jboss.jdeparser.JExprs.call;
+import static org.jboss.jdeparser.JMod.*;
+import static org.jboss.jdeparser.JTypes.$t;
+
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
+import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
+import javax.annotation.Generated;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
-class GraphImplementor extends Implementor<GraphImplementation> {
+import org.apache.jena.graph.Graph;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.impl.ModelCom;
+import org.jboss.jdeparser.JCall;
+import org.jboss.jdeparser.JExprs;
+import org.jboss.jdeparser.JMethodDef;
+import org.jboss.jdeparser.JType;
+
+class GraphImplementor extends Implementor<GraphInterface> {
     GraphImplementor(final TypeElement type, final Environment env) {
-        super(new GraphImplementation(new GraphInterface(type, env)));
+        super(new GraphInterface(type, env));
     }
 
     @Override
     protected void implementInternal() {
-        myClass.addImports(sourceFile);
-        myClass.addClass(sourceFile);
-        myClass.addConstructor();
-        myClass.addWrap();
+        addImports();
+        addClass();
+        final JMethodDef constructor = addConstructor();
+        addWrap();
 
-        myClass.getMyInterface().transitiveResourceTypes().forEach(myClass::addToPersonality);
+        myInterface.transitiveResourceTypes().forEach(type -> addToPersonality(type, constructor));
 
-        myClass.getMyInterface().instanceMethods().forEach(method -> myClass.addResourceMethod(
+        myInterface.instanceMethods().forEach(method -> addResourceMethod(
                 method,
                 "optionalFirstInstanceOfEither",
                 method.getAnnotation(OptionalFirstInstanceOfEither.class).value()));
 
-        myClass.getMyInterface().subjectMethods().forEach(method -> myClass.addResourceMethod(
+        myInterface.subjectMethods().forEach(method -> addResourceMethod(
                 method,
                 "optionalFirstSubjectOfEither",
                 method.getAnnotation(OptionalFirstSubjectOfEither.class).value()));
 
-        myClass.getMyInterface().objectMethods().forEach(method -> myClass.addResourceMethod(
+        myInterface.objectMethods().forEach(method -> addResourceMethod(
                 method,
                 "optionalFirstObjectOfEither",
                 method.getAnnotation(OptionalFirstObjectOfEither.class).value()));
+    }
+
+    private void addImports() {
+        sourceFile
+                ._import(WrapperModel.class)
+                ._import(Generated.class)
+                ._import(Graph.class)
+                ._import(Model.class)
+                ._import(ModelCom.class);
+    }
+
+    private void addClass() {
+        addClass(WrapperModel.class);
+    }
+
+    private JMethodDef addConstructor() {
+        final JMethodDef constructor = target.constructor(PROTECTED);
+        constructor.param(FINAL, Graph.class, ORIGINAL);
+        constructor.body().callSuper().arg($v(ORIGINAL));
+
+        return constructor;
+    }
+
+    private void addWrap() {
+        final JMethodDef myWrap = target.method(PUBLIC | STATIC, myInterface.getOriginalInterface(), WRAP);
+        myWrap.param(FINAL, Model.class, ORIGINAL);
+        myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("getGraph")));
+    }
+
+    private void addToPersonality(final TypeMirror type, final JMethodDef constructor) {
+        final JType implementation = asImplementation(type);
+
+        constructor
+                .body()
+                .call(call("getPersonality"), "add")
+                .arg(implementation._class())
+                .arg(implementation.field(FACTORY));
+    }
+
+    private void addResourceMethod(final ExecutableElement method, final String convenience, final String[] values) {
+        final JType implementation = asImplementation(method.getReturnType());
+
+        // Call model wrapper convenience method passing projection class argument
+        final JCall convenienceCall = call(convenience).arg(implementation._class());
+
+        // Pass each filter value from the annotation as additional argument
+        for (final String value : values) {
+            convenienceCall.arg(JExprs.str(value));
+        }
+
+        addMethod(method).body()._return(convenienceCall);
     }
 }
