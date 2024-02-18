@@ -34,7 +34,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -54,7 +53,6 @@ class MappingTest {
         assertThat(mapping.getMethodName(), is(in(MAPPING_METHODS)));
     }
 
-    @Disabled("not ready yet") // TODO: Enable when ready
     @DisplayName("has enum constant equivalent to ValueMappings method")
     @ParameterizedTest(name = "{0}")
     @MethodSource("mappingMethods")

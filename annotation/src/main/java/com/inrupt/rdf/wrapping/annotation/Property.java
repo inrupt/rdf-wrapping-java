@@ -36,9 +36,13 @@ public @interface Property {
     Mapping mapping();
 
     enum Mapping {
+        AS("as"),
         IRI_AS_STRING("iriAsString"),
         IRI_AS_URI("iriAsUri"),
-        AS("as");
+        LITERAL_AS_BOOLEAN("literalAsBoolean"),
+        LITERAL_AS_INSTANT("literalAsInstant"),
+        LITERAL_AS_INTEGER_OR_NULL("literalAsIntegerOrNull"),
+        LITERAL_AS_STRING("literalAsString");
 
         private final String methodName;
 
