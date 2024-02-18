@@ -25,8 +25,8 @@ import static java.lang.reflect.Modifier.isPublic;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.describedAs;
 import static org.hamcrest.Matchers.in;
-import static org.hamcrest.Matchers.is;
 
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -50,14 +51,22 @@ class MappingTest {
     @ParameterizedTest(name = "{0}")
     @EnumSource(Mapping.class)
     void constantHasEquivalentMethod(final Mapping mapping) {
-        assertThat(mapping.getMethodName(), is(in(MAPPING_METHODS)));
+        final Matcher<String> hasCorrespondingMethod = describedAs("ValueMappings to have corresponding method",
+                in(MAPPING_METHODS));
+
+        assertThat("Mapping enum constant without corresponding ValueMappings method",
+                mapping.getMethodName(), hasCorrespondingMethod);
     }
 
     @DisplayName("has enum constant equivalent to ValueMappings method")
     @ParameterizedTest(name = "{0}")
     @MethodSource("mappingMethods")
     void methodHasEquivalentConstant(final String method) {
-        assertThat(method, is(in(ENUM_CONSTANTS)));
+        final Matcher<String> hasCorrespondingConstant = describedAs("Mapping enum to have corresponding constant",
+                in(ENUM_CONSTANTS));
+
+        assertThat("ValueMappings method without corresponding Mapping enum constant",
+                method, hasCorrespondingConstant);
     }
 
     private static Stream<String> mappingMethods() {
