@@ -31,37 +31,37 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 class WrapperProcessingEnvironment implements ProcessingEnvironment {
-    protected final ProcessingEnvironment env;
+    protected final ProcessingEnvironment original;
 
-    public WrapperProcessingEnvironment(final ProcessingEnvironment env) {
-        this.env = env;
+    public WrapperProcessingEnvironment(final ProcessingEnvironment original) {
+        this.original = original;
     }
 
     public Map<String, String> getOptions() {
-        return env.getOptions();
+        return original.getOptions();
     }
 
     public Messager getMessager() {
-        return env.getMessager();
+        return original.getMessager();
     }
 
     public Filer getFiler() {
-        return env.getFiler();
+        return original.getFiler();
     }
 
     public Elements getElementUtils() {
-        return env.getElementUtils();
+        return original.getElementUtils();
     }
 
     public Types getTypeUtils() {
-        return env.getTypeUtils();
+        return original.getTypeUtils();
     }
 
     public SourceVersion getSourceVersion() {
-        return env.getSourceVersion();
+        return original.getSourceVersion();
     }
 
     public Locale getLocale() {
-        return env.getLocale();
+        return original.getLocale();
     }
 }
