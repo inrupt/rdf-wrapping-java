@@ -274,7 +274,7 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         v.forEach(Objects::requireNonNull);
 
         remove(p);
-        v.forEach(value -> add(p, v, m));
+        v.forEach(value -> add(p, value, m));
     }
 
     /**

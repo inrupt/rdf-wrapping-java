@@ -130,6 +130,24 @@ public final class NodeMappings {
     }
 
     /**
+     * Maps a integer value to a literal node.
+     *
+     * @param value the value to map
+     * @param model the graph used to create the node
+     *
+     * @return an xsd:int typed literal node with the integer value as its lexical value
+     *
+     * @throws NullPointerException if the value is null
+     * @throws NullPointerException if the model is null
+     */
+    public static Literal asTypedLiteral(final Integer value, final Model model) {
+        Objects.requireNonNull(value, VALUE_REQUIRED);
+        Objects.requireNonNull(model, GRAPH_REQUIRED);
+
+        return model.createTypedLiteral(value);
+    }
+
+    /**
      * Maps a term to itself.
      *
      * @param value the value to map

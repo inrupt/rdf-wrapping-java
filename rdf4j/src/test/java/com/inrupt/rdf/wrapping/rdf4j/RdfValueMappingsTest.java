@@ -148,8 +148,19 @@ class RdfValueMappingsTest extends HasSameMethods {
 
         assertThat(asTypedLiteral(true, MODEL), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("label", is("true".toString()))).and(
+                hasProperty("label", is("true"))).and(
                 hasProperty("datatype", is(XSD.BOOLEAN))));
+    }
+
+    @Test
+    void asTypedLiteralIntegerTest() {
+        assertThrows(NullPointerException.class, () -> asTypedLiteral((Integer) null, null));
+        assertThrows(NullPointerException.class, () -> asTypedLiteral(1, null));
+
+        assertThat(asTypedLiteral(1, MODEL), both(
+                instanceOf(Literal.class)).and(
+                hasProperty("label", is("1"))).and(
+                hasProperty("datatype", is(XSD.INT))));
     }
 
     @Test

@@ -39,6 +39,7 @@ import org.apache.commons.rdf.api.IRI;
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.enhanced.Implementation;
 import org.apache.jena.graph.Node;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
@@ -299,6 +300,22 @@ class WrapperResourceTest extends HasSameMethods {
                 contains(hasProperty("literal", hasProperty("lexicalForm", is(O2)))));
     }
 
+    @DisplayName("overwrite (*) removes and adds each item instead of collection")
+    @Test
+    void overwriteManyPassesItemNotIterable() {
+        s.addProperty(P, O1);
+
+        final List<String> value = new ArrayList<>();
+        value.add(O2);
+        value.add(O2); // same is OK because mapping in this case is dynamic to fresh blank nodes
+
+        s.overwriteDynamic(value);
+
+        assertThat(
+                (Iterable<Statement>) () -> s.listProperties(P),
+                iterableWithSize(2));
+    }
+
     @DisplayName("overwriteNullable (1) removes when value is null")
     @Test
     void overwriteOneNullableRemovesIfNull() {
@@ -461,6 +478,10 @@ class WrapperResourceTest extends HasSameMethods {
 
         public void overwrite(final Iterable<String> value) {
             overwrite(P, value, NM);
+        }
+
+        public void overwriteDynamic(final Iterable<String> value) {
+            overwrite(P, value, (String v, Model g) -> ResourceFactory.createResource());
         }
 
         public void overwriteNullable(final String value) {
