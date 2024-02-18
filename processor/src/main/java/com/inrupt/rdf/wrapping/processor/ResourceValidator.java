@@ -25,6 +25,7 @@ import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 class ResourceValidator extends Validator<ResourceInterface> {
@@ -42,8 +43,23 @@ class ResourceValidator extends Validator<ResourceInterface> {
 
         requireNonMemberMethods(Property.class);
 
+        requireNonVoidReturnType();
         requireCompatiblePrimitiveReturnType();
         requireCompatibleComplexReturnType();
+    }
+
+    private void requireNonVoidReturnType() {
+        myInterface.membersAnnotatedWith(Property.class)
+                .forEach(method -> {
+                    final TypeElement returnType = myInterface.getEnv().type(method.getReturnType());
+
+                    if (returnType == null) {
+                        errors.add(new ValidationError(
+                                method,
+                                "Property method [%s] must not be void",
+                                method.getSimpleName()));
+                    }
+                });
     }
 
     private void requireCompatiblePrimitiveReturnType() {
@@ -69,7 +85,8 @@ class ResourceValidator extends Validator<ResourceInterface> {
     private void requireCompatibleComplexReturnType() {
         myInterface.complexMappingPropertyMethods()
                 .forEach(method -> {
-                    if (myInterface.getEnv().type(method.getReturnType()).getAnnotation(Resource.class) == null) {
+                    final TypeElement returnType = myInterface.getEnv().type(method.getReturnType());
+                    if (returnType != null && returnType.getAnnotation(Resource.class) == null) {
                         errors.add(new ValidationError(
                                 method,
                                 "Method %s on interface %s must return @Resource interface",

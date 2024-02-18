@@ -73,7 +73,6 @@ class Interface {
         return getEnv().methodsOf(getType())
                 .filter(method -> !method.isDefault())
                 .filter(method -> !method.getModifiers().contains(Modifier.STATIC))
-                .filter(method -> !getEnv().isVoid(method.getReturnType()))
                 .filter(method -> method.getAnnotation(annotation) != null);
     }
 }
