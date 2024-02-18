@@ -22,9 +22,6 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static javax.lang.model.element.Modifier.STATIC;
 
-import com.inrupt.rdf.wrapping.annotation.Dataset;
-import com.inrupt.rdf.wrapping.annotation.Graph;
-
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +29,6 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 abstract class Validator<T extends Interface> {
@@ -43,16 +39,16 @@ abstract class Validator<T extends Interface> {
         this.myInterface = myInterface;
     }
 
-    static Validator<?> validator(final TypeElement type, final Environment env) {
-        if (type.getAnnotation(Dataset.class) != null) {
-            return new DatasetValidator(type, env);
+    static Validator<?> validator(final Interface definition) {
+        if (definition instanceof DatasetInterface) {
+            return new DatasetValidator((DatasetInterface) definition);
 
-        } else if (type.getAnnotation(Graph.class) != null) {
-            return new GraphValidator(type, env);
+        } else if (definition instanceof GraphInterface) {
+            return new GraphValidator((GraphInterface) definition);
 
         } else { // Resource
             // Processor's supported annotations are finite
-            return new ResourceValidator(type, env);
+            return new ResourceValidator((ResourceInterface) definition);
         }
     }
 

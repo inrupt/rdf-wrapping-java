@@ -44,8 +44,8 @@ import org.jboss.jdeparser.JMethodDef;
 import org.jboss.jdeparser.JType;
 
 class GraphImplementor extends Implementor<GraphInterface> {
-    GraphImplementor(final TypeElement type, final Environment env) {
-        super(new GraphInterface(type, env));
+    GraphImplementor(final GraphInterface definition) {
+        super(definition);
     }
 
     @Override

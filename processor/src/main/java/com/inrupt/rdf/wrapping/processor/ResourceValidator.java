@@ -25,12 +25,11 @@ import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 class ResourceValidator extends Validator<ResourceInterface> {
-    ResourceValidator(final TypeElement type, final Environment env) {
-        super(new ResourceInterface(type, env));
+    ResourceValidator(final ResourceInterface definition) {
+        super(definition);
     }
 
     @Override

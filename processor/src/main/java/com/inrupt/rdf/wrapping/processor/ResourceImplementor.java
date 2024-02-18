@@ -31,7 +31,6 @@ import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.graph.Node;
@@ -43,8 +42,8 @@ import org.jboss.jdeparser.JType;
 class ResourceImplementor extends Implementor<ResourceInterface> {
     static final String FACTORY = "factory";
 
-    ResourceImplementor(final TypeElement type, final Environment env) {
-        super(new ResourceInterface(type, env));
+    ResourceImplementor(final ResourceInterface definition) {
+        super(definition);
     }
 
     @Override

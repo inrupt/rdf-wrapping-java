@@ -21,6 +21,7 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import static com.inrupt.rdf.wrapping.processor.Implementor.implementor;
+import static com.inrupt.rdf.wrapping.processor.Interface.definition;
 import static com.inrupt.rdf.wrapping.processor.Validator.validator;
 import static java.util.stream.Collectors.toSet;
 import static javax.lang.model.SourceVersion.RELEASE_8;
@@ -64,8 +65,9 @@ public class Processor extends AbstractProcessor {
                 // All our annotations are @Target(TYPE), so they're all TypeElements
                 final TypeElement type = (TypeElement) element;
 
-                implementors.add(implementor(env, type));
-                validationErrors.addAll(validator(type, env).validate());
+                final Interface definition = definition(type, env);
+                implementors.add(implementor(definition));
+                validationErrors.addAll(validator(definition).validate());
             }
         }
 

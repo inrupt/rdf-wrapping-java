@@ -22,6 +22,9 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static org.jboss.jdeparser.JTypes.typeOf;
 
+import com.inrupt.rdf.wrapping.annotation.Dataset;
+import com.inrupt.rdf.wrapping.annotation.Graph;
+
 import java.lang.annotation.Annotation;
 import java.util.stream.Stream;
 
@@ -39,6 +42,20 @@ class Interface {
         this.env = env;
         this.type = type;
     }
+
+    static Interface definition(final TypeElement type, final Environment env) {
+        if (type.getAnnotation(Dataset.class) != null) {
+            return new DatasetInterface(type, env);
+
+        } else if (type.getAnnotation(Graph.class) != null) {
+            return new GraphInterface(type, env);
+
+        } else { // Resource
+            // Processor's supported annotations are finite
+            return new ResourceInterface(type, env);
+        }
+    }
+
 
     protected TypeElement getType() {
         return type;

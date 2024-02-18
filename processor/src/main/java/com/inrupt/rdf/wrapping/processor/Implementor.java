@@ -79,16 +79,16 @@ abstract class Implementor<T extends Interface> {
 
     protected abstract void implementInternal();
 
-    static Implementor<?> implementor(final Environment env, final TypeElement e) {
-        if (e.getAnnotation(Dataset.class) != null) {
-            return new DatasetImplementor(e, env);
+    static Implementor<?> implementor(final Interface definition) {
+        if (definition instanceof DatasetInterface) {
+            return new DatasetImplementor((DatasetInterface) definition);
 
-        } else if (e.getAnnotation(Graph.class) != null) {
-            return new GraphImplementor(e, env);
+        } else if (definition instanceof GraphInterface) {
+            return new GraphImplementor((GraphInterface) definition);
 
         } else { // Resource
             // Processor's supported annotations are finite
-            return new ResourceImplementor(e, env);
+            return new ResourceImplementor((ResourceInterface) definition);
         }
     }
 
