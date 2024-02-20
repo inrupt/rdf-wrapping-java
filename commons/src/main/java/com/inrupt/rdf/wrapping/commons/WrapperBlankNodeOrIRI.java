@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.*;
@@ -191,7 +192,7 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         Objects.requireNonNull(m);
 
         try (final Stream<T> stream = objectStream(p, m)) {
-            return stream.iterator();
+            return stream.collect(Collectors.toList()).stream().iterator();
         }
     }
 
