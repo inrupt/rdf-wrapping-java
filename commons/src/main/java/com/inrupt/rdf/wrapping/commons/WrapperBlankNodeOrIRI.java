@@ -192,7 +192,8 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         Objects.requireNonNull(m);
 
         try (final Stream<T> stream = objectStream(p, m)) {
-            return stream.collect(Collectors.toList()).stream().iterator();
+            return stream.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList))
+                .iterator();
         }
     }
 
