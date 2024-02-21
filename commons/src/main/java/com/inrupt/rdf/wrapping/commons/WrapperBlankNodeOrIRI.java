@@ -186,6 +186,10 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
      * @param <T> the type of values returned
      *
      * @return the converted objects of statements with this subject and the given predicate
+     *
+     * @implNote Prior to returning the iterator, this implementation consumes (buffers) an underlying
+     * {@link Graph#stream(BlankNodeOrIRI, IRI, RDFTerm) stream of statements} with the predicate {@code p} and the
+     * mapping function {@code m} applied to each object.
      */
     protected <T> Iterator<T> objectIterator(final IRI p, final ValueMapping<T> m) {
         Objects.requireNonNull(p);
