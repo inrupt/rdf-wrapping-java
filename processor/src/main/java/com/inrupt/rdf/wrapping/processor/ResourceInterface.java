@@ -20,11 +20,13 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static java.util.stream.Stream.concat;
-
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -54,15 +56,27 @@ class ResourceInterface extends Interface {
     }
 
     Stream<TypeMirror> transitiveResourceTypes() {
-        final Stream<TypeMirror> children = resourcePropertyMethods().map(ExecutableElement::getReturnType);
+        final Queue<TypeMirror> outstanding = new LinkedList<>();
+        final Set<TypeMirror> results = new HashSet<>();
 
-        final Stream<TypeMirror> descendants = resourcePropertyMethods()
-                .map(ExecutableElement::getReturnType)
-                .map(getEnv()::type)
-                .map(type -> new ResourceInterface(type, getEnv()))
-                .flatMap(ResourceInterface::transitiveResourceTypes);
+        ResourceInterface current = this;
+        while (true) {
+            current.resourcePropertyMethods()
+                    .map(ExecutableElement::getReturnType)
+                    .filter(results::add)
+                    .forEach(outstanding::add);
 
-        return concat(children, descendants).distinct();
+            if (outstanding.isEmpty()) {
+                break;
+            }
+
+            final TypeMirror next = outstanding.remove();
+            final TypeElement nextType = getEnv().type(next);
+
+            current = new ResourceInterface(nextType, getEnv());
+        }
+
+        return results.stream();
     }
 
     private Predicate<ExecutableElement> returnTypeIsResource() {
