@@ -130,8 +130,8 @@ class ValidatorTest {
                 arguments("resource property method is assignable instance"),
                 arguments("resource unannotated method is static"),
                 arguments("resource unannotated method is default"),
-                arguments("resource complex property method is resource instance")
-
+                arguments("resource complex property method is resource instance"),
+                arguments("resource complex property method recursive")
         );
     }
 }
