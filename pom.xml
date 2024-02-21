@@ -127,6 +127,12 @@
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
       </dependency>
+      <!-- patch CVE-2024-25710 commons-compress 1.26.0 -->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>1.26.0</version>
+      </dependency>
 
       <!-- testing -->
       <dependency>
@@ -535,7 +541,6 @@
           </execution>
         </executions>
         <configuration>
-          <cveValidForHours>24</cveValidForHours>
           <failBuildOnCVSS>7</failBuildOnCVSS>
           <formats>
             <format>HTML</format>
