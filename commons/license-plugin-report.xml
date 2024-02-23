@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<licensePluginReport goal="CHECK" timestamp="1705937640162">
-    <module artifactId="inrupt-rdf-wrapping-commons" groupId="com.inrupt.rdf" version="1.1.0"/>
+<licensePluginReport goal="CHECK" timestamp="1708698668323">
+    <module artifactId="inrupt-rdf-wrapping-commons" groupId="com.inrupt.rdf" version="1.1.1"/>
     <files>
         <file path="src/main/java/com/inrupt/rdf/wrapping/commons/ObjectSet.java" result="PRESENT"/>
         <file path="src/main/java/com/inrupt/rdf/wrapping/commons/RDFFactory.java" result="PRESENT"/>
