@@ -33,7 +33,6 @@ import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;

@@ -24,9 +24,6 @@ import static org.jboss.jdeparser.JMod.PUBLIC;
 import static org.jboss.jdeparser.JTypes.$t;
 import static org.jboss.jdeparser.JTypes.typeOf;
 
-import com.inrupt.rdf.wrapping.annotation.Dataset;
-import com.inrupt.rdf.wrapping.annotation.Graph;
-
 import java.io.IOException;
 import java.time.Instant;
 
