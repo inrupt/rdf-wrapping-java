@@ -21,14 +21,14 @@
 package com.inrupt.rdf.wrapping.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 @Target(METHOD)
-@Retention(SOURCE)
+@Retention(RUNTIME)
 @Documented
 public @interface Property {
     String predicate();
