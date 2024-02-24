@@ -112,8 +112,10 @@ public class ObjectSet<T> extends AbstractSet<T> {
 
     @Override
     public int size() {
-        final long size = statements().count();
-        return size > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) size;
+        try (final Stream<? extends Triple> stream = statements()) {
+            final long size = stream.count();
+            return size > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) size;
+        }
     }
 
     @Override
@@ -131,14 +133,24 @@ public class ObjectSet<T> extends AbstractSet<T> {
         return graph.contains(subject, predicate, object);
     }
 
+    /**
+     * @implNote Prior to returning the iterator, this implementation consumes (buffers) an underlying
+     * {@link Graph#stream(BlankNodeOrIRI, IRI, RDFTerm) stream of statements} with the current {@link #subject} and
+     * {@link #predicate} as well as the {@link #valueMapping value mapping function} applied to each object.
+     */
     @Override
     public Iterator<T> iterator() {
-        return values().iterator();
+        try (final Stream<T> stream = values()) {
+            return stream.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList))
+                .iterator();
+        }
     }
 
     @Override
     public Object[] toArray() {
-        return values().toArray();
+        try (final Stream<T> stream = values()) {
+            return stream.toArray();
+        }
     }
 
     @Override
@@ -197,9 +209,11 @@ public class ObjectSet<T> extends AbstractSet<T> {
     public boolean retainAll(final Collection<?> c) {
         Objects.requireNonNull(c);
 
-        return values().collect(Collectors.toList()).stream()
+        try (final Stream<T> stream = values()) {
+            return stream.collect(Collectors.toList()).stream()
                 .map(value -> removeUnlessContains(c, value))
                 .reduce(false, EITHER);
+        }
     }
 
     // AbstractSet#removeAll relies on Iterator#remove, which is not supported here.

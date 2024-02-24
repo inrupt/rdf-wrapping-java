@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.*;
@@ -103,7 +104,9 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        return objectStream(p, m).findAny().orElse(null);
+        try (final Stream<T> stream = objectStream(p, m)) {
+            return stream.findAny().orElse(null);
+        }
     }
 
     /**
@@ -183,12 +186,19 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
      * @param <T> the type of values returned
      *
      * @return the converted objects of statements with this subject and the given predicate
+     *
+     * @implNote Prior to returning the iterator, this implementation consumes (buffers) an underlying
+     * {@link Graph#stream(BlankNodeOrIRI, IRI, RDFTerm) stream of statements} with the predicate {@code p} and the
+     * mapping function {@code m} applied to each object.
      */
     protected <T> Iterator<T> objectIterator(final IRI p, final ValueMapping<T> m) {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        return objectStream(p, m).iterator();
+        try (final Stream<T> stream = objectStream(p, m)) {
+            return stream.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList))
+                .iterator();
+        }
     }
 
     /**
@@ -204,7 +214,9 @@ public abstract class WrapperBlankNodeOrIRI implements BlankNodeOrIRI {
         Objects.requireNonNull(p);
         Objects.requireNonNull(m);
 
-        return objectStream(p, m).collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
+        try (final Stream<T> stream = objectStream(p, m)) {
+            return stream.collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
+        }
     }
 
     /**
