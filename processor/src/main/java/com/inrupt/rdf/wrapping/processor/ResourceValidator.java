@@ -45,19 +45,9 @@ class ResourceValidator extends Validator<ResourceInterface> {
 
         requireNonMemberMethods(Property.class);
 
-        requireNonVoidReturnType();
+        requireNonVoidReturnType(Property.class);
         requireCompatiblePrimitiveReturnType();
         requireCompatibleComplexReturnType();
-    }
-
-    private void requireNonVoidReturnType() {
-        myInterface.membersAnnotatedWith(Property.class)
-                .filter(method -> method.getReturnType().getKind() == VOID)
-                .forEach(method ->
-                        errors.add(new ValidationError(
-                                method,
-                                "Property method [%s] must not be void",
-                                method.getSimpleName())));
     }
 
     private void requireCompatiblePrimitiveReturnType() {

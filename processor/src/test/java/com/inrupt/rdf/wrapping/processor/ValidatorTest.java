@@ -44,6 +44,7 @@ class ValidatorTest {
     private static final String MUST_BE_STATIC_OR_DEFAULT = "must be static or default";
     private static final String MUST_RETURN_RESOURCE_INTERFACE = "must return @Resource interface";
     private static final String MUST_RETURN_GRAPH_INTERFACE = "must return @Graph interface";
+    private static final String MUST_NOT_BE_VOID = "must not be void";
 
     private Compiler compiler;
 
@@ -67,11 +68,13 @@ class ValidatorTest {
                 arguments("dataset is not an interface", MUST_BE_AN_INTERFACE),
                 arguments("dataset extends unacceptable", "can only extend org.apache.jena.query.Dataset"),
                 arguments("dataset default graph method is static", CANNOT_BE_STATIC_OR_DEFAULT),
+                arguments("dataset default graph method is void", MUST_NOT_BE_VOID),
                 arguments("dataset default graph method is default", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("dataset default graph method is not graph", MUST_RETURN_GRAPH_INTERFACE),
                 arguments("dataset named graph method is static", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("dataset named graph method is default", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("dataset named graph method is not graph", MUST_RETURN_GRAPH_INTERFACE),
+                arguments("dataset named graph method is void", MUST_NOT_BE_VOID),
                 arguments("dataset instance method is not annotated", MUST_BE_STATIC_OR_DEFAULT),
 
                 arguments("graph is not an interface", MUST_BE_AN_INTERFACE),

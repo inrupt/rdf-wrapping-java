@@ -42,6 +42,9 @@ class DatasetValidator extends Validator<DatasetInterface> {
 
         requireNonMemberMethods(DefaultGraph.class, NamedGraph.class);
 
+        requireNonVoidReturnType(DefaultGraph.class);
+        requireNonVoidReturnType(NamedGraph.class);
+
         requireAnnotatedReturnType(DefaultGraph.class, Graph.class);
         requireAnnotatedReturnType(NamedGraph.class, Graph.class);
     }

@@ -21,6 +21,7 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import static javax.lang.model.element.Modifier.STATIC;
+import static javax.lang.model.type.TypeKind.VOID;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -134,6 +135,7 @@ abstract class Validator<T extends Interface> {
                 myInterface.getEnv().type(method.getReturnType()).getAnnotation(required) == null;
 
         myInterface.getEnv().methodsOf(myInterface.getType())
+                .filter(method -> method.getReturnType().getKind() != VOID)
                 .filter(isAnnotated)
                 .filter(isNotResource)
                 .forEach(method -> errors.add(new ValidationError(
@@ -143,5 +145,15 @@ abstract class Validator<T extends Interface> {
                         myInterface.getType().getSimpleName(),
                         annotation.getSimpleName(),
                         required.getSimpleName())));
+    }
+
+    protected void requireNonVoidReturnType(final Class<? extends Annotation> annotation) {
+        myInterface.membersAnnotatedWith(annotation)
+                .filter(method -> method.getReturnType().getKind() == VOID)
+                .forEach(method ->
+                        errors.add(new ValidationError(
+                                method,
+                                "Method [%s] must not be void",
+                                method.getSimpleName())));
     }
 }
