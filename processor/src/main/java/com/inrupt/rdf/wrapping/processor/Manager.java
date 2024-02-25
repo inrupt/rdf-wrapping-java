@@ -32,7 +32,6 @@ import org.apache.jena.rdf.model.Model;
 /**
  * A utility class that aids wrapper interfaces to find generated implementations.
  */
-// TODO: Should this be SPI?
 public final class Manager {
     private Manager() {
     }
