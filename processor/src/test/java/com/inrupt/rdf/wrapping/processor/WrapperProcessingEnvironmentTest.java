@@ -20,48 +20,37 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static java.beans.Introspector.getBeanInfo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.beans.PropertyUtil.propertyDescriptorsFor;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Stream;
 
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.SourceVersion;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
 import org.hamcrest.Matcher;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @DisplayName("Wrapper processing environment")
+@ExtendWith(MockitoExtension.class)
 class WrapperProcessingEnvironmentTest {
-    private static final ProcessingEnvironment original = mock(ProcessingEnvironment.class);
-    private static final ProcessingEnvironment wrapper = new WrapperProcessingEnvironment(original);
+    // Stubs suffice as we're testing only for reference equality
+    @Mock(answer = RETURNS_DEEP_STUBS)
+    ProcessingEnvironment original;
 
-    @BeforeAll
-    static void beforeAll() {
-        // Mocks suffice as we're testing only for reference equality
-        when(original.getOptions()).thenReturn(mock(Map.class));
-        when(original.getMessager()).thenReturn(mock(Messager.class));
-        when(original.getFiler()).thenReturn(mock(Filer.class));
-        when(original.getElementUtils()).thenReturn(mock(Elements.class));
-        when(original.getTypeUtils()).thenReturn(mock(Types.class));
-        when(original.getSourceVersion()).thenReturn(mock(SourceVersion.class));
-        when(original.getLocale()).thenReturn(mock(Locale.class));
-    }
+    @InjectMocks
+    WrapperProcessingEnvironment wrapper;
 
     @DisplayName("returns original value for property")
     @ParameterizedTest(name = "{0}")
@@ -78,7 +67,8 @@ class WrapperProcessingEnvironmentTest {
         assertThat("Property differs", wrapper, roundtripsProperty);
     }
 
-    static Stream<Arguments> propertiesOfWrapper() {
-        return Stream.of(propertyDescriptorsFor(wrapper, Object.class)).map(d -> arguments(d.getName(), d));
+    static Stream<Arguments> propertiesOfWrapper() throws IntrospectionException {
+        return Stream.of(getBeanInfo(WrapperProcessingEnvironment.class, Object.class).getPropertyDescriptors())
+                .map(d -> arguments(d.getName(), d));
     }
 }

@@ -33,34 +33,41 @@ import javax.lang.model.util.Types;
 class WrapperProcessingEnvironment implements ProcessingEnvironment {
     protected final ProcessingEnvironment original;
 
-    public WrapperProcessingEnvironment(final ProcessingEnvironment original) {
+    WrapperProcessingEnvironment(final ProcessingEnvironment original) {
         this.original = original;
     }
 
+    @Override
     public Map<String, String> getOptions() {
         return original.getOptions();
     }
 
+    @Override
     public Messager getMessager() {
         return original.getMessager();
     }
 
+    @Override
     public Filer getFiler() {
         return original.getFiler();
     }
 
+    @Override
     public Elements getElementUtils() {
         return original.getElementUtils();
     }
 
+    @Override
     public Types getTypeUtils() {
         return original.getTypeUtils();
     }
 
+    @Override
     public SourceVersion getSourceVersion() {
         return original.getSourceVersion();
     }
 
+    @Override
     public Locale getLocale() {
         return original.getLocale();
     }
