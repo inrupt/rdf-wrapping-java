@@ -39,6 +39,10 @@ class ResourceValidator extends Validator<ResourceInterface> {
     protected void validateInternal() {
         requireInterface();
 
+        // TODO: Allow definitions to extend WrapperResource. That means interface must be extracted from
+        //  WrapperResource so definition can extend it. Also allow definitions to extend other definitions
+        //  (interfaces annotated with @Resource). That requires implementor to follow suit. Both above apply to
+        //  dataset and graph definitions as well
         limitBaseInterfaces(org.apache.jena.rdf.model.Resource.class);
 
         requireMemberMethods(Property.class);
