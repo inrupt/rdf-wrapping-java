@@ -47,6 +47,10 @@ class GraphValidator extends Validator<GraphInterface> {
                 OptionalFirstObjectOfEither.class,
                 OptionalFirstSubjectOfEither.class);
 
+        requireNonVoidReturnType(OptionalFirstInstanceOfEither.class);
+        requireNonVoidReturnType(OptionalFirstObjectOfEither.class);
+        requireNonVoidReturnType(OptionalFirstSubjectOfEither.class);
+
         requireAnnotatedReturnType(OptionalFirstInstanceOfEither.class, Resource.class);
         requireAnnotatedReturnType(OptionalFirstObjectOfEither.class, Resource.class);
         requireAnnotatedReturnType(OptionalFirstSubjectOfEither.class, Resource.class);
