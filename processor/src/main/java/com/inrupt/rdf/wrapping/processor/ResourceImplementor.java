@@ -108,10 +108,11 @@ class ResourceImplementor extends Implementor<ResourceInterface> {
     }
 
     private void addPropertyMethod(final ExecutableElement method, final JExpr mapping) {
-        final String predicateFromAnnotation = method.getAnnotation(Property.class).predicate();
+        final Property annotation = method.getAnnotation(Property.class);
+        final String predicateFromAnnotation = annotation.predicate();
+        final String cardinality = annotation.cardinality().getMethodName();
         final JCall predicate = call("getModel").call("createProperty").arg(str(predicateFromAnnotation));
 
-        // TODO: Dynamic cardniality
-        addMethod(method).body()._return(call("anyOrNull").arg(predicate).arg(mapping));
+        addMethod(method).body()._return(call(cardinality).arg(predicate).arg(mapping));
     }
 }

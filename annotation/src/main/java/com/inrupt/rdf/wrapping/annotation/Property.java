@@ -33,6 +33,8 @@ import java.lang.annotation.Target;
 public @interface Property {
     String predicate();
 
+    Cardinality cardinality();
+
     Mapping mapping();
 
     enum Mapping {
@@ -47,6 +49,20 @@ public @interface Property {
         private final String methodName;
 
         Mapping(final String methodName) {
+            this.methodName = methodName;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+    }
+
+    enum Cardinality {
+        ANY_OR_NULL("anyOrNull");
+
+        private final String methodName;
+
+        Cardinality(final String methodName) {
             this.methodName = methodName;
         }
 

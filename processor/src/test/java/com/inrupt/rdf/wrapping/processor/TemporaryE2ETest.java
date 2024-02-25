@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.annotation.Property.Cardinality.ANY_OR_NULL;
 import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.*;
 import static org.apache.jena.rdf.model.ModelFactory.createDefaultModel;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -180,19 +181,19 @@ class TemporaryE2ETest {
 
             @Resource
             interface ResourceDefinition1 {
-                @Property(predicate = "urn:example:p", mapping = IRI_AS_STRING)
+                @Property(predicate = "urn:example:p", cardinality = ANY_OR_NULL, mapping = IRI_AS_STRING)
                 String getProperty1();
 
-                @Property(predicate = "urn:example:p", mapping = IRI_AS_URI)
+                @Property(predicate = "urn:example:p", cardinality = ANY_OR_NULL, mapping = IRI_AS_URI)
                 URI getProperty2();
 
-                @Property(predicate = "urn:example:p", mapping = AS)
+                @Property(predicate = "urn:example:p", cardinality = ANY_OR_NULL, mapping = AS)
                 ResourceDefinition2 getProperty3();
             }
 
             @Resource
             interface ResourceDefinition2 {
-                @Property(predicate = "urn:example:p", mapping = AS)
+                @Property(predicate = "urn:example:p", cardinality = ANY_OR_NULL, mapping = AS)
                 ResourceDefinition3 getProperty();
             }
 
