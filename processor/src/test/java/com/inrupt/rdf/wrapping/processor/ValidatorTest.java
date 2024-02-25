@@ -93,8 +93,9 @@ class ValidatorTest {
                 arguments("resource property method is default", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("resource instance method is not annotated", MUST_BE_STATIC_OR_DEFAULT),
                 arguments("resource property method return type not assignable", "must be assignable from return type"),
-                arguments("resource property method is void", "must not be void"),
-                arguments("resource complex property method is not resource", MUST_RETURN_RESOURCE_INTERFACE)
+                arguments("resource property method is void", MUST_NOT_BE_VOID),
+                arguments("resource complex property method is not resource", MUST_RETURN_RESOURCE_INTERFACE),
+                arguments("resource complex property method is void", MUST_NOT_BE_VOID)
         );
     }
 

@@ -20,6 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static javax.lang.model.type.TypeKind.VOID;
+
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
@@ -50,20 +52,17 @@ class ResourceValidator extends Validator<ResourceInterface> {
 
     private void requireNonVoidReturnType() {
         myInterface.membersAnnotatedWith(Property.class)
-                .forEach(method -> {
-                    final TypeElement returnType = myInterface.getEnv().type(method.getReturnType());
-
-                    if (returnType == null) {
+                .filter(method -> method.getReturnType().getKind() == VOID)
+                .forEach(method ->
                         errors.add(new ValidationError(
                                 method,
                                 "Property method [%s] must not be void",
-                                method.getSimpleName()));
-                    }
-                });
+                                method.getSimpleName())));
     }
 
     private void requireCompatiblePrimitiveReturnType() {
         myInterface.primitiveMappingPropertyMethods()
+                .filter(method -> method.getReturnType().getKind() != VOID)
                 .forEach(method -> {
                     final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
                     final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
@@ -84,9 +83,10 @@ class ResourceValidator extends Validator<ResourceInterface> {
 
     private void requireCompatibleComplexReturnType() {
         myInterface.complexMappingPropertyMethods()
+                .filter(method -> method.getReturnType().getKind() != VOID)
                 .forEach(method -> {
                     final TypeElement returnType = myInterface.getEnv().type(method.getReturnType());
-                    if (returnType != null && returnType.getAnnotation(Resource.class) == null) {
+                    if (returnType == null || returnType.getAnnotation(Resource.class) == null) {
                         errors.add(new ValidationError(
                                 method,
                                 "Method %s on interface %s must return @Resource interface",
