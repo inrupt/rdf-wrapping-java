@@ -154,7 +154,7 @@ class ResourceDefinitionTest {
         @Property(predicate = P, mapping = LITERAL_AS_INTEGER_OR_NULL)
         Integer getLiteralAsIntegerOrNull();
 
-        @Property(predicate = P, mapping = Mapping.AS)
+        @Property(predicate = P, mapping = AS)
         ResourceDefinition getAs();
     }
 
