@@ -79,79 +79,74 @@ class ManagerTest {
 
         assertDoesNotThrow(() -> wrap(dataset, OkDataset.class));
     }
-}
 
-interface NoImplementation {
-}
-
-interface ImplementationTypeMismatch {
-}
-
-class ImplementationTypeMismatch_$impl {
-}
-
-interface WrapMissing {
-}
-
-class WrapMissing_$impl implements WrapMissing {
-}
-
-interface WrapVoid {
-}
-
-@SuppressWarnings("HideUtilityClassConstructor") // Not really a utility class
-class WrapVoid_$impl implements WrapVoid {
-    public static void wrap(final Model ignored) {
+    interface NoImplementation {
     }
-}
 
-interface WrapInaccessible {
-}
-
-class WrapInaccessible_$impl implements WrapInaccessible {
-    private static WrapInaccessible wrap(final Model ignored) {
-        return null;
+    interface ImplementationTypeMismatch {
     }
-}
 
-interface WrapThrows {
-}
-
-@SuppressWarnings("HideUtilityClassConstructor") // Not really a utility class
-class WrapThrows_$impl implements WrapThrows {
-    public static Object wrap(final Model ignored) {
-        throw new RuntimeException();
+    static class ImplementationTypeMismatch_$impl {
     }
-}
 
-interface WrapMismatch {
-}
-
-@SuppressWarnings("HideUtilityClassConstructor") // Not really a utility class
-class WrapMismatch_$impl implements WrapMismatch {
-    public static Object wrap(final Model ignored) {
-        return new Object();
+    interface WrapMissing {
     }
-}
 
-interface OkModel {
-}
-
-@SuppressWarnings("HideUtilityClassConstructor") // Not really a utility class
-class OkModel_$impl implements OkModel {
-    public static OkModel wrap(final Model ignored) {
-        return new OkModel() {
-        };
+    static class WrapMissing_$impl implements WrapMissing {
     }
-}
 
-interface OkDataset {
-}
+    interface WrapVoid {
+    }
 
-@SuppressWarnings("HideUtilityClassConstructor") // Not really a utility class
-class OkDataset_$impl implements OkDataset {
-    public static OkDataset wrap(final Dataset ignored) {
-        return new OkDataset() {
-        };
+    static class WrapVoid_$impl implements WrapVoid {
+        static void wrap(final Model ignored) {
+        }
+    }
+
+    interface WrapInaccessible {
+    }
+
+    static class WrapInaccessible_$impl implements WrapInaccessible {
+        private static WrapInaccessible wrap(final Model ignored) {
+            return null;
+        }
+    }
+
+    interface WrapThrows {
+    }
+
+    static class WrapThrows_$impl implements WrapThrows {
+        static Object wrap(final Model ignored) {
+            throw new RuntimeException();
+        }
+    }
+
+    interface WrapMismatch {
+    }
+
+    static class WrapMismatch_$impl implements WrapMismatch {
+        static Object wrap(final Model ignored) {
+            return new Object();
+        }
+    }
+
+    interface OkModel {
+    }
+
+    static class OkModel_$impl implements OkModel {
+        static OkModel wrap(final Model ignored) {
+            return new OkModel() {
+            };
+        }
+    }
+
+    interface OkDataset {
+    }
+
+    static class OkDataset_$impl implements OkDataset {
+        static OkDataset wrap(final Dataset ignored) {
+            return new OkDataset() {
+            };
+        }
     }
 }
