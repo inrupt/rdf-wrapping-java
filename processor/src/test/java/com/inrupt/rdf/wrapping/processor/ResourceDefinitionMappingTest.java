@@ -56,7 +56,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("Resource definition")
-class ResourceDefinitionTest {
+class ResourceDefinitionMappingTest {
     private static final String P = "urn:example:p";
     private static final String C = "urn:example:c";
     private static final Object[] RESOURCE_DEFINITION_METHODS = stream(ResourceDefinition.class.getDeclaredMethods())

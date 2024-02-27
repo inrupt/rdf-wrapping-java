@@ -58,7 +58,10 @@ public @interface Property {
     }
 
     enum Cardinality {
-        ANY_OR_NULL("anyOrNull");
+        ANY_OR_NULL("anyOrNull"),
+        ANY_OR_THROW("anyOrThrow"),
+        SINGLE_OR_NULL("singleOrNull"),
+        SINGLE_OR_THROW("singleOrThrow");
 
         private final String methodName;
 

@@ -1,0 +1,194 @@
+/*
+ * Copyright Inrupt Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+package com.inrupt.rdf.wrapping.processor;
+
+import static com.inrupt.rdf.wrapping.annotation.Property.Cardinality.*;
+import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.LITERAL_AS_STRING;
+import static java.beans.Introspector.getBeanInfo;
+import static java.lang.reflect.Modifier.isProtected;
+import static java.util.Arrays.stream;
+import static java.util.UUID.randomUUID;
+import static org.apache.jena.rdf.model.ModelFactory.createDefaultModel;
+import static org.apache.jena.vocabulary.RDF.type;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
+import com.inrupt.rdf.wrapping.annotation.Graph;
+import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
+import com.inrupt.rdf.wrapping.annotation.Property;
+import com.inrupt.rdf.wrapping.annotation.Property.Cardinality;
+import com.inrupt.rdf.wrapping.annotation.Resource;
+import com.inrupt.rdf.wrapping.jena.WrapperResource;
+
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.shared.PropertyNotFoundException;
+import org.hamcrest.Matcher;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+@DisplayName("Resource definition")
+class ResourceDefinitionCardinalityTest {
+    private static final String P = "urn:example:p";
+    private static final String C = "urn:example:c";
+    private static final Object[] RESOURCE_DEFINITION_METHODS = stream(ResourceDefinition.class.getDeclaredMethods())
+            .map(m -> m.getAnnotation(Property.class))
+            .map(Property::cardinality)
+            .map(Cardinality::getMethodName)
+            .distinct()
+            .toArray();
+    private static final int NONE = 0;
+    private static final int SINGLE = 1;
+    private static final int MANY = 2;
+    public static final String DOES_NOT_THROW = "does not throw";
+    public static final String THROWS = "throws";
+
+    private Model m;
+    private GraphDefinition wrapped;
+
+    @BeforeEach
+    void setUp() {
+        m = createDefaultModel();
+        wrapped = GraphDefinition.wrap(m);
+    }
+
+    @DisplayName("properly converts node with cardinality")
+    @ParameterizedTest(name = "{2} for cardinality {0} with {1} items")
+    @MethodSource
+    void e2e(final Cardinality cardinality, final int number, final String throwing) throws IntrospectionException {
+        final List<String> values = new ArrayList<>();
+        final Class<? extends Exception> expectedException;
+        final Matcher<?> asExpected;
+        // anchor for graph definition
+        final org.apache.jena.rdf.model.Resource s = m.createResource().addProperty(type, m.createResource(C));
+        final ResourceDefinition resource = wrapped.getResource();
+
+        switch (number) {
+            case NONE:
+                asExpected = nullValue();
+                expectedException = PropertyNotFoundException.class;
+                break;
+            case SINGLE:
+                asExpected = in(values);
+                expectedException = null;
+                break;
+            default:
+            case MANY:
+                asExpected = in(values);
+                expectedException = IllegalStateException.class;
+                break;
+        }
+
+        // Add and remember as many objects as needed
+        for (int i = 0; i < number; i++) {
+            final String value = randomUUID().toString();
+            values.add(value);
+            s.addProperty(m.createProperty(P), m.createTypedLiteral(value));
+        }
+
+        switch (throwing) {
+            case THROWS:
+                final Method getter = findProperty(resource, cardinality);
+                assertThat(
+                        assertThrows(InvocationTargetException.class, () -> getter.invoke(resource)),
+                        hasProperty("cause", is(instanceOf(expectedException))));
+                break;
+            default:
+            case DOES_NOT_THROW:
+                assertThat(resource, hasProperty(cardinality.getMethodName(), is(asExpected)));
+        }
+    }
+
+    private static Method findProperty(final ResourceDefinition r, final Cardinality c) throws IntrospectionException {
+        return stream(getBeanInfo(r.getClass(), Object.class).getPropertyDescriptors())
+                .filter(p -> p.getName().equals(c.getMethodName()))
+                .map(PropertyDescriptor::getReadMethod)
+                .findAny()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private static Stream<Arguments> e2e() {
+        return Stream.of(
+                arguments(ANY_OR_NULL, NONE, DOES_NOT_THROW),
+                arguments(ANY_OR_NULL, SINGLE, DOES_NOT_THROW),
+                arguments(ANY_OR_NULL, MANY, DOES_NOT_THROW),
+                arguments(ANY_OR_THROW, NONE, THROWS),
+                arguments(ANY_OR_THROW, SINGLE, DOES_NOT_THROW),
+                arguments(ANY_OR_THROW, MANY, DOES_NOT_THROW),
+                arguments(SINGLE_OR_NULL, NONE, DOES_NOT_THROW),
+                arguments(SINGLE_OR_NULL, SINGLE, DOES_NOT_THROW),
+                arguments(SINGLE_OR_NULL, MANY, THROWS),
+                arguments(SINGLE_OR_THROW, NONE, THROWS),
+                arguments(SINGLE_OR_THROW, SINGLE, DOES_NOT_THROW),
+                arguments(SINGLE_OR_THROW, MANY, THROWS)
+        );
+    }
+
+    @DisplayName("mock has equivalent of ValueMappings method")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void wrapperResourceMethods(final String name) {
+        assertThat(RESOURCE_DEFINITION_METHODS, hasItemInArray(name));
+    }
+
+    private static Stream<String> wrapperResourceMethods() {
+        return stream(WrapperResource.class.getDeclaredMethods())
+                .filter(m -> isProtected(m.getModifiers()))
+                .map(Method::getName);
+    }
+
+    @Resource
+    interface ResourceDefinition {
+        @Property(predicate = P, cardinality = ANY_OR_NULL, mapping = LITERAL_AS_STRING)
+        String getAnyOrNull();
+
+        @Property(predicate = P, cardinality = ANY_OR_THROW, mapping = LITERAL_AS_STRING)
+        String getAnyOrThrow();
+
+        @Property(predicate = P, cardinality = SINGLE_OR_NULL, mapping = LITERAL_AS_STRING)
+        String getSingleOrNull();
+
+        @Property(predicate = P, cardinality = SINGLE_OR_THROW, mapping = LITERAL_AS_STRING)
+        String getSingleOrThrow();
+    }
+
+    @Graph
+    interface GraphDefinition {
+        static GraphDefinition wrap(final Model original) {
+            return Manager.wrap(original, GraphDefinition.class);
+        }
+
+        @OptionalFirstInstanceOfEither(C)
+        ResourceDefinition getResource();
+    }
+}
