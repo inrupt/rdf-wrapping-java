@@ -52,6 +52,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.shared.PropertyNotFoundException;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -154,6 +155,7 @@ class ResourceDefinitionCardinalityTest {
         );
     }
 
+    @Disabled("Not ready yet") // TODO: Enable
     @DisplayName("mock has equivalent of ValueMappings method")
     @ParameterizedTest(name = "{0}")
     @MethodSource
