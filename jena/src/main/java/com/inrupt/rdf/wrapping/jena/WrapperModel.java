@@ -22,6 +22,7 @@ package com.inrupt.rdf.wrapping.jena;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.jena.graph.Graph;
@@ -35,7 +36,8 @@ public abstract class WrapperModel extends ModelCom {
     }
 
     protected <T extends RDFNode> T optionalFirstInstanceOfEither(final Class<T> view, final String... classes) {
-        return listStatements(new InstanceOfEitherSelector(classes))
+        return listStatements()
+                .filterKeep(new InstanceOfEither(classes))
                 .mapWith(Statement::getSubject)
                 .mapWith(subject -> subject.as(view))
                 .nextOptional()
@@ -43,7 +45,8 @@ public abstract class WrapperModel extends ModelCom {
     }
 
     protected <T extends RDFNode> T optionalFirstSubjectOfEither(final Class<T> view, final String... predicates) {
-        return listStatements(new EitherPredicateSelector(predicates))
+        return listStatements()
+                .filterKeep(new EitherPredicate(predicates))
                 .mapWith(Statement::getSubject)
                 .mapWith(subject -> subject.as(view))
                 .nextOptional()
@@ -51,17 +54,18 @@ public abstract class WrapperModel extends ModelCom {
     }
 
     protected <T extends RDFNode> T optionalFirstObjectOfEither(final Class<T> view, final String... predicates) {
-        return listStatements(new EitherPredicateSelector(predicates))
+        return listStatements()
+                .filterKeep(new EitherPredicate(predicates))
                 .mapWith(Statement::getObject)
                 .mapWith(object -> object.as(view))
                 .nextOptional()
                 .orElse(null);
     }
 
-    private static final class InstanceOfEitherSelector implements Selector {
+    private static final class InstanceOfEither implements Predicate<Statement> {
         private final List<Resource> classes;
 
-        private InstanceOfEitherSelector(final String[] classes) {
+        private InstanceOfEither(final String[] classes) {
             this.classes = Arrays
                     .stream(classes)
                     .map(ResourceFactory::createResource)
@@ -74,38 +78,18 @@ public abstract class WrapperModel extends ModelCom {
                 return false;
             }
 
-            if (!getPredicate().equals(statement.getPredicate())) {
+            if (!RDF.type.equals(statement.getPredicate())) {
                 return false;
             }
 
             return classes.contains(statement.getObject().asResource());
         }
-
-        @Override
-        public Property getPredicate() {
-            return RDF.type;
-        }
-
-        @Override
-        public boolean isSimple() {
-            return false;
-        }
-
-        @Override
-        public Resource getSubject() {
-            return null;
-        }
-
-        @Override
-        public RDFNode getObject() {
-            return null;
-        }
     }
 
-    private static final class EitherPredicateSelector implements Selector {
+    private static final class EitherPredicate implements Predicate<Statement> {
         private final List<Property> predicates;
 
-        private EitherPredicateSelector(final String[] predicates) {
+        private EitherPredicate(final String[] predicates) {
             this.predicates = Arrays
                     .stream(predicates)
                     .map(ResourceFactory::createProperty)
@@ -115,26 +99,6 @@ public abstract class WrapperModel extends ModelCom {
         @Override
         public boolean test(final Statement statement) {
             return predicates.contains(statement.getPredicate());
-        }
-
-        @Override
-        public boolean isSimple() {
-            return false;
-        }
-
-        @Override
-        public Resource getSubject() {
-            return null;
-        }
-
-        @Override
-        public Property getPredicate() {
-            return null;
-        }
-
-        @Override
-        public RDFNode getObject() {
-            return null;
         }
     }
 }
