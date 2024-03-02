@@ -34,8 +34,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
-class ResourceInterface extends Interface {
-    ResourceInterface(final TypeElement type, final Environment env) {
+class ResourceDefinition extends Definition {
+    ResourceDefinition(final TypeElement type, final Environment env) {
         super(type, env);
     }
 
@@ -59,7 +59,7 @@ class ResourceInterface extends Interface {
         final Queue<TypeMirror> outstanding = new LinkedList<>();
         final Set<TypeMirror> results = new HashSet<>();
 
-        ResourceInterface current = this;
+        ResourceDefinition current = this;
         while (true) {
             current.resourcePropertyMethods()
                     .map(ExecutableElement::getReturnType)
@@ -73,7 +73,7 @@ class ResourceInterface extends Interface {
             final TypeMirror next = outstanding.remove();
             final TypeElement nextType = getEnv().type(next);
 
-            current = new ResourceInterface(nextType, getEnv());
+            current = new ResourceDefinition(nextType, getEnv());
         }
 
         return results.stream();

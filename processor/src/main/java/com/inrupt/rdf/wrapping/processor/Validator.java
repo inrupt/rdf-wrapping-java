@@ -32,24 +32,24 @@ import java.util.function.Predicate;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 
-abstract class Validator<T extends Interface> {
-    protected final T myInterface;
+abstract class Validator<T extends Definition> {
+    protected final T definition;
     protected final Collection<ValidationError> errors = new ArrayList<>();
 
-    protected Validator(final T myInterface) {
-        this.myInterface = myInterface;
+    protected Validator(final T definition) {
+        this.definition = definition;
     }
 
-    static Validator<?> validator(final Interface definition) {
-        if (definition instanceof DatasetInterface) {
-            return new DatasetValidator((DatasetInterface) definition);
+    static Validator<?> validator(final Definition definition) {
+        if (definition instanceof DatasetDefinition) {
+            return new DatasetValidator((DatasetDefinition) definition);
 
-        } else if (definition instanceof GraphInterface) {
-            return new GraphValidator((GraphInterface) definition);
+        } else if (definition instanceof GraphDefinition) {
+            return new GraphValidator((GraphDefinition) definition);
 
         } else { // Resource
             // Processor's supported annotations are finite
-            return new ResourceValidator((ResourceInterface) definition);
+            return new ResourceValidator((ResourceDefinition) definition);
         }
     }
 
@@ -67,14 +67,14 @@ abstract class Validator<T extends Interface> {
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
 
-        myInterface.getEnv().methodsOf(myInterface.getType())
+        definition.getEnv().methodsOf(definition.getType())
                 .filter(isNotMember)
                 .filter(isAnnotated)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Method %s on interface %s annotated with @%s cannot be static or default",
                         method.getSimpleName(),
-                        myInterface.getType().getSimpleName(),
+                        definition.getType().getSimpleName(),
                         annotation.getSimpleName())));
     }
 
@@ -86,44 +86,44 @@ abstract class Validator<T extends Interface> {
         final Predicate<ExecutableElement> isUnannotated = method ->
                 Arrays.stream(annotations).noneMatch(a -> method.getAnnotation(a) != null);
 
-        myInterface.getEnv().methodsOf(myInterface.getType())
+        definition.getEnv().methodsOf(definition.getType())
                 .filter(isMember)
                 .filter(isUnannotated)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Unannotated method %s on interface %s must be static or default",
                         method.getSimpleName(),
-                        myInterface.getType().getSimpleName())));
+                        definition.getType().getSimpleName())));
     }
 
     protected void limitBaseInterfaces(final Class<?> allowed) {
-        if (!myInterface.getType().getKind().isInterface()) {
+        if (!definition.getType().getKind().isInterface()) {
             return;
         }
 
-        for (final TypeMirror implemented : myInterface.getType().getInterfaces()) {
-            if (myInterface.getEnv().isSameType(implemented, allowed)) {
+        for (final TypeMirror implemented : definition.getType().getInterfaces()) {
+            if (definition.getEnv().isSameType(implemented, allowed)) {
                 continue;
             }
 
             errors.add(new ValidationError(
-                    myInterface.getType(),
+                    definition.getType(),
                     "Interface %s can only extend %s or nothing",
-                    myInterface.getType().getSimpleName(),
+                    definition.getType().getSimpleName(),
                     allowed.getName()));
         }
     }
 
     protected void requireInterface() {
-        if (myInterface.getType().getKind().isInterface()) {
+        if (definition.getType().getKind().isInterface()) {
             return;
         }
 
         errors.add(new ValidationError(
-                myInterface.getType(),
+                definition.getType(),
                 "Element %s must be an interface but was a %s",
-                myInterface.getType().getSimpleName(),
-                myInterface.getType().getKind()));
+                definition.getType().getSimpleName(),
+                definition.getType().getKind()));
     }
 
     protected void requireAnnotatedReturnType(
@@ -132,9 +132,9 @@ abstract class Validator<T extends Interface> {
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
         final Predicate<ExecutableElement> isNotResource = method ->
-                myInterface.getEnv().type(method.getReturnType()).getAnnotation(required) == null;
+                definition.getEnv().type(method.getReturnType()).getAnnotation(required) == null;
 
-        myInterface.getEnv().methodsOf(myInterface.getType())
+        definition.getEnv().methodsOf(definition.getType())
                 .filter(method -> method.getReturnType().getKind() != VOID)
                 .filter(isAnnotated)
                 .filter(isNotResource)
@@ -142,13 +142,13 @@ abstract class Validator<T extends Interface> {
                         method,
                         "Method %s on interface %s annotated with @%s must return @%s interface",
                         method.getSimpleName(),
-                        myInterface.getType().getSimpleName(),
+                        definition.getType().getSimpleName(),
                         annotation.getSimpleName(),
                         required.getSimpleName())));
     }
 
     protected void requireNonVoidReturnType(final Class<? extends Annotation> annotation) {
-        myInterface.membersAnnotatedWith(annotation)
+        definition.membersAnnotatedWith(annotation)
                 .filter(method -> method.getReturnType().getKind() == VOID)
                 .forEach(method ->
                         errors.add(new ValidationError(

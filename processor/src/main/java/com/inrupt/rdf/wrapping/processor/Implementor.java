@@ -34,20 +34,20 @@ import javax.lang.model.type.TypeMirror;
 
 import org.jboss.jdeparser.*;
 
-abstract class Implementor<T extends Interface> {
+abstract class Implementor<T extends Definition> {
     protected static final String ORIGINAL = "original";
     static final String WRAP = "wrap";
 
     protected final JSources sources;
     protected final JSourceFile sourceFile;
-    protected final T myInterface;
+    protected final T definition;
     protected JClassDef target;
 
-    protected Implementor(final T myInterface) {
-        this.myInterface = myInterface;
+    protected Implementor(final T definition) {
+        this.definition = definition;
 
-        final TypeElement type = myInterface.getType();
-        final Environment env = myInterface.getEnv();
+        final TypeElement type = definition.getType();
+        final Environment env = definition.getEnv();
 
         final String packageName = env.getElementUtils().getPackageOf(type).getQualifiedName().toString();
 
@@ -58,7 +58,7 @@ abstract class Implementor<T extends Interface> {
 
     private String getImplementationClass() {
         final String originalBinaryName =
-                myInterface.getEnv().getElementUtils().getBinaryName(myInterface.getType()).toString();
+                definition.getEnv().getElementUtils().getBinaryName(definition.getType()).toString();
         final String qualifiedName = asImplementation(originalBinaryName);
         final int lastDot = originalBinaryName.lastIndexOf('.');
         return qualifiedName.substring(lastDot + 1);
@@ -76,23 +76,23 @@ abstract class Implementor<T extends Interface> {
 
     protected abstract void implementInternal();
 
-    static Implementor<?> implementor(final Interface definition) {
-        if (definition instanceof DatasetInterface) {
-            return new DatasetImplementor((DatasetInterface) definition);
+    static Implementor<?> implementor(final Definition definition) {
+        if (definition instanceof DatasetDefinition) {
+            return new DatasetImplementor((DatasetDefinition) definition);
 
-        } else if (definition instanceof GraphInterface) {
-            return new GraphImplementor((GraphInterface) definition);
+        } else if (definition instanceof GraphDefinition) {
+            return new GraphImplementor((GraphDefinition) definition);
 
         } else { // Resource
             // Processor's supported annotations are finite
-            return new ResourceImplementor((ResourceInterface) definition);
+            return new ResourceImplementor((ResourceDefinition) definition);
         }
     }
 
     protected void addClass(final Class<?> clazz) {
         target = sourceFile._class(PUBLIC, getImplementationClass());
         target._extends(clazz);
-        target._implements(myInterface.getOriginalInterface());
+        target._implements(definition.getOriginalInterface());
 
         target.docComment().text("Warning, this class consists of generated code.");
         target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
@@ -109,8 +109,8 @@ abstract class Implementor<T extends Interface> {
     }
 
     protected JType asImplementation(final TypeMirror original) {
-        final TypeElement returnType = myInterface.getEnv().type(original);
-        final String originalBinaryName = myInterface.getEnv()
+        final TypeElement returnType = definition.getEnv().type(original);
+        final String originalBinaryName = definition.getEnv()
                 .getElementUtils()
                 .getBinaryName(returnType)
                 .toString();

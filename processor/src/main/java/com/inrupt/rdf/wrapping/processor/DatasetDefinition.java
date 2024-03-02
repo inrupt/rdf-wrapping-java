@@ -28,8 +28,8 @@ import java.util.stream.Stream;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
-class DatasetInterface extends Interface {
-    DatasetInterface(final TypeElement type, final Environment env) {
+class DatasetDefinition extends Definition {
+    DatasetDefinition(final TypeElement type, final Environment env) {
         super(type, env);
     }
 

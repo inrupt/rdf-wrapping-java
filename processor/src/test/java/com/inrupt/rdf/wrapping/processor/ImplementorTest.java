@@ -45,14 +45,14 @@ class ImplementorTest {
     @DisplayName("fails to implement when filer can't write")
     void failsToWrite() throws IOException {
         final TypeElement type = mock(TypeElement.class);
-        final Interface myInterface = mock(Interface.class);
+        final Definition definition = mock(Definition.class);
         final Environment env = mock(Environment.class);
         final Elements elementUtils = mock(Elements.class);
         final Name name = mock(Name.class);
         final PackageElement packageElement = mock(PackageElement.class);
         final Filer filer = mock(Filer.class);
-        when(myInterface.getType()).thenReturn(type);
-        when(myInterface.getEnv()).thenReturn(env);
+        when(definition.getType()).thenReturn(type);
+        when(definition.getEnv()).thenReturn(env);
 
         when(elementUtils.getBinaryName(any())).thenReturn(name);
         when(packageElement.getQualifiedName()).thenReturn(name);
@@ -61,7 +61,7 @@ class ImplementorTest {
         when(env.getElementUtils()).thenReturn(elementUtils);
         when(env.getFiler()).thenReturn(filer);
 
-        final Implementor mock = new Implementor(myInterface) {
+        final Implementor mock = new Implementor(definition) {
             @Override
             protected void implementInternal() {
             }

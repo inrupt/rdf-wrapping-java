@@ -34,25 +34,25 @@ import javax.lang.model.element.TypeElement;
 
 import org.jboss.jdeparser.JType;
 
-class Interface {
+class Definition {
     private final TypeElement type;
     private final Environment env;
 
-    Interface(final TypeElement type, final Environment env) {
+    Definition(final TypeElement type, final Environment env) {
         this.env = env;
         this.type = type;
     }
 
-    static Interface definition(final TypeElement type, final Environment env) {
+    static Definition definition(final TypeElement type, final Environment env) {
         if (type.getAnnotation(Dataset.class) != null) {
-            return new DatasetInterface(type, env);
+            return new DatasetDefinition(type, env);
 
         } else if (type.getAnnotation(Graph.class) != null) {
-            return new GraphInterface(type, env);
+            return new GraphDefinition(type, env);
 
         } else { // Resource
             // Processor's supported annotations are finite
-            return new ResourceInterface(type, env);
+            return new ResourceDefinition(type, env);
         }
     }
 

@@ -39,10 +39,10 @@ import org.jboss.jdeparser.JExpr;
 import org.jboss.jdeparser.JMethodDef;
 import org.jboss.jdeparser.JType;
 
-class ResourceImplementor extends Implementor<ResourceInterface> {
+class ResourceImplementor extends Implementor<ResourceDefinition> {
     static final String FACTORY = "factory";
 
-    ResourceImplementor(final ResourceInterface definition) {
+    ResourceImplementor(final ResourceDefinition definition) {
         super(definition);
     }
 
@@ -90,7 +90,7 @@ class ResourceImplementor extends Implementor<ResourceInterface> {
     }
 
     private void addPrimitivePropertyMethods() {
-        myInterface.primitivePropertyMethods().forEach(method -> {
+        definition.primitivePropertyMethods().forEach(method -> {
             final String mappingMethodName = method.getAnnotation(Property.class).mapping().getMethodName();
             final JExpr mapping = $t(ValueMappings.class).methodRef(mappingMethodName);
 
@@ -99,7 +99,7 @@ class ResourceImplementor extends Implementor<ResourceInterface> {
     }
 
     private void addResourcePropertyMethods() {
-        myInterface.resourcePropertyMethods().forEach(method -> {
+        definition.resourcePropertyMethods().forEach(method -> {
             final JType implementation = asImplementation(method.getReturnType());
             final JCall mapping = $t(ValueMappings.class).call("as").arg(implementation._class());
 

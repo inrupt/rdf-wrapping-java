@@ -32,8 +32,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
-class GraphInterface extends Interface {
-    GraphInterface(final TypeElement type, final Environment env) {
+class GraphDefinition extends Definition {
+    GraphDefinition(final TypeElement type, final Environment env) {
         super(type, env);
     }
 
@@ -41,8 +41,8 @@ class GraphInterface extends Interface {
         final Stream<TypeMirror> children = resourceMethodTypes();
         final Stream<TypeMirror> descendants = resourceMethodTypes()
                 .map(getEnv()::type)
-                .map(type -> new ResourceInterface(type, getEnv()))
-                .flatMap(ResourceInterface::transitiveResourceTypes);
+                .map(type -> new ResourceDefinition(type, getEnv()))
+                .flatMap(ResourceDefinition::transitiveResourceTypes);
 
         return concat(children, descendants)
                 .distinct();

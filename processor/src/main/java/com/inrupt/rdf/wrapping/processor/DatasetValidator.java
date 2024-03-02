@@ -26,8 +26,8 @@ import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
 import org.apache.jena.query.Dataset;
 
-class DatasetValidator extends Validator<DatasetInterface> {
-    DatasetValidator(final DatasetInterface definition) {
+class DatasetValidator extends Validator<DatasetDefinition> {
+    DatasetValidator(final DatasetDefinition definition) {
         super(definition);
     }
 

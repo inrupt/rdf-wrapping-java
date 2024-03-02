@@ -27,8 +27,8 @@ import com.inrupt.rdf.wrapping.annotation.Resource;
 
 import org.apache.jena.rdf.model.Model;
 
-class GraphValidator extends Validator<GraphInterface> {
-    GraphValidator(final GraphInterface definition) {
+class GraphValidator extends Validator<GraphDefinition> {
+    GraphValidator(final GraphDefinition definition) {
         super(definition);
     }
 

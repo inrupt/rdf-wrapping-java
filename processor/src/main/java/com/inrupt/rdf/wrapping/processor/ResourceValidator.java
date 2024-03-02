@@ -30,8 +30,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
-class ResourceValidator extends Validator<ResourceInterface> {
-    ResourceValidator(final ResourceInterface definition) {
+class ResourceValidator extends Validator<ResourceDefinition> {
+    ResourceValidator(final ResourceDefinition definition) {
         super(definition);
     }
 
@@ -55,13 +55,13 @@ class ResourceValidator extends Validator<ResourceInterface> {
     }
 
     private void requireCompatiblePrimitiveReturnType() {
-        myInterface.primitiveMappingPropertyMethods()
+        definition.primitiveMappingPropertyMethods()
                 .filter(method -> method.getReturnType().getKind() != VOID)
                 .forEach(method -> {
                     final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
                     final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
 
-                    if (!myInterface.getEnv().getTypeUtils().isAssignable(
+                    if (!definition.getEnv().getTypeUtils().isAssignable(
                             mappingMethodReturnType,
                             method.getReturnType())) {
                         errors.add(new ValidationError(
@@ -76,22 +76,22 @@ class ResourceValidator extends Validator<ResourceInterface> {
     }
 
     private void requireCompatibleComplexReturnType() {
-        myInterface.complexMappingPropertyMethods()
+        definition.complexMappingPropertyMethods()
                 .filter(method -> method.getReturnType().getKind() != VOID)
                 .forEach(method -> {
-                    final TypeElement returnType = myInterface.getEnv().type(method.getReturnType());
+                    final TypeElement returnType = definition.getEnv().type(method.getReturnType());
                     if (returnType == null || returnType.getAnnotation(Resource.class) == null) {
                         errors.add(new ValidationError(
                                 method,
                                 "Method %s on interface %s must return @Resource interface",
                                 method.getSimpleName(),
-                                myInterface.getType().getSimpleName()));
+                                definition.getType().getSimpleName()));
                     }
                 });
     }
 
     private TypeMirror returnTypeOfMapper(final String mappingMethod) {
-        return myInterface.getEnv().methodsOf(ValueMappings.class)
+        return definition.getEnv().methodsOf(ValueMappings.class)
                 .filter(method -> method.getSimpleName().contentEquals(mappingMethod))
                 .map(ExecutableElement::getReturnType)
                 .findFirst()

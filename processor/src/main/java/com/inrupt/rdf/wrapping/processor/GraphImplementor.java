@@ -42,8 +42,8 @@ import org.jboss.jdeparser.JExprs;
 import org.jboss.jdeparser.JMethodDef;
 import org.jboss.jdeparser.JType;
 
-class GraphImplementor extends Implementor<GraphInterface> {
-    GraphImplementor(final GraphInterface definition) {
+class GraphImplementor extends Implementor<GraphDefinition> {
+    GraphImplementor(final GraphDefinition definition) {
         super(definition);
     }
 
@@ -55,17 +55,17 @@ class GraphImplementor extends Implementor<GraphInterface> {
         addToPersonality(constructor);
         addWrap();
 
-        myInterface.instanceMethods().forEach(method -> addResourceMethod(
+        definition.instanceMethods().forEach(method -> addResourceMethod(
                 method,
                 "optionalFirstInstanceOfEither",
                 method.getAnnotation(OptionalFirstInstanceOfEither.class).value()));
 
-        myInterface.subjectMethods().forEach(method -> addResourceMethod(
+        definition.subjectMethods().forEach(method -> addResourceMethod(
                 method,
                 "optionalFirstSubjectOfEither",
                 method.getAnnotation(OptionalFirstSubjectOfEither.class).value()));
 
-        myInterface.objectMethods().forEach(method -> addResourceMethod(
+        definition.objectMethods().forEach(method -> addResourceMethod(
                 method,
                 "optionalFirstObjectOfEither",
                 method.getAnnotation(OptionalFirstObjectOfEither.class).value()));
@@ -93,13 +93,13 @@ class GraphImplementor extends Implementor<GraphInterface> {
     }
 
     private void addWrap() {
-        final JMethodDef myWrap = target.method(PUBLIC | STATIC, myInterface.getOriginalInterface(), WRAP);
+        final JMethodDef myWrap = target.method(PUBLIC | STATIC, definition.getOriginalInterface(), WRAP);
         myWrap.param(FINAL, Model.class, ORIGINAL);
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("getGraph")));
     }
 
     private void addToPersonality(final JMethodDef constructor) {
-        myInterface.transitiveResourceTypes().forEach(type -> {
+        definition.transitiveResourceTypes().forEach(type -> {
             final JType implementation = asImplementation(type);
 
             constructor

@@ -36,8 +36,8 @@ import org.jboss.jdeparser.JExpr;
 import org.jboss.jdeparser.JMethodDef;
 import org.jboss.jdeparser.JType;
 
-class DatasetImplementor extends Implementor<DatasetInterface> {
-    DatasetImplementor(final DatasetInterface definition) {
+class DatasetImplementor extends Implementor<DatasetDefinition> {
+    DatasetImplementor(final DatasetDefinition definition) {
         super(definition);
     }
 
@@ -70,17 +70,17 @@ class DatasetImplementor extends Implementor<DatasetInterface> {
     }
 
     private void addWrap() {
-        final JMethodDef myWrap = target.method(PUBLIC | STATIC, myInterface.getOriginalInterface(), WRAP);
+        final JMethodDef myWrap = target.method(PUBLIC | STATIC, definition.getOriginalInterface(), WRAP);
         myWrap.param(FINAL, Dataset.class, ORIGINAL);
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("asDatasetGraph")));
     }
 
     private void addDefaultGraphs() {
-        myInterface.defaultGraphMethods().forEach(method -> addGraph(method, call("getDefaultModel")));
+        definition.defaultGraphMethods().forEach(method -> addGraph(method, call("getDefaultModel")));
     }
 
     private void addNamedGraphs() {
-        myInterface.namedGraphMethods().forEach(method -> {
+        definition.namedGraphMethods().forEach(method -> {
             final String graph = method.getAnnotation(NamedGraph.class).value();
 
             addGraph(method, call("getNamedModel").arg(str(graph)));
