@@ -55,10 +55,9 @@ public final class Manager {
 
     private static <T> Class<?> findImplementation(final Class<T> definition) {
         final String implementation = asImplementation(definition.getName());
-        final ClassLoader loader = definition.getClassLoader();
 
         try {
-            return Class.forName(implementation, true, loader);
+            return Class.forName(implementation);
 
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("implementation not found", e);

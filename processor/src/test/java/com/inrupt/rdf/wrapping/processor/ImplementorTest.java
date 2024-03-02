@@ -61,6 +61,7 @@ class ImplementorTest {
         when(env.getElementUtils()).thenReturn(elementUtils);
         when(env.getFiler()).thenReturn(filer);
 
+        @SuppressWarnings({"rawtypes", "unchecked"}) // For test brevity
         final Implementor mock = new Implementor(definition) {
             @Override
             protected void implementInternal() {

@@ -20,8 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.processor.Implementor.implementor;
 import static com.inrupt.rdf.wrapping.processor.Definition.definition;
+import static com.inrupt.rdf.wrapping.processor.Implementor.implementor;
 import static com.inrupt.rdf.wrapping.processor.Validator.validator;
 import static java.util.stream.Collectors.toSet;
 import static javax.lang.model.SourceVersion.RELEASE_8;

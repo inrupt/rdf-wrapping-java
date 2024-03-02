@@ -70,13 +70,17 @@ class ResourceDefinition extends Definition {
                 break;
             }
 
-            final TypeMirror next = outstanding.remove();
-            final TypeElement nextType = getEnv().type(next);
-
-            current = new ResourceDefinition(nextType, getEnv());
+            current = dequeue(outstanding);
         }
 
         return results.stream();
+    }
+
+    private ResourceDefinition dequeue(final Queue<TypeMirror> outstanding) {
+        final TypeMirror next = outstanding.remove();
+        final TypeElement nextType = getEnv().type(next);
+
+        return new ResourceDefinition(nextType, getEnv());
     }
 
     private Predicate<ExecutableElement> returnTypeIsResource() {

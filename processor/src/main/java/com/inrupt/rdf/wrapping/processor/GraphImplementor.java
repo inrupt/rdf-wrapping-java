@@ -110,6 +110,7 @@ class GraphImplementor extends Implementor<GraphDefinition> {
         });
     }
 
+    @SuppressWarnings("PMD.UseVarargs") // irrelevant in this utility method
     private void addResourceMethod(final ExecutableElement method, final String convenience, final String[] values) {
         final JType implementation = asImplementation(method.getReturnType());
 
