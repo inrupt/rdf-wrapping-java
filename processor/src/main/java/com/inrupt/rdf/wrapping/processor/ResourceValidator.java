@@ -20,8 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static javax.lang.model.type.TypeKind.VOID;
-
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
@@ -55,39 +53,35 @@ class ResourceValidator extends Validator<ResourceDefinition> {
     }
 
     private void requireCompatiblePrimitiveReturnType() {
-        definition.primitiveMappingPropertyMethods()
-                .filter(method -> method.getReturnType().getKind() != VOID)
-                .forEach(method -> {
-                    final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
-                    final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
+        definition.primitiveMappingPropertyMethods().forEach(method -> {
+            final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
+            final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
 
-                    if (!definition.getEnv().getTypeUtils().isAssignable(
-                            mappingMethodReturnType,
-                            method.getReturnType())) {
-                        errors.add(new ValidationError(
-                                method,
-                                "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
-                                method.getReturnType(),
-                                method.getSimpleName(),
-                                mappingMethodReturnType,
-                                mappingMethod));
-                    }
-                });
+            if (!definition.getEnv().getTypeUtils().isAssignable(
+                    mappingMethodReturnType,
+                    method.getReturnType())) {
+                errors.add(new ValidationError(
+                        method,
+                        "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
+                        method.getReturnType(),
+                        method.getSimpleName(),
+                        mappingMethodReturnType,
+                        mappingMethod));
+            }
+        });
     }
 
     private void requireCompatibleComplexReturnType() {
-        definition.complexMappingPropertyMethods()
-                .filter(method -> method.getReturnType().getKind() != VOID)
-                .forEach(method -> {
-                    final TypeElement returnType = definition.getEnv().type(method.getReturnType());
-                    if (returnType == null || returnType.getAnnotation(Resource.class) == null) {
-                        errors.add(new ValidationError(
-                                method,
-                                "Method %s on interface %s must return @Resource interface",
-                                method.getSimpleName(),
-                                definition.getType().getSimpleName()));
-                    }
-                });
+        definition.complexMappingPropertyMethods().forEach(method -> {
+            final TypeElement returnType = definition.returnTypeOf(method);
+            if (returnType == null || returnType.getAnnotation(Resource.class) == null) {
+                errors.add(new ValidationError(
+                        method,
+                        "Method %s on interface %s must return @Resource interface",
+                        method.getSimpleName(),
+                        definition.getType().getSimpleName()));
+            }
+        });
     }
 
     private TypeMirror returnTypeOfMapper(final String mappingMethod) {

@@ -56,14 +56,6 @@ abstract class Implementor<T extends Definition> {
         sourceFile = sources.createSourceFile(packageName, getImplementationClass());
     }
 
-    private String getImplementationClass() {
-        final String originalBinaryName =
-                definition.getEnv().getElementUtils().getBinaryName(definition.getType()).toString();
-        final String qualifiedName = asImplementation(originalBinaryName);
-        final int lastDot = originalBinaryName.lastIndexOf('.');
-        return qualifiedName.substring(lastDot + 1);
-    }
-
     void implement() {
         implementInternal();
 
@@ -73,8 +65,6 @@ abstract class Implementor<T extends Definition> {
             throw new RuntimeException("could not open writer", e);
         }
     }
-
-    protected abstract void implementInternal();
 
     static Implementor<?> implementor(final Definition definition) {
         if (definition instanceof DatasetDefinition) {
@@ -88,6 +78,12 @@ abstract class Implementor<T extends Definition> {
             return new ResourceImplementor((ResourceDefinition) definition);
         }
     }
+
+    static String asImplementation(final String original) {
+        return original + "_$impl";
+    }
+
+    protected abstract void implementInternal();
 
     protected void addClass(final Class<?> clazz) {
         target = sourceFile._class(PUBLIC, getImplementationClass());
@@ -109,16 +105,20 @@ abstract class Implementor<T extends Definition> {
     }
 
     protected JType asImplementation(final TypeMirror original) {
-        final TypeElement returnType = definition.getEnv().type(original);
-        final String originalBinaryName = definition.getEnv()
-                .getElementUtils()
-                .getBinaryName(returnType)
-                .toString();
+        final TypeElement returnType = definition.typeOf(original);
+        final String originalBinaryName = binaryName(returnType);
 
         return $t(asImplementation(originalBinaryName));
     }
 
-    static String asImplementation(final String original) {
-        return original + "_$impl";
+    private String getImplementationClass() {
+        final String originalBinaryName = binaryName(definition.getType());
+        final String qualifiedName = asImplementation(originalBinaryName);
+        final int lastDot = originalBinaryName.lastIndexOf('.');
+        return qualifiedName.substring(lastDot + 1);
+    }
+
+    private String binaryName(final TypeElement element) {
+        return definition.getEnv().getElementUtils().getBinaryName(element).toString();
     }
 }

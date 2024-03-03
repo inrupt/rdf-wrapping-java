@@ -20,21 +20,26 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.jboss.jdeparser.JTypes.typeOf;
+import static javax.lang.model.element.Modifier.STATIC;
+import static javax.lang.model.type.TypeKind.VOID;
 
 import com.inrupt.rdf.wrapping.annotation.Dataset;
 import com.inrupt.rdf.wrapping.annotation.Graph;
 
 import java.lang.annotation.Annotation;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 import org.jboss.jdeparser.JType;
+import org.jboss.jdeparser.JTypes;
 
 class Definition {
+    static final Predicate<ExecutableElement> isVoid = method -> method.getReturnType().getKind() == VOID;
+
     private final TypeElement type;
     private final Environment env;
 
@@ -56,6 +61,13 @@ class Definition {
         }
     }
 
+    TypeElement typeOf(final TypeMirror mirror) {
+        return getEnv().type(mirror);
+    }
+
+    TypeElement returnTypeOf(final ExecutableElement method) {
+        return typeOf(method.getReturnType());
+    }
 
     protected TypeElement getType() {
         return type;
@@ -66,13 +78,13 @@ class Definition {
     }
 
     protected JType getOriginalInterface() {
-        return typeOf(getType().asType());
+        return JTypes.typeOf(getType().asType());
     }
 
-    protected final Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
+    protected Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
         return getEnv().methodsOf(getType())
                 .filter(method -> !method.isDefault())
-                .filter(method -> !method.getModifiers().contains(Modifier.STATIC))
+                .filter(method -> !method.getModifiers().contains(STATIC))
                 .filter(method -> method.getAnnotation(annotation) != null);
     }
 }

@@ -20,6 +20,9 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.AS;
+import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
+
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 
@@ -35,24 +38,35 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 class ResourceDefinition extends Definition {
+    private static final Predicate<ExecutableElement> isComplex = method ->
+            method.getAnnotation(Property.class).mapping() == AS;
+    private final Predicate<ExecutableElement> returnsResource = method ->
+            getEnv().type(method.getReturnType()).getAnnotation(Resource.class) != null;
+
     ResourceDefinition(final TypeElement type, final Environment env) {
         super(type, env);
     }
 
     Stream<ExecutableElement> primitivePropertyMethods() {
-        return membersAnnotatedWith(Property.class).filter(returnTypeIsResource().negate());
+        return membersAnnotatedWith(Property.class)
+                .filter(not(returnsResource));
     }
 
     Stream<ExecutableElement> resourcePropertyMethods() {
-        return membersAnnotatedWith(Property.class).filter(returnTypeIsResource());
+        return membersAnnotatedWith(Property.class)
+                .filter(returnsResource);
     }
 
     Stream<ExecutableElement> complexMappingPropertyMethods() {
-        return membersAnnotatedWith(Property.class).filter(isComplexMapping());
+        return membersAnnotatedWith(Property.class)
+                .filter(isComplex)
+                .filter(not(isVoid));
     }
 
     Stream<ExecutableElement> primitiveMappingPropertyMethods() {
-        return membersAnnotatedWith(Property.class).filter(isComplexMapping().negate());
+        return membersAnnotatedWith(Property.class)
+                .filter(not(isComplex))
+                .filter(not(isVoid));
     }
 
     Stream<TypeMirror> transitiveResourceTypes() {
@@ -81,13 +95,5 @@ class ResourceDefinition extends Definition {
         final TypeElement nextType = getEnv().type(next);
 
         return new ResourceDefinition(nextType, getEnv());
-    }
-
-    private Predicate<ExecutableElement> returnTypeIsResource() {
-        return method -> getEnv().type(method.getReturnType()).getAnnotation(Resource.class) != null;
-    }
-
-    private Predicate<ExecutableElement> isComplexMapping() {
-        return method -> method.getAnnotation(Property.class).mapping() == Property.Mapping.AS;
     }
 }

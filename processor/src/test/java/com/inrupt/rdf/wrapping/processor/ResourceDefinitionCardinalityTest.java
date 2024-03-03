@@ -71,8 +71,8 @@ class ResourceDefinitionCardinalityTest {
     private static final int NONE = 0;
     private static final int SINGLE = 1;
     private static final int MANY = 2;
-    public static final String DOES_NOT_THROW = "does not throw";
-    public static final String THROWS = "throws";
+    private static final String DOES_NOT_THROW = "does not throw";
+    private static final String THROWS = "throws";
 
     private Model m;
     private GraphDefinition wrapped;
@@ -86,7 +86,7 @@ class ResourceDefinitionCardinalityTest {
     @DisplayName("properly converts node with cardinality")
     @ParameterizedTest(name = "{2} for cardinality {0} with {1} items")
     @MethodSource
-    void e2e(final Cardinality cardinality, final int number, final String throwing) throws IntrospectionException {
+    void e2e(final Cardinality cardinality, final int number, final String throwing) throws Exception {
         final List<String> values = new ArrayList<>();
         final Class<? extends Exception> expectedException;
         final Matcher<?> asExpected;
@@ -130,14 +130,6 @@ class ResourceDefinitionCardinalityTest {
         }
     }
 
-    private static Method findProperty(final ResourceDefinition r, final Cardinality c) throws IntrospectionException {
-        return stream(getBeanInfo(r.getClass(), Object.class).getPropertyDescriptors())
-                .filter(p -> p.getName().equals(c.getMethodName()))
-                .map(PropertyDescriptor::getReadMethod)
-                .findAny()
-                .orElseThrow(RuntimeException::new);
-    }
-
     private static Stream<Arguments> e2e() {
         return Stream.of(
                 arguments(ANY_OR_NULL, NONE, DOES_NOT_THROW),
@@ -167,6 +159,14 @@ class ResourceDefinitionCardinalityTest {
         return stream(WrapperResource.class.getDeclaredMethods())
                 .filter(m -> isProtected(m.getModifiers()))
                 .map(Method::getName);
+    }
+
+    private static Method findProperty(final ResourceDefinition r, final Cardinality c) throws IntrospectionException {
+        return stream(getBeanInfo(r.getClass(), Object.class).getPropertyDescriptors())
+                .filter(p -> p.getName().equals(c.getMethodName()))
+                .map(PropertyDescriptor::getReadMethod)
+                .findAny()
+                .orElseThrow(RuntimeException::new);
     }
 
     @Resource

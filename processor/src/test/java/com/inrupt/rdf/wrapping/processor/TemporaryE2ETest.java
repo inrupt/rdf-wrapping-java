@@ -97,11 +97,12 @@ class TemporaryE2ETest {
 
     @Test
     void resourceCanGetProperty() {
-        final Model model = modelFrom("PREFIX : <urn:example:>\n" +
-                "\n" +
-                "[\n" +
-                "    a :C ;\n" +
-                "] .\n");
+        final Model model = modelFrom("" +
+                "PREFIX : <urn:example:> \n" +
+                "                        \n" +
+                "[                       \n" +
+                "    a :C ;              \n" +
+                "] .                     \n");
         final GraphDefinition y = GraphDefinition.wrap(model);
         final ResourceDefinition1 z = y.getResource1();
 
@@ -110,16 +111,17 @@ class TemporaryE2ETest {
 
     @Test
     void e2e() {
-        final Dataset dataset = datasetFrom("PREFIX : <urn:example:>\n" +
-                "\n" +
-                "GRAPH <urn:example:g1> {\n" +
-                "    [\n" +
-                "        a :C ;\n" +
-                "        :p :VALUE ;\n" +
-                "    ] .\n" +
-                "\n" +
-                "    [ :p [] ] .\n" +
-                "}\n");
+        final Dataset dataset = datasetFrom("" +
+                "PREFIX : <urn:example:>  \n" +
+                "                         \n" +
+                "GRAPH <urn:example:g1> { \n" +
+                "    [                    \n" +
+                "        a :C ;           \n" +
+                "        :p :VALUE ;      \n" +
+                "    ] .                  \n" +
+                "                         \n" +
+                "    [ :p [] ] .          \n" +
+                "}                        \n");
 
         final DatasetDefinition x = DatasetDefinition.wrap(dataset);
         final GraphDefinition y = x.getNamedGraph();

@@ -20,8 +20,9 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.processor.Definition.isVoid;
+import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
 import static javax.lang.model.element.Modifier.STATIC;
-import static javax.lang.model.type.TypeKind.VOID;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -131,13 +132,13 @@ abstract class Validator<T extends Definition> {
             final Class<? extends Annotation> required) {
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
-        final Predicate<ExecutableElement> isNotResource = method ->
-                definition.getEnv().type(method.getReturnType()).getAnnotation(required) == null;
+        final Predicate<ExecutableElement> isResource = method ->
+                definition.returnTypeOf(method).getAnnotation(required) != null;
 
         definition.getEnv().methodsOf(definition.getType())
-                .filter(method -> method.getReturnType().getKind() != VOID)
+                .filter(not(isVoid))
                 .filter(isAnnotated)
-                .filter(isNotResource)
+                .filter(not(isResource))
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Method %s on interface %s annotated with @%s must return @%s interface",
@@ -149,7 +150,7 @@ abstract class Validator<T extends Definition> {
 
     protected void requireNonVoidReturnType(final Class<? extends Annotation> annotation) {
         definition.membersAnnotatedWith(annotation)
-                .filter(method -> method.getReturnType().getKind() == VOID)
+                .filter(isVoid)
                 .forEach(method ->
                         errors.add(new ValidationError(
                                 method,

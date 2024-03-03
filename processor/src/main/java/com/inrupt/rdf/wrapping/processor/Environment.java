@@ -44,10 +44,6 @@ class Environment extends WrapperProcessingEnvironment {
         return (TypeElement) getTypeUtils().asElement(mirror);
     }
 
-    boolean isVoid(final TypeMirror type) {
-        return isSameType(type, Void.class);
-    }
-
     boolean isSameType(final TypeMirror t1, final Class<?> t2) {
         return getTypeUtils().isSameType(t1, mirror(t2));
     }
