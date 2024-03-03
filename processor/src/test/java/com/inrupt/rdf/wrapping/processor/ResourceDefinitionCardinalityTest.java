@@ -45,7 +45,9 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Model;
@@ -56,6 +58,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("Resource definition")
@@ -83,10 +86,10 @@ class ResourceDefinitionCardinalityTest {
         wrapped = GraphDefinition.wrap(m);
     }
 
-    @DisplayName("properly converts node with cardinality")
+    @DisplayName("properly converts/fails node with cardinality")
     @ParameterizedTest(name = "{2} for cardinality {0} with {1} items")
     @MethodSource
-    void e2e(final Cardinality cardinality, final int number, final String throwing) throws Exception {
+    void singular(final Cardinality cardinality, final int number, final String throwing) throws Exception {
         final List<String> values = new ArrayList<>();
         final Class<? extends Exception> expectedException;
         final Matcher<?> asExpected;
@@ -130,7 +133,7 @@ class ResourceDefinitionCardinalityTest {
         }
     }
 
-    private static Stream<Arguments> e2e() {
+    private static Stream<Arguments> singular() {
         return Stream.of(
                 arguments(ANY_OR_NULL, NONE, DOES_NOT_THROW),
                 arguments(ANY_OR_NULL, SINGLE, DOES_NOT_THROW),
@@ -145,6 +148,44 @@ class ResourceDefinitionCardinalityTest {
                 arguments(SINGLE_OR_THROW, SINGLE, DOES_NOT_THROW),
                 arguments(SINGLE_OR_THROW, MANY, THROWS)
         );
+    }
+
+    @DisplayName("returns correct items for plural cardinality")
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(value = Cardinality.class, names = {"OBJECT_ITERATOR", "OBJECTS_READ_ONLY", "OBJECT_STREAM"})
+    @SuppressWarnings("unchecked")
+    void plural(final Cardinality cardinality) throws Exception {
+        final List<String> values = new ArrayList<>();
+
+        // anchor for graph definition
+        final org.apache.jena.rdf.model.Resource s = m.createResource().addProperty(type, m.createResource(C));
+        final ResourceDefinition resource = wrapped.getResource();
+
+        for (int i = 0; i < 100; i++) {
+            final String value = randomUUID().toString();
+            values.add(value);
+            s.addProperty(m.createProperty(P), m.createTypedLiteral(value));
+        }
+
+        final Object invoke = findProperty(resource, cardinality).invoke(resource);
+
+        final Iterable<?> result;
+        switch (cardinality) {
+            case OBJECT_ITERATOR:
+                result = () -> (Iterator) invoke;
+                break;
+
+            case OBJECTS_READ_ONLY:
+                result = (Set) invoke;
+                break;
+
+            default:
+            case OBJECT_STREAM:
+                result = () -> ((Stream) invoke).iterator();
+                break;
+        }
+
+        assertThat(result, containsInAnyOrder(values.toArray()));
     }
 
     @Disabled("Not ready yet") // TODO: Enable
@@ -182,6 +223,15 @@ class ResourceDefinitionCardinalityTest {
 
         @Property(predicate = P, cardinality = SINGLE_OR_THROW, mapping = LITERAL_AS_STRING)
         String getSingleOrThrow();
+
+        @Property(predicate = P, cardinality = OBJECT_ITERATOR, mapping = LITERAL_AS_STRING)
+        Iterator<String> getObjectIterator();
+
+        @Property(predicate = P, cardinality = OBJECTS_READ_ONLY, mapping = LITERAL_AS_STRING)
+        Set<String> getObjectsReadOnly();
+
+        @Property(predicate = P, cardinality = OBJECT_STREAM, mapping = LITERAL_AS_STRING)
+        Stream<String> getObjectStream();
     }
 
     @Graph

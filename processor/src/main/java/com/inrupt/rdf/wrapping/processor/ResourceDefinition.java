@@ -40,6 +40,8 @@ import javax.lang.model.type.TypeMirror;
 class ResourceDefinition extends Definition {
     private static final Predicate<ExecutableElement> isComplex = method ->
             method.getAnnotation(Property.class).mapping() == AS;
+    private static final Predicate<ExecutableElement> isPlural = method ->
+            method.getAnnotation(Property.class).cardinality().isPlural();
     private final Predicate<ExecutableElement> returnsResource = method ->
             getEnv().type(method.getReturnType()).getAnnotation(Resource.class) != null;
 
@@ -60,13 +62,20 @@ class ResourceDefinition extends Definition {
     Stream<ExecutableElement> complexMappingPropertyMethods() {
         return membersAnnotatedWith(Property.class)
                 .filter(isComplex)
+                .filter(not(isPlural))
                 .filter(not(isVoid));
     }
 
     Stream<ExecutableElement> primitiveMappingPropertyMethods() {
         return membersAnnotatedWith(Property.class)
                 .filter(not(isComplex))
+                .filter(not(isPlural))
                 .filter(not(isVoid));
+    }
+
+    Stream<ExecutableElement> pluralPropertyMethods() {
+        return membersAnnotatedWith(Property.class)
+                .filter(isPlural);
     }
 
     Stream<TypeMirror> transitiveResourceTypes() {

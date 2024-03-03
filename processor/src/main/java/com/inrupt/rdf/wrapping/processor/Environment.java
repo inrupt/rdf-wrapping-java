@@ -20,8 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import com.inrupt.rdf.wrapping.jena.ValueMappings;
-
 import java.util.stream.Stream;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -45,14 +43,18 @@ class Environment extends WrapperProcessingEnvironment {
     }
 
     boolean isSameType(final TypeMirror t1, final Class<?> t2) {
-        return getTypeUtils().isSameType(t1, mirror(t2));
+        return isSameType(t1, mirror(t2));
+    }
+
+    boolean isSameType(final TypeMirror t1, final TypeMirror t2) {
+        return getTypeUtils().isSameType(t1, t2);
     }
 
     Stream<ExecutableElement> methodsOf(final Element element) {
         return ElementFilter.methodsIn(element.getEnclosedElements()).stream();
     }
 
-    Stream<ExecutableElement> methodsOf(final Class<ValueMappings> clazz) {
+    Stream<ExecutableElement> methodsOf(final Class<?> clazz) {
         return methodsOf(type(clazz));
     }
 

@@ -58,19 +58,34 @@ public @interface Property {
     }
 
     enum Cardinality {
-        ANY_OR_NULL("anyOrNull"),
-        ANY_OR_THROW("anyOrThrow"),
-        SINGLE_OR_NULL("singleOrNull"),
-        SINGLE_OR_THROW("singleOrThrow");
+        ANY_OR_NULL("anyOrNull", false),
+
+        ANY_OR_THROW("anyOrThrow", false),
+
+        SINGLE_OR_NULL("singleOrNull", false),
+
+        SINGLE_OR_THROW("singleOrThrow", false),
+
+        OBJECT_ITERATOR("objectIterator", true),
+
+        OBJECTS_READ_ONLY("objectsReadOnly", true),
+
+        OBJECT_STREAM("objectStream", true);
 
         private final String methodName;
+        private final boolean plural;
 
-        Cardinality(final String methodName) {
+        Cardinality(final String methodName, final boolean plural) {
             this.methodName = methodName;
+            this.plural = plural;
         }
 
         public String getMethodName() {
             return methodName;
+        }
+
+        public boolean isPlural() {
+            return plural;
         }
     }
 }

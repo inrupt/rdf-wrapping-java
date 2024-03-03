@@ -101,7 +101,16 @@ class ValidatorTest {
                 arguments("resource property method return type not assignable", "must be assignable from return type"),
                 arguments("resource property method is void", MUST_NOT_BE_VOID),
                 arguments("resource complex property method is not resource", MUST_RETURN_RESOURCE_INTERFACE),
-                arguments("resource complex property method is void", MUST_NOT_BE_VOID)
+                arguments("resource complex property method is void", MUST_NOT_BE_VOID),
+
+                arguments("resource plural property method erasure differs", "must have same erasure as return type"),
+                arguments("resource plural property method erasure super", "must have same erasure as return type"),
+                arguments(
+                        "resource plural property method type argument differs",
+                        "must have same type argument as return type"),
+                arguments(
+                        "resource plural property method type argument super",
+                        "must have same type argument as return type")
         );
     }
 
@@ -138,7 +147,9 @@ class ValidatorTest {
                 arguments("resource unannotated method is static"),
                 arguments("resource unannotated method is default"),
                 arguments("resource complex property method is resource instance"),
-                arguments("resource complex property method recursive")
+                arguments("resource complex property method recursive"),
+
+                arguments("resource plural property method")
         );
     }
 }

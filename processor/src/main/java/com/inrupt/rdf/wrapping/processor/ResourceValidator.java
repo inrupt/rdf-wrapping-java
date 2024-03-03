@@ -23,9 +23,15 @@ package com.inrupt.rdf.wrapping.processor;
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
+import com.inrupt.rdf.wrapping.jena.WrapperResource;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 class ResourceValidator extends Validator<ResourceDefinition> {
@@ -50,42 +56,110 @@ class ResourceValidator extends Validator<ResourceDefinition> {
         requireNonVoidReturnType(Property.class);
         requireCompatiblePrimitiveReturnType();
         requireCompatibleComplexReturnType();
+
+        requirePluralErasure();
+        requirePluralTypeArgument();
     }
 
     private void requireCompatiblePrimitiveReturnType() {
         definition.primitiveMappingPropertyMethods().forEach(method -> {
-            final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
-            final TypeMirror mappingMethodReturnType = returnTypeOfMapper(mappingMethod);
+            final TypeMirror thisReturn = method.getReturnType();
 
-            if (!definition.getEnv().getTypeUtils().isAssignable(
-                    mappingMethodReturnType,
-                    method.getReturnType())) {
-                errors.add(new ValidationError(
-                        method,
-                        "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
-                        method.getReturnType(),
-                        method.getSimpleName(),
-                        mappingMethodReturnType,
-                        mappingMethod));
+            final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
+            final TypeMirror mappingReturn = returnTypeOf(mappingMethod, ValueMappings.class);
+
+            if (definition.getEnv().getTypeUtils().isAssignable(mappingReturn, thisReturn)) {
+                return;
             }
+
+            errors.add(new ValidationError(
+                    method,
+                    "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
+                    thisReturn,
+                    method.getSimpleName(),
+                    mappingReturn,
+                    mappingMethod));
         });
     }
 
     private void requireCompatibleComplexReturnType() {
         definition.complexMappingPropertyMethods().forEach(method -> {
             final TypeElement returnType = definition.returnTypeOf(method);
-            if (returnType == null || returnType.getAnnotation(Resource.class) == null) {
-                errors.add(new ValidationError(
-                        method,
-                        "Method %s on interface %s must return @Resource interface",
-                        method.getSimpleName(),
-                        definition.getType().getSimpleName()));
+
+            if (returnType != null && returnType.getAnnotation(Resource.class) != null) {
+                return;
             }
+
+            errors.add(new ValidationError(
+                    method,
+                    "Method %s on interface %s must return @Resource interface",
+                    method.getSimpleName(),
+                    definition.getType().getSimpleName()));
         });
     }
 
-    private TypeMirror returnTypeOfMapper(final String mappingMethod) {
-        return definition.getEnv().methodsOf(ValueMappings.class)
+    private void requirePluralErasure() {
+        definition.pluralPropertyMethods().forEach(method -> {
+            final TypeMirror thisReturn = method.getReturnType();
+            final TypeMirror thisErasure = definition.getEnv().getTypeUtils().erasure(thisReturn);
+
+            final String cardinalityMethod = method.getAnnotation(Property.class).cardinality().getMethodName();
+            final TypeMirror cardinalityReturn = returnTypeOf(cardinalityMethod, WrapperResource.class);
+            final TypeMirror cardinalityErasure =
+                    definition.getEnv().getTypeUtils().erasure(cardinalityReturn);
+
+            // TODO: Check subclassing of erasures e.g. Collection<T> & Set<T>
+            if (definition.getEnv().isSameType(cardinalityErasure, thisErasure)) {
+                return;
+            }
+
+            errors.add(new ValidationError(
+                    method,
+                    "Return type [%s] of [%s] must have same erasure as return type [%s] of cardinality [%s]",
+                    thisReturn,
+                    method.getSimpleName(),
+                    cardinalityReturn,
+                    cardinalityMethod));
+        });
+    }
+
+    // TODO: Check bounds of type parameters e.g. String & CharSequence
+    private void requirePluralTypeArgument() {
+        definition.pluralPropertyMethods().forEach(method -> {
+            final DeclaredType thisReturn = (DeclaredType) method.getReturnType();
+            final TypeMirror thisErasure = definition.getEnv().getTypeUtils().erasure(thisReturn);
+
+            if (definition.getEnv().isSameType(thisErasure, thisReturn)) {
+                // Ignore cases where return type of property method is not generic
+                return;
+            }
+
+            final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
+            final TypeMirror mappingReturn = returnTypeOf(mappingMethod, ValueMappings.class);
+
+            final List<TypeElement> mappingTypeArguments = new ArrayList<>();
+            mappingTypeArguments.add(definition.typeOf(mappingReturn));
+
+            final List<TypeElement> thisTypeArguments = thisReturn.getTypeArguments().stream()
+                    .map(definition::typeOf)
+                    .collect(Collectors.toList());
+
+            if (mappingTypeArguments.equals(thisTypeArguments)) {
+                return;
+            }
+
+            errors.add(new ValidationError(
+                    method,
+                    "Return type [%s] of [%s] must have same type argument as return type [%s] of mapping [%s]",
+                    thisReturn,
+                    method.getSimpleName(),
+                    mappingReturn,
+                    mappingMethod));
+        });
+    }
+
+    private TypeMirror returnTypeOf(final String mappingMethod, final Class<?> clazz) {
+        return definition.getEnv().methodsOf(clazz)
                 .filter(method -> method.getSimpleName().contentEquals(mappingMethod))
                 .map(ExecutableElement::getReturnType)
                 .findFirst()
