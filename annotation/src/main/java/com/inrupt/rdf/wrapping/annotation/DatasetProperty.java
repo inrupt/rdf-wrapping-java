@@ -18,21 +18,18 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.processor;
+package com.inrupt.rdf.wrapping.annotation;
 
-import com.inrupt.rdf.wrapping.annotation.Dataset;
-import com.inrupt.rdf.wrapping.annotation.DatasetProperty;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.util.stream.Stream;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import javax.lang.model.element.TypeElement;
-
-class DatasetDefinition extends Definition<TypeElement, Dataset> {
-    DatasetDefinition(final TypeElement element, final Environment env) {
-        super(element, env, Dataset.class);
-    }
-
-    Stream<DatasetPropertyDefinition> properties() {
-        return membersAnnotatedWith(DatasetProperty.class).map(m -> new DatasetPropertyDefinition(m, env));
-    }
+@Target(METHOD)
+@Retention(RUNTIME)
+@Documented
+public @interface DatasetProperty {
+    String value() default "";
 }

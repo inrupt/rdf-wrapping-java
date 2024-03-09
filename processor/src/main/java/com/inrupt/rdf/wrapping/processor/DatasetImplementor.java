@@ -24,10 +24,7 @@ import static org.jboss.jdeparser.JExprs.*;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
-import com.inrupt.rdf.wrapping.annotation.NamedGraph;
-
 import javax.annotation.Generated;
-import javax.lang.model.element.ExecutableElement;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.sparql.core.DatasetGraph;
@@ -47,8 +44,7 @@ class DatasetImplementor extends Implementor<DatasetDefinition> {
         addClass();
         addConstructor();
         addWrap();
-        addDefaultGraphs();
-        addNamedGraphs();
+        addGraphs();
     }
 
     private void addImports() {
@@ -75,21 +71,19 @@ class DatasetImplementor extends Implementor<DatasetDefinition> {
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("asDatasetGraph")));
     }
 
-    private void addDefaultGraphs() {
-        definition.defaultGraphMethods().forEach(method -> addGraph(method, call("getDefaultModel")));
-    }
-
-    private void addNamedGraphs() {
-        definition.namedGraphMethods().forEach(method -> {
-            final String graph = method.getAnnotation(NamedGraph.class).value();
-
-            addGraph(method, call("getNamedModel").arg(str(graph)));
+    private void addGraphs() {
+        definition.properties().forEach(p -> {
+            if (p.graphName().isEmpty()) {
+                addGraph(p, call("getDefaultModel"));
+            } else {
+                addGraph(p, call("getNamedModel").arg(str(p.graphName())));
+            }
         });
     }
 
-    private void addGraph(final ExecutableElement method, final JExpr expr) {
-        final JType implementation = asImplementation(method.getReturnType());
+    private void addGraph(final DatasetPropertyDefinition d, final JExpr expr) {
+        final JType implementation = asImplementation(d.getReturnType());
 
-        addMethod(method).body()._return(implementation.call(WRAP).arg(expr));
+        addMethod(d).body()._return(implementation.call(WRAP).arg(expr));
     }
 }

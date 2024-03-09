@@ -24,8 +24,8 @@ import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
 import static com.inrupt.rdf.wrapping.processor.ResourceDefinition.isSetter;
 import static com.inrupt.rdf.wrapping.processor.ResourceDefinition.isVoid;
 
-import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
@@ -53,9 +53,9 @@ class ResourceValidator extends Validator<ResourceDefinition> {
         //  dataset and graph definitions as well
         limitBaseInterfaces(org.apache.jena.rdf.model.Resource.class);
 
-        requireMemberMethods(Property.class);
+        requireMemberMethods(ResourceProperty.class);
 
-        requireNonMemberMethods(Property.class);
+        requireNonMemberMethods(ResourceProperty.class);
 
         requireNonVoidReturnType();
         requireCompatiblePrimitiveReturnType();

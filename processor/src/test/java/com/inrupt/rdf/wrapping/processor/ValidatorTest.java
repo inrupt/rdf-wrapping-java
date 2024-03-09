@@ -67,10 +67,6 @@ class ValidatorTest {
         return Stream.of(
                 arguments("dataset is not an interface", MUST_BE_AN_INTERFACE),
                 arguments("dataset extends unacceptable", "can only extend org.apache.jena.query.Dataset"),
-                arguments("dataset default graph method is static", CANNOT_BE_STATIC_OR_DEFAULT),
-                arguments("dataset default graph method is void", MUST_NOT_BE_VOID),
-                arguments("dataset default graph method is default", CANNOT_BE_STATIC_OR_DEFAULT),
-                arguments("dataset default graph method is not graph", MUST_RETURN_GRAPH_INTERFACE),
                 arguments("dataset named graph method is static", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("dataset named graph method is default", CANNOT_BE_STATIC_OR_DEFAULT),
                 arguments("dataset named graph method is not graph", MUST_RETURN_GRAPH_INTERFACE),
@@ -128,7 +124,6 @@ class ValidatorTest {
         return Stream.of(
                 arguments("dataset extends nothing"),
                 arguments("dataset extends Dataset"),
-                arguments("dataset default graph method is graph instance"),
                 arguments("dataset named graph method is graph instance"),
                 arguments("dataset unannotated method is static"),
                 arguments("dataset unannotated method is default"),

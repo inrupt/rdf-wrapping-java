@@ -20,9 +20,9 @@
  */
 package com.inrupt.rdf.wrapping.annotation;
 
-import static com.inrupt.rdf.wrapping.annotation.Property.Cardinality.ANY_OR_NULL;
-import static com.inrupt.rdf.wrapping.annotation.Property.NodeMapping.IDENTITY;
-import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.AS;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality.ANY_OR_NULL;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.NodeMapping.IDENTITY;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.AS;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 @Target(METHOD)
 @Retention(RUNTIME)
 @Documented
-public @interface Property {
+public @interface ResourceProperty {
     String predicate();
 
     Cardinality cardinality() default ANY_OR_NULL;

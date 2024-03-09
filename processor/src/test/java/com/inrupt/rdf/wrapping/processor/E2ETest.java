@@ -21,9 +21,9 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import static com.github.jsonldjava.shaded.com.google.common.base.Charsets.UTF_8;
-import static com.inrupt.rdf.wrapping.annotation.Property.Cardinality.*;
-import static com.inrupt.rdf.wrapping.annotation.Property.NodeMapping.AS_TYPED_LITERAL;
-import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.*;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality.*;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.NodeMapping.AS_TYPED_LITERAL;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.*;
 import static com.inrupt.rdf.wrapping.processor.E2ETest.*;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.io.IOUtils.toInputStream;
@@ -115,10 +115,10 @@ interface MyDataset {
         return Manager.wrap(original, MyDataset.class);
     }
 
-    @DefaultGraph
+    @DatasetProperty
     MyGraph anonymous();
 
-    @NamedGraph(G)
+    @DatasetProperty(G)
     MyGraph named();
 
     // Dataset definitions support static methods.
@@ -156,22 +156,22 @@ interface MyGraph {
 
 @Resource
 interface MyResource {
-    @Property(predicate = LABEL, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    @ResourceProperty(predicate = LABEL, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Integer label();
 
-    @Property(predicate = IRI, valueMapping = IRI_AS_URI)
+    @ResourceProperty(predicate = IRI, valueMapping = IRI_AS_URI)
     URI uri();
 
-    @Property(predicate = CHILD)
+    @ResourceProperty(predicate = CHILD)
     MyResource child();
 
-    @Property(predicate = THROWING, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
+    @ResourceProperty(predicate = THROWING, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
     String throwing();
 
-    @Property(predicate = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    @ResourceProperty(predicate = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Set<Integer> many();
 
-    @Property(predicate = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
+    @ResourceProperty(predicate = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
     void overwrite(Integer value);
 
     // Resource definitions support static methods.

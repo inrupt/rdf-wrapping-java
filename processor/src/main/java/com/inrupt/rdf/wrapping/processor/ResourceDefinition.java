@@ -20,12 +20,12 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.AS;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.AS;
 import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
 import static javax.lang.model.type.TypeKind.VOID;
 
-import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -114,6 +114,6 @@ class ResourceDefinition extends Definition<TypeElement, Resource> {
     }
 
     Stream<ResourcePropertyDefinition> properties() {
-        return membersAnnotatedWith(Property.class).map(e -> new ResourcePropertyDefinition(e, env));
+        return membersAnnotatedWith(ResourceProperty.class).map(e -> new ResourcePropertyDefinition(e, env));
     }
 }

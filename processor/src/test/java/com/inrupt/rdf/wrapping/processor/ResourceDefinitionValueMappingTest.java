@@ -20,7 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.*;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.*;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.util.Arrays.stream;
 import static java.util.UUID.randomUUID;
@@ -34,9 +34,9 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
-import com.inrupt.rdf.wrapping.annotation.Property;
-import com.inrupt.rdf.wrapping.annotation.Property.ValueMapping;
 import com.inrupt.rdf.wrapping.annotation.Resource;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
 import java.lang.reflect.Method;
@@ -59,8 +59,8 @@ class ResourceDefinitionValueMappingTest {
     private static final String P = "urn:example:p";
     private static final String C = "urn:example:c";
     private static final Object[] RESOURCE_DEFINITION_METHODS = stream(ResourceDefinition.class.getDeclaredMethods())
-            .map(m -> m.getAnnotation(Property.class))
-            .map(Property::valueMapping)
+            .map(m -> m.getAnnotation(ResourceProperty.class))
+            .map(ResourceProperty::valueMapping)
             .map(ValueMapping::getMethodName)
             .toArray();
 
@@ -137,25 +137,25 @@ class ResourceDefinitionValueMappingTest {
 
     @Resource
     interface ResourceDefinition {
-        @Property(predicate = P, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_STRING)
         String getLiteralAsString();
 
-        @Property(predicate = P, valueMapping = IRI_AS_URI)
+        @ResourceProperty(predicate = P, valueMapping = IRI_AS_URI)
         URI getIriAsUri();
 
-        @Property(predicate = P, valueMapping = IRI_AS_STRING)
+        @ResourceProperty(predicate = P, valueMapping = IRI_AS_STRING)
         String getIriAsString();
 
-        @Property(predicate = P, valueMapping = LITERAL_AS_INSTANT)
+        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_INSTANT)
         Instant getLiteralAsInstant();
 
-        @Property(predicate = P, valueMapping = LITERAL_AS_BOOLEAN)
+        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_BOOLEAN)
         Boolean getLiteralAsBoolean();
 
-        @Property(predicate = P, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
         Integer getLiteralAsIntegerOrNull();
 
-        @Property(predicate = P)
+        @ResourceProperty(predicate = P)
         ResourceDefinition getAs();
     }
 

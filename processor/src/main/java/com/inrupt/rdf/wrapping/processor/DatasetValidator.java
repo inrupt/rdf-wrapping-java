@@ -20,9 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import com.inrupt.rdf.wrapping.annotation.DefaultGraph;
+import com.inrupt.rdf.wrapping.annotation.DatasetProperty;
 import com.inrupt.rdf.wrapping.annotation.Graph;
-import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
 import org.apache.jena.query.Dataset;
 
@@ -37,15 +36,12 @@ class DatasetValidator extends Validator<DatasetDefinition> {
 
         limitBaseInterfaces(Dataset.class);
 
-        requireMemberMethods(DefaultGraph.class);
-        requireMemberMethods(NamedGraph.class);
+        requireMemberMethods(DatasetProperty.class);
 
-        requireNonMemberMethods(DefaultGraph.class, NamedGraph.class);
+        requireNonMemberMethods(DatasetProperty.class);
 
-        requireNonVoidReturnType(DefaultGraph.class);
-        requireNonVoidReturnType(NamedGraph.class);
+        requireNonVoidReturnType(DatasetProperty.class);
 
-        requireAnnotatedReturnType(DefaultGraph.class, Graph.class);
-        requireAnnotatedReturnType(NamedGraph.class, Graph.class);
+        requireAnnotatedReturnType(DatasetProperty.class, Graph.class);
     }
 }

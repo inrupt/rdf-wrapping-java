@@ -20,8 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.annotation.Property.Cardinality.*;
-import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.LITERAL_AS_STRING;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality.*;
+import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.LITERAL_AS_STRING;
 import static java.beans.Introspector.getBeanInfo;
 import static java.lang.reflect.Modifier.isProtected;
 import static java.util.Arrays.stream;
@@ -35,9 +35,9 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
-import com.inrupt.rdf.wrapping.annotation.Property;
-import com.inrupt.rdf.wrapping.annotation.Property.Cardinality;
 import com.inrupt.rdf.wrapping.annotation.Resource;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
 import java.beans.IntrospectionException;
@@ -66,8 +66,8 @@ class ResourceDefinitionCardinalityTest {
     private static final String P = "urn:example:p";
     private static final String C = "urn:example:c";
     private static final Object[] RESOURCE_DEFINITION_METHODS = stream(ResourceDefinition.class.getDeclaredMethods())
-            .map(m -> m.getAnnotation(Property.class))
-            .map(Property::cardinality)
+            .map(m -> m.getAnnotation(ResourceProperty.class))
+            .map(ResourceProperty::cardinality)
             .map(Cardinality::getMethodName)
             .distinct()
             .toArray();
@@ -212,25 +212,25 @@ class ResourceDefinitionCardinalityTest {
 
     @Resource
     interface ResourceDefinition {
-        @Property(predicate = P, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_STRING)
         String getAnyOrNull();
 
-        @Property(predicate = P, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(predicate = P, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
         String getAnyOrThrow();
 
-        @Property(predicate = P, cardinality = SINGLE_OR_NULL, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(predicate = P, cardinality = SINGLE_OR_NULL, valueMapping = LITERAL_AS_STRING)
         String getSingleOrNull();
 
-        @Property(predicate = P, cardinality = SINGLE_OR_THROW, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(predicate = P, cardinality = SINGLE_OR_THROW, valueMapping = LITERAL_AS_STRING)
         String getSingleOrThrow();
 
-        @Property(predicate = P, cardinality = OBJECT_ITERATOR, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(predicate = P, cardinality = OBJECT_ITERATOR, valueMapping = LITERAL_AS_STRING)
         Iterator<String> getObjectIterator();
 
-        @Property(predicate = P, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(predicate = P, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_STRING)
         Set<String> getObjectsReadOnly();
 
-        @Property(predicate = P, cardinality = OBJECT_STREAM, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(predicate = P, cardinality = OBJECT_STREAM, valueMapping = LITERAL_AS_STRING)
         Stream<String> getObjectStream();
     }
 

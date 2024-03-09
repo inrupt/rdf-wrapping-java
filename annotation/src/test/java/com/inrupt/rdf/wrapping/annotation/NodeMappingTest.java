@@ -27,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.describedAs;
 import static org.hamcrest.Matchers.in;
 
-import com.inrupt.rdf.wrapping.annotation.Property.NodeMapping;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty.NodeMapping;
 import com.inrupt.rdf.wrapping.jena.NodeMappings;
 
 import java.lang.reflect.Method;

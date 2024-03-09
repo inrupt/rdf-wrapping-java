@@ -20,18 +20,18 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import com.inrupt.rdf.wrapping.annotation.Property;
-import com.inrupt.rdf.wrapping.annotation.Property.Cardinality;
-import com.inrupt.rdf.wrapping.annotation.Property.NodeMapping;
-import com.inrupt.rdf.wrapping.annotation.Property.ValueMapping;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty.NodeMapping;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 
-class ResourcePropertyDefinition extends Definition<ExecutableElement, Property> {
+class ResourcePropertyDefinition extends PropertyDefinition<ResourceProperty> {
     ResourcePropertyDefinition(final ExecutableElement element, final Environment env) {
-        super(element, env, Property.class);
+        super(element, env, ResourceProperty.class);
     }
 
     String predicate() {
@@ -43,7 +43,7 @@ class ResourcePropertyDefinition extends Definition<ExecutableElement, Property>
     }
 
     String cardinalityMethod() {
-        return annotation().cardinality().getMethodName();
+        return cardinality().getMethodName();
     }
 
     ValueMapping valueMapping() {
@@ -51,7 +51,7 @@ class ResourcePropertyDefinition extends Definition<ExecutableElement, Property>
     }
 
     String valueMappingMethod() {
-        return annotation().valueMapping().getMethodName();
+        return valueMapping().getMethodName();
     }
 
     NodeMapping nodeMapping() {
@@ -59,11 +59,7 @@ class ResourcePropertyDefinition extends Definition<ExecutableElement, Property>
     }
 
     String nodeMappingMethod() {
-        return annotation().nodeMapping().getMethodName();
-    }
-
-    TypeMirror getReturnType() {
-        return element.getReturnType();
+        return nodeMapping().getMethodName();
     }
 
     Name getName() {

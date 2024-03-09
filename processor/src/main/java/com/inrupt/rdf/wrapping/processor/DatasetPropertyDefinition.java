@@ -18,18 +18,18 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.annotation;
+package com.inrupt.rdf.wrapping.processor;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import com.inrupt.rdf.wrapping.annotation.DatasetProperty;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.lang.model.element.ExecutableElement;
 
-@Target(METHOD)
-@Retention(RUNTIME)
-@Documented
-public @interface NamedGraph {
-    String value();
+class DatasetPropertyDefinition extends PropertyDefinition<DatasetProperty> {
+    DatasetPropertyDefinition(final ExecutableElement element, final Environment env) {
+        super(element, env, DatasetProperty.class);
+    }
+
+    String graphName() {
+        return annotation().value();
+    }
 }

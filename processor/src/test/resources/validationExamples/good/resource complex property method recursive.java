@@ -3,8 +3,8 @@ package x;
 
 import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
-import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
 
 @Graph
 interface X {
@@ -13,7 +13,7 @@ interface X {
 
     @Resource
     interface Y {
-        @Property(predicate = "x")
+        @ResourceProperty(predicate = "x")
         Y x();
     }
 }

@@ -18,17 +18,19 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.annotation;
+package com.inrupt.rdf.wrapping.processor;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
 
-@Target(METHOD)
-@Retention(RUNTIME)
-@Documented
-public @interface DefaultGraph {
+abstract class PropertyDefinition<T extends Annotation> extends Definition<ExecutableElement, T> {
+    PropertyDefinition(final ExecutableElement element, final Environment env, final Class<T> clazz) {
+        super(element, env, clazz);
+    }
+
+    TypeMirror getReturnType() {
+        return element.getReturnType();
+    }
 }

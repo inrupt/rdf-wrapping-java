@@ -27,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.describedAs;
 import static org.hamcrest.Matchers.in;
 
-import com.inrupt.rdf.wrapping.annotation.Property.Cardinality;
+import com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
 import java.lang.reflect.Method;

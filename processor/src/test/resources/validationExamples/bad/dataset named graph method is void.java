@@ -2,10 +2,10 @@
 package x;
 
 import com.inrupt.rdf.wrapping.annotation.Dataset;
-import com.inrupt.rdf.wrapping.annotation.NamedGraph;
+import com.inrupt.rdf.wrapping.annotation.DatasetProperty;
 
 @Dataset
 interface X {
-    @NamedGraph("x")
+    @DatasetProperty("x")
     void x();
 }
