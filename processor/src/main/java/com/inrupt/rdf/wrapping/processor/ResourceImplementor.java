@@ -24,15 +24,12 @@ import static org.jboss.jdeparser.JExprs.*;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
-import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.jena.NodeMappings;
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
 import javax.annotation.Generated;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
 
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.graph.Node;
@@ -91,20 +88,19 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
     }
 
     private void addPrimitivePropertyMethods() {
-        definition.primitivePropertyMethods().forEach(method -> {
-            final String mappingMethodName = method.getAnnotation(Property.class).valueMapping().getMethodName();
-            final JExpr mapping = $t(ValueMappings.class).methodRef(mappingMethodName);
+        definition.primitiveProperties().forEach(p -> {
+            final JExpr mapping = $t(ValueMappings.class).methodRef(p.valueMappingMethod());
 
-            addPropertyMethod(method, mapping);
+            addPropertyMethod(p, mapping);
         });
     }
 
     private void addResourcePropertyMethods() {
-        definition.resourcePropertyMethods().forEach(method -> {
-            final JType implementation = asImplementation(method.getReturnType());
+        definition.resourceProperties().forEach(p -> {
+            final JType implementation = asImplementation(p.getReturnType());
             final JCall mapping = $t(ValueMappings.class).call("as").arg(implementation._class());
 
-            addPropertyMethod(method, mapping);
+            addPropertyMethod(p, mapping);
         });
     }
 
@@ -112,28 +108,21 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
     // TODO: Cover
     // TODO: Other mutators
     private void addOverwrite() {
-        definition.setterPropertyMethods().forEach(method -> {
-            final Property annotation = method.getAnnotation(Property.class);
-            final String predicateFromAnnotation = annotation.predicate();
-            final String cardinality = annotation.cardinality().getMethodName();
-            final JCall predicate = call("getModel").call("createProperty").arg(str(predicateFromAnnotation));
-            final JMethodDef m = addMethod(method);
+        definition.setterProperties().forEach(p -> {
+            final JCall predicate = call("getModel").call("createProperty").arg(str(p.predicate()));
 
-            final String mappingMethodName = annotation.nodeMapping().getMethodName();
-            final JExpr mapping = $t(NodeMappings.class).methodRef(mappingMethodName);
+            final JExpr mapping = $t(NodeMappings.class).methodRef(p.nodeMappingMethod());
 
-            final VariableElement variableElement = method.getParameters().get(0);
-            final JParamDeclaration value = m.param(FINAL, JTypes.typeOf(variableElement.asType()), "value");
-            m.body().call(cardinality).arg(predicate).arg($v(value)).arg(mapping);
+            final JMethodDef m = addMethod(p);
+            final JParamDeclaration value = m.param(FINAL, JTypes.typeOf(p.getValueParamType()), "value");
+
+            m.body().call(p.cardinalityMethod()).arg(predicate).arg($v(value)).arg(mapping);
         });
     }
 
-    private void addPropertyMethod(final ExecutableElement method, final JExpr mapping) {
-        final Property annotation = method.getAnnotation(Property.class);
-        final String predicateFromAnnotation = annotation.predicate();
-        final String cardinality = annotation.cardinality().getMethodName();
-        final JCall predicate = call("getModel").call("createProperty").arg(str(predicateFromAnnotation));
+    private void addPropertyMethod(final ResourcePropertyDefinition p, final JExpr mapping) {
+        final JCall predicate = call("getModel").call("createProperty").arg(str(p.predicate()));
 
-        addMethod(method).body()._return(call(cardinality).arg(predicate).arg(mapping));
+        addMethod(p).body()._return(call(p.cardinalityMethod()).arg(predicate).arg(mapping));
     }
 }

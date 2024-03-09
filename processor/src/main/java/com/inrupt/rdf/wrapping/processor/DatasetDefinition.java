@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import com.inrupt.rdf.wrapping.annotation.Dataset;
 import com.inrupt.rdf.wrapping.annotation.DefaultGraph;
 import com.inrupt.rdf.wrapping.annotation.NamedGraph;
 
@@ -28,9 +29,9 @@ import java.util.stream.Stream;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
-class DatasetDefinition extends Definition {
-    DatasetDefinition(final TypeElement type, final Environment env) {
-        super(type, env);
+class DatasetDefinition extends Definition<TypeElement, Dataset> {
+    DatasetDefinition(final TypeElement element, final Environment env) {
+        super(element, env, Dataset.class);
     }
 
     Stream<ExecutableElement> defaultGraphMethods() {

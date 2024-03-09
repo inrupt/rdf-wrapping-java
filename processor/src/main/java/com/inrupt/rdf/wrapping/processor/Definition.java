@@ -20,7 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static javax.lang.model.element.Modifier.STATIC;
 import static javax.lang.model.type.TypeKind.VOID;
 
 import com.inrupt.rdf.wrapping.annotation.Dataset;
@@ -30,6 +29,7 @@ import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
@@ -37,18 +37,20 @@ import javax.lang.model.type.TypeMirror;
 import org.jboss.jdeparser.JType;
 import org.jboss.jdeparser.JTypes;
 
-class Definition {
+class Definition<T extends Element, U extends Annotation> {
     static final Predicate<ExecutableElement> isVoid = method -> method.getReturnType().getKind() == VOID;
 
-    private final TypeElement type;
-    private final Environment env;
+    protected final T element;
+    protected final Environment env;
+    private final Class<U> clazz;
 
-    Definition(final TypeElement type, final Environment env) {
+    Definition(final T element, final Environment env, final Class<U> clazz) {
+        this.element = element;
         this.env = env;
-        this.type = type;
+        this.clazz = clazz;
     }
 
-    static Definition definition(final TypeElement type, final Environment env) {
+    static Definition<TypeElement, ?> definition(final TypeElement type, final Environment env) {
         if (type.getAnnotation(Dataset.class) != null) {
             return new DatasetDefinition(type, env);
 
@@ -69,8 +71,8 @@ class Definition {
         return typeOf(method.getReturnType());
     }
 
-    protected TypeElement getType() {
-        return type;
+    protected T getElement() {
+        return element;
     }
 
     protected Environment getEnv() {
@@ -78,13 +80,15 @@ class Definition {
     }
 
     protected JType getOriginalInterface() {
-        return JTypes.typeOf(getType().asType());
+        return JTypes.typeOf(element.asType());
     }
 
     protected Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
-        return getEnv().methodsOf(getType())
-                .filter(method -> !method.isDefault())
-                .filter(method -> !method.getModifiers().contains(STATIC))
+        return env.methodsOf(element)
                 .filter(method -> method.getAnnotation(annotation) != null);
+    }
+
+    U annotation() {
+        return element.getAnnotation(clazz);
     }
 }

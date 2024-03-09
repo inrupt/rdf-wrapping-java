@@ -22,6 +22,7 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static java.util.stream.Stream.concat;
 
+import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
@@ -32,9 +33,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
-class GraphDefinition extends Definition {
+class GraphDefinition extends Definition<TypeElement, Graph> {
     GraphDefinition(final TypeElement type, final Environment env) {
-        super(type, env);
+        super(type, env, Graph.class);
     }
 
     Stream<TypeMirror> transitiveResourceTypes() {

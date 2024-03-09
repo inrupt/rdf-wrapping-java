@@ -1,0 +1,76 @@
+/*
+ * Copyright Inrupt Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+package com.inrupt.rdf.wrapping.processor;
+
+import com.inrupt.rdf.wrapping.annotation.Property;
+import com.inrupt.rdf.wrapping.annotation.Property.Cardinality;
+import com.inrupt.rdf.wrapping.annotation.Property.NodeMapping;
+import com.inrupt.rdf.wrapping.annotation.Property.ValueMapping;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
+import javax.lang.model.type.TypeMirror;
+
+class ResourcePropertyDefinition extends Definition<ExecutableElement, Property> {
+    ResourcePropertyDefinition(final ExecutableElement element, final Environment env) {
+        super(element, env, Property.class);
+    }
+
+    String predicate() {
+        return annotation().predicate();
+    }
+
+    Cardinality cardinality() {
+        return annotation().cardinality();
+    }
+
+    String cardinalityMethod() {
+        return annotation().cardinality().getMethodName();
+    }
+
+    ValueMapping valueMapping() {
+        return annotation().valueMapping();
+    }
+
+    String valueMappingMethod() {
+        return annotation().valueMapping().getMethodName();
+    }
+
+    NodeMapping nodeMapping() {
+        return annotation().nodeMapping();
+    }
+
+    String nodeMappingMethod() {
+        return annotation().nodeMapping().getMethodName();
+    }
+
+    TypeMirror getReturnType() {
+        return element.getReturnType();
+    }
+
+    Name getName() {
+        return element.getSimpleName();
+    }
+
+    TypeMirror getValueParamType() {
+        return element.getParameters().get(0).asType();
+    }
+}

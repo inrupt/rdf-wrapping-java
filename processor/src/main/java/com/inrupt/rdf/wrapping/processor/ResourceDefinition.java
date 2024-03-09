@@ -22,6 +22,7 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.AS;
 import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
+import static javax.lang.model.type.TypeKind.VOID;
 
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
@@ -33,57 +34,54 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
-class ResourceDefinition extends Definition {
-    private static final Predicate<ExecutableElement> isComplex = method ->
-            method.getAnnotation(Property.class).valueMapping() == AS;
-    private static final Predicate<ExecutableElement> isPlural = method ->
-            method.getAnnotation(Property.class).cardinality().isPlural();
-    private final Predicate<ExecutableElement> returnsResource = method ->
-            getEnv().type(method.getReturnType()).getAnnotation(Resource.class) != null;
-    static final Predicate<ExecutableElement> isSetter = method ->
-            method.getAnnotation(Property.class).cardinality().isSetter();
+class ResourceDefinition extends Definition<TypeElement, Resource> {
+    private static final Predicate<ResourcePropertyDefinition> isComplex = p -> p.valueMapping() == AS;
+    private static final Predicate<ResourcePropertyDefinition> isPlural = p -> p.cardinality().isPlural();
+    private final Predicate<ResourcePropertyDefinition> returnsResource = p ->
+            getEnv().type(p.getReturnType()).getAnnotation(Resource.class) != null;
+    static final Predicate<ResourcePropertyDefinition> isSetter = p -> p.cardinality().isSetter();
+    static final Predicate<ResourcePropertyDefinition> isVoid = p -> p.getReturnType().getKind() == VOID;
 
-    ResourceDefinition(final TypeElement type, final Environment env) {
-        super(type, env);
+    ResourceDefinition(final TypeElement element, final Environment env) {
+        super(element, env, Resource.class);
     }
 
-    Stream<ExecutableElement> primitivePropertyMethods() {
-        return membersAnnotatedWith(Property.class)
+    Stream<ResourcePropertyDefinition> primitiveProperties() {
+        return properties()
                 .filter(not(isSetter))
                 .filter(not(returnsResource));
     }
 
-    Stream<ExecutableElement> resourcePropertyMethods() {
-        return membersAnnotatedWith(Property.class)
+    Stream<ResourcePropertyDefinition> resourceProperties() {
+        return properties()
                 .filter(not(isSetter))
                 .filter(returnsResource);
     }
 
-    Stream<ExecutableElement> complexMappingPropertyMethods() {
-        return membersAnnotatedWith(Property.class)
+    Stream<ResourcePropertyDefinition> complexMappingProperties() {
+        return properties()
                 .filter(isComplex)
                 .filter(not(isPlural))
                 .filter(not(isVoid));
     }
 
-    Stream<ExecutableElement> setterPropertyMethods() {
-        return membersAnnotatedWith(Property.class)
+    Stream<ResourcePropertyDefinition> setterProperties() {
+        return properties()
                 .filter(isSetter);
     }
 
-    Stream<ExecutableElement> primitiveMappingPropertyMethods() {
-        return membersAnnotatedWith(Property.class)
+    Stream<ResourcePropertyDefinition> primitiveMappingProperties() {
+        return properties()
                 .filter(not(isComplex))
                 .filter(not(isPlural))
                 .filter(not(isVoid));
     }
 
-    Stream<ExecutableElement> pluralPropertyMethods() {
-        return membersAnnotatedWith(Property.class)
+    Stream<ResourcePropertyDefinition> pluralProperties() {
+        return properties()
                 .filter(isPlural);
     }
 
@@ -93,8 +91,8 @@ class ResourceDefinition extends Definition {
 
         ResourceDefinition current = this;
         while (true) {
-            current.resourcePropertyMethods()
-                    .map(ExecutableElement::getReturnType)
+            current.resourceProperties()
+                    .map(ResourcePropertyDefinition::getReturnType)
                     .filter(results::add)
                     .forEach(outstanding::add);
 
@@ -113,5 +111,9 @@ class ResourceDefinition extends Definition {
         final TypeElement nextType = getEnv().type(next);
 
         return new ResourceDefinition(nextType, getEnv());
+    }
+
+    Stream<ResourcePropertyDefinition> properties() {
+        return membersAnnotatedWith(Property.class).map(e -> new ResourcePropertyDefinition(e, env));
     }
 }

@@ -31,9 +31,10 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
-abstract class Validator<T extends Definition> {
+abstract class Validator<T extends Definition<?, ?>> {
     protected final T definition;
     protected final Collection<ValidationError> errors = new ArrayList<>();
 
@@ -41,7 +42,7 @@ abstract class Validator<T extends Definition> {
         this.definition = definition;
     }
 
-    static Validator<?> validator(final Definition definition) {
+    static Validator<?> validator(final Definition<?, ?> definition) {
         if (definition instanceof DatasetDefinition) {
             return new DatasetValidator((DatasetDefinition) definition);
 
@@ -68,14 +69,14 @@ abstract class Validator<T extends Definition> {
 
         final Predicate<ExecutableElement> isAnnotated = method -> method.getAnnotation(annotation) != null;
 
-        definition.getEnv().methodsOf(definition.getType())
+        definition.getEnv().methodsOf(definition.getElement())
                 .filter(isNotMember)
                 .filter(isAnnotated)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Method %s on interface %s annotated with @%s cannot be static or default",
                         method.getSimpleName(),
-                        definition.getType().getSimpleName(),
+                        definition.getElement().getSimpleName(),
                         annotation.getSimpleName())));
     }
 
@@ -87,44 +88,44 @@ abstract class Validator<T extends Definition> {
         final Predicate<ExecutableElement> isUnannotated = method ->
                 Arrays.stream(annotations).noneMatch(a -> method.getAnnotation(a) != null);
 
-        definition.getEnv().methodsOf(definition.getType())
+        definition.getEnv().methodsOf(definition.getElement())
                 .filter(isMember)
                 .filter(isUnannotated)
                 .forEach(method -> errors.add(new ValidationError(
                         method,
                         "Unannotated method %s on interface %s must be static or default",
                         method.getSimpleName(),
-                        definition.getType().getSimpleName())));
+                        definition.getElement().getSimpleName())));
     }
 
     protected void limitBaseInterfaces(final Class<?> allowed) {
-        if (!definition.getType().getKind().isInterface()) {
+        if (!definition.getElement().getKind().isInterface()) {
             return;
         }
 
-        for (final TypeMirror implemented : definition.getType().getInterfaces()) {
+        for (final TypeMirror implemented : ((TypeElement) definition.getElement()).getInterfaces()) {
             if (definition.getEnv().isSameType(implemented, allowed)) {
                 continue;
             }
 
             errors.add(new ValidationError(
-                    definition.getType(),
+                    definition.getElement(),
                     "Interface %s can only extend %s or nothing",
-                    definition.getType().getSimpleName(),
+                    definition.getElement().getSimpleName(),
                     allowed.getName()));
         }
     }
 
     protected void requireInterface() {
-        if (definition.getType().getKind().isInterface()) {
+        if (definition.getElement().getKind().isInterface()) {
             return;
         }
 
         errors.add(new ValidationError(
-                definition.getType(),
+                definition.getElement(),
                 "Element %s must be an interface but was a %s",
-                definition.getType().getSimpleName(),
-                definition.getType().getKind()));
+                definition.getElement().getSimpleName(),
+                definition.getElement().getKind()));
     }
 
     protected void requireAnnotatedReturnType(
@@ -135,7 +136,7 @@ abstract class Validator<T extends Definition> {
         final Predicate<ExecutableElement> isResource = method ->
                 definition.returnTypeOf(method).getAnnotation(required) != null;
 
-        definition.getEnv().methodsOf(definition.getType())
+        definition.getEnv().methodsOf(definition.getElement())
                 .filter(not(isVoid))
                 .filter(isAnnotated)
                 .filter(not(isResource))
@@ -143,7 +144,7 @@ abstract class Validator<T extends Definition> {
                         method,
                         "Method %s on interface %s annotated with @%s must return @%s interface",
                         method.getSimpleName(),
-                        definition.getType().getSimpleName(),
+                        definition.getElement().getSimpleName(),
                         annotation.getSimpleName(),
                         required.getSimpleName())));
     }

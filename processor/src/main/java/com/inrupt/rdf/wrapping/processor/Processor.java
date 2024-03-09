@@ -65,7 +65,7 @@ public class Processor extends AbstractProcessor {
                 // All our annotations are @Target(TYPE), so they're all TypeElements
                 final TypeElement type = (TypeElement) element;
 
-                final Definition definition = definition(type, env);
+                final Definition<TypeElement, ?> definition = definition(type, env);
                 implementors.add(implementor(definition));
                 validationErrors.addAll(validator(definition).validate());
             }

@@ -51,7 +51,7 @@ class ImplementorTest {
         final Name name = mock(Name.class);
         final PackageElement packageElement = mock(PackageElement.class);
         final Filer filer = mock(Filer.class);
-        when(definition.getType()).thenReturn(type);
+        when(definition.getElement()).thenReturn(type);
         when(definition.getEnv()).thenReturn(env);
 
         when(elementUtils.getBinaryName(any())).thenReturn(name);

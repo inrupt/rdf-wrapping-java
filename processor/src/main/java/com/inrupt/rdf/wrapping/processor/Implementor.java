@@ -28,13 +28,14 @@ import java.io.IOException;
 import java.time.Instant;
 
 import javax.annotation.Generated;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 import org.jboss.jdeparser.*;
 
-abstract class Implementor<T extends Definition> {
+abstract class Implementor<T extends Definition<?, ?>> {
     protected static final String ORIGINAL = "original";
     static final String WRAP = "wrap";
 
@@ -46,7 +47,7 @@ abstract class Implementor<T extends Definition> {
     protected Implementor(final T definition) {
         this.definition = definition;
 
-        final TypeElement type = definition.getType();
+        final Element type = definition.getElement();
         final Environment env = definition.getEnv();
 
         final String packageName = env.getElementUtils().getPackageOf(type).getQualifiedName().toString();
@@ -66,7 +67,7 @@ abstract class Implementor<T extends Definition> {
         }
     }
 
-    static Implementor<?> implementor(final Definition definition) {
+    static Implementor<?> implementor(final Definition<?, ?> definition) {
         if (definition instanceof DatasetDefinition) {
             return new DatasetImplementor((DatasetDefinition) definition);
 
@@ -104,6 +105,16 @@ abstract class Implementor<T extends Definition> {
         return myMethod;
     }
 
+    protected JMethodDef addMethod(final Definition<? extends ExecutableElement, ?> d) {
+        final String myName = d.element.getSimpleName().toString();
+        final JType myType = typeOf(d.element.getReturnType());
+
+        final JMethodDef myMethod = target.method(PUBLIC, myType, myName);
+        myMethod.annotate(Override.class);
+
+        return myMethod;
+    }
+
     protected JType asImplementation(final TypeMirror original) {
         final TypeElement returnType = definition.typeOf(original);
         final String originalBinaryName = binaryName(returnType);
@@ -112,7 +123,7 @@ abstract class Implementor<T extends Definition> {
     }
 
     private String getImplementationClass() {
-        final String originalBinaryName = binaryName(definition.getType());
+        final String originalBinaryName = binaryName((TypeElement) definition.getElement());
         final String qualifiedName = asImplementation(originalBinaryName);
         final int lastDot = originalBinaryName.lastIndexOf('.');
         return qualifiedName.substring(lastDot + 1);
