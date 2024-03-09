@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.annotation.GraphProperty.Method.INSTANCE_OF;
 import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.*;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.util.Arrays.stream;
@@ -33,7 +34,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.inrupt.rdf.wrapping.annotation.Graph;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
+import com.inrupt.rdf.wrapping.annotation.GraphProperty;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
 import com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping;
@@ -165,7 +166,7 @@ class ResourceDefinitionValueMappingTest {
             return Manager.wrap(original, GraphDefinition.class);
         }
 
-        @OptionalFirstInstanceOfEither(C)
+        @GraphProperty(value = C, method = INSTANCE_OF)
         ResourceDefinition getResource();
     }
 }

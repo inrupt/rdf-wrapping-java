@@ -20,9 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
+import com.inrupt.rdf.wrapping.annotation.GraphProperty;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 
 import org.apache.jena.rdf.model.Model;
@@ -38,21 +36,12 @@ class GraphValidator extends Validator<GraphDefinition> {
 
         limitBaseInterfaces(Model.class);
 
-        requireMemberMethods(OptionalFirstInstanceOfEither.class);
-        requireMemberMethods(OptionalFirstObjectOfEither.class);
-        requireMemberMethods(OptionalFirstSubjectOfEither.class);
+        requireMemberMethods(GraphProperty.class);
 
-        requireNonMemberMethods(
-                OptionalFirstInstanceOfEither.class,
-                OptionalFirstObjectOfEither.class,
-                OptionalFirstSubjectOfEither.class);
+        requireNonMemberMethods(GraphProperty.class);
 
-        requireNonVoidReturnType(OptionalFirstInstanceOfEither.class);
-        requireNonVoidReturnType(OptionalFirstObjectOfEither.class);
-        requireNonVoidReturnType(OptionalFirstSubjectOfEither.class);
+        requireNonVoidReturnType(GraphProperty.class);
 
-        requireAnnotatedReturnType(OptionalFirstInstanceOfEither.class, Resource.class);
-        requireAnnotatedReturnType(OptionalFirstObjectOfEither.class, Resource.class);
-        requireAnnotatedReturnType(OptionalFirstSubjectOfEither.class, Resource.class);
+        requireAnnotatedReturnType(GraphProperty.class, Resource.class);
     }
 }

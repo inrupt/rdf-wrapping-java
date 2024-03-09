@@ -26,13 +26,9 @@ import static org.jboss.jdeparser.JExprs.call;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
 import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
 import javax.annotation.Generated;
-import javax.lang.model.element.ExecutableElement;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
@@ -55,20 +51,7 @@ class GraphImplementor extends Implementor<GraphDefinition> {
         addToPersonality(constructor);
         addWrap();
 
-        definition.instanceMethods().forEach(method -> addResourceMethod(
-                method,
-                "optionalFirstInstanceOfEither",
-                method.getAnnotation(OptionalFirstInstanceOfEither.class).value()));
-
-        definition.subjectMethods().forEach(method -> addResourceMethod(
-                method,
-                "optionalFirstSubjectOfEither",
-                method.getAnnotation(OptionalFirstSubjectOfEither.class).value()));
-
-        definition.objectMethods().forEach(method -> addResourceMethod(
-                method,
-                "optionalFirstObjectOfEither",
-                method.getAnnotation(OptionalFirstObjectOfEither.class).value()));
+        addResourceMethods();
     }
 
     private void addImports() {
@@ -110,18 +93,19 @@ class GraphImplementor extends Implementor<GraphDefinition> {
         });
     }
 
-    @SuppressWarnings("PMD.UseVarargs") // irrelevant in this utility method
-    private void addResourceMethod(final ExecutableElement method, final String convenience, final String[] values) {
-        final JType implementation = asImplementation(method.getReturnType());
+    private void addResourceMethods() {
+        definition.properties().forEach(p -> {
+            final JType implementation = asImplementation(p.getReturnType());
 
-        // Call model wrapper convenience method passing projection class argument
-        final JCall convenienceCall = call(convenience).arg(implementation._class());
+            // Call model wrapper convenience method passing projection class argument
+            final JCall convenienceCall = call(p.method()).arg(implementation._class());
 
-        // Pass each filter value from the annotation as additional argument
-        for (final String value : values) {
-            convenienceCall.arg(JExprs.str(value));
-        }
+            // Pass each filter value from the annotation as additional argument
+            for (final String value : p.resources()) {
+                convenienceCall.arg(JExprs.str(value));
+            }
 
-        addMethod(method).body()._return(convenienceCall);
+            addMethod(p).body()._return(convenienceCall);
+        });
     }
 }

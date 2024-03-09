@@ -23,13 +23,10 @@ package com.inrupt.rdf.wrapping.processor;
 import static java.util.stream.Stream.concat;
 
 import com.inrupt.rdf.wrapping.annotation.Graph;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstSubjectOfEither;
+import com.inrupt.rdf.wrapping.annotation.GraphProperty;
 
 import java.util.stream.Stream;
 
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -38,9 +35,13 @@ class GraphDefinition extends Definition<TypeElement, Graph> {
         super(type, env, Graph.class);
     }
 
+    Stream<GraphPropertyDefinition> properties() {
+        return membersAnnotatedWith(GraphProperty.class).map(m -> new GraphPropertyDefinition(m, env));
+    }
+
     Stream<TypeMirror> transitiveResourceTypes() {
-        final Stream<TypeMirror> children = resourceMethodTypes();
-        final Stream<TypeMirror> descendants = resourceMethodTypes()
+        final Stream<TypeMirror> children = returnTypes();
+        final Stream<TypeMirror> descendants = returnTypes()
                 .map(getEnv()::type)
                 .map(type -> new ResourceDefinition(type, getEnv()))
                 .flatMap(ResourceDefinition::transitiveResourceTypes);
@@ -49,21 +50,7 @@ class GraphDefinition extends Definition<TypeElement, Graph> {
                 .distinct();
     }
 
-    Stream<ExecutableElement> instanceMethods() {
-        return membersAnnotatedWith(OptionalFirstInstanceOfEither.class);
-    }
-
-    Stream<ExecutableElement> subjectMethods() {
-        return membersAnnotatedWith(OptionalFirstSubjectOfEither.class);
-    }
-
-    Stream<ExecutableElement> objectMethods() {
-        return membersAnnotatedWith(OptionalFirstObjectOfEither.class);
-    }
-
-    private Stream<TypeMirror> resourceMethodTypes() {
-        return concat(concat(instanceMethods(), subjectMethods()), objectMethods())
-                .map(ExecutableElement::getReturnType)
-                .distinct();
+    private Stream<TypeMirror> returnTypes() {
+        return properties().map(PropertyDefinition::getReturnType);
     }
 }

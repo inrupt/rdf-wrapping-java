@@ -21,6 +21,8 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import static com.github.jsonldjava.shaded.com.google.common.base.Charsets.UTF_8;
+import static com.inrupt.rdf.wrapping.annotation.GraphProperty.Method.INSTANCE_OF;
+import static com.inrupt.rdf.wrapping.annotation.GraphProperty.Method.OBJECT_OF;
 import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality.*;
 import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.NodeMapping.AS_TYPED_LITERAL;
 import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.*;
@@ -134,14 +136,14 @@ interface MyDataset {
 
 @Graph
 interface MyGraph {
-    @OptionalFirstInstanceOfEither(C)
-    MyResource instance();
-
-    @OptionalFirstSubjectOfEither(CHILD)
+    @GraphProperty(CHILD)
     MyResource subject();
 
-    @OptionalFirstObjectOfEither(CHILD)
+    @GraphProperty(value = CHILD, method = OBJECT_OF)
     MyResource object();
+
+    @GraphProperty(value = C, method = INSTANCE_OF)
+    MyResource instance();
 
     // Graph definitions support static methods.
     static UUID constant() {

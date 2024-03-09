@@ -2,10 +2,10 @@
 package x;
 
 import com.inrupt.rdf.wrapping.annotation.Graph;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstObjectOfEither;
+import com.inrupt.rdf.wrapping.annotation.GraphProperty;
 
 @Graph
 interface X {
-    @OptionalFirstObjectOfEither("x")
+    @GraphProperty("x")
     Object x();
 }

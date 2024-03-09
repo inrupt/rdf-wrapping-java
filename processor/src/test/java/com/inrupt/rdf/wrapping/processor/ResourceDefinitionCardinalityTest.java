@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.annotation.GraphProperty.Method.INSTANCE_OF;
 import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality.*;
 import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.LITERAL_AS_STRING;
 import static java.beans.Introspector.getBeanInfo;
@@ -34,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.inrupt.rdf.wrapping.annotation.Graph;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
+import com.inrupt.rdf.wrapping.annotation.GraphProperty;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
 import com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality;
@@ -240,7 +241,7 @@ class ResourceDefinitionCardinalityTest {
             return Manager.wrap(original, GraphDefinition.class);
         }
 
-        @OptionalFirstInstanceOfEither(C)
+        @GraphProperty(value = C, method = INSTANCE_OF)
         ResourceDefinition getResource();
     }
 }

@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.annotation;
 
+import static com.inrupt.rdf.wrapping.annotation.GraphProperty.Method.SUBJECT_OF;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -30,6 +31,24 @@ import java.lang.annotation.Target;
 @Target(METHOD)
 @Retention(RUNTIME)
 @Documented
-public @interface OptionalFirstSubjectOfEither {
+public @interface GraphProperty {
     String[] value();
+
+    Method method() default SUBJECT_OF;
+
+    enum Method {
+        SUBJECT_OF("optionalFirstSubjectOfEither"),
+        OBJECT_OF("optionalFirstObjectOfEither"),
+        INSTANCE_OF("optionalFirstInstanceOfEither");
+
+        private final String methodName;
+
+        Method(final String methodName) {
+            this.methodName = methodName;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+    }
 }

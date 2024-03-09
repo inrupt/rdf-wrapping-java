@@ -18,18 +18,22 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.inrupt.rdf.wrapping.annotation;
+package com.inrupt.rdf.wrapping.processor;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import com.inrupt.rdf.wrapping.annotation.GraphProperty;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.lang.model.element.ExecutableElement;
 
-@Target(METHOD)
-@Retention(RUNTIME)
-@Documented
-public @interface OptionalFirstInstanceOfEither {
-    String[] value();
+class GraphPropertyDefinition extends PropertyDefinition<GraphProperty> {
+    GraphPropertyDefinition(final ExecutableElement element, final Environment env) {
+        super(element, env, GraphProperty.class);
+    }
+
+    String[] resources() {
+        return annotation().value();
+    }
+
+    String method() {
+        return annotation().method().getMethodName();
+    }
 }

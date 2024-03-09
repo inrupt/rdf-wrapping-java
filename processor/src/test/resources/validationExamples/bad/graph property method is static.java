@@ -2,11 +2,11 @@
 package x;
 
 import com.inrupt.rdf.wrapping.annotation.Graph;
-import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
+import com.inrupt.rdf.wrapping.annotation.GraphProperty;
 
 @Graph
 interface X {
-    @OptionalFirstInstanceOfEither("x")
+    @GraphProperty("x")
     static Object x() {
         return null;
     }
