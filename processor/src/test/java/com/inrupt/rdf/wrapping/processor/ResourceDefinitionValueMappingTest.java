@@ -20,8 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.annotation.Property.Cardinality.ANY_OR_NULL;
-import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.*;
+import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.*;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.util.Arrays.stream;
 import static java.util.UUID.randomUUID;
@@ -36,7 +35,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import com.inrupt.rdf.wrapping.annotation.Graph;
 import com.inrupt.rdf.wrapping.annotation.OptionalFirstInstanceOfEither;
 import com.inrupt.rdf.wrapping.annotation.Property;
-import com.inrupt.rdf.wrapping.annotation.Property.Mapping;
+import com.inrupt.rdf.wrapping.annotation.Property.ValueMapping;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
@@ -56,13 +55,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("Resource definition")
-class ResourceDefinitionMappingTest {
+class ResourceDefinitionValueMappingTest {
     private static final String P = "urn:example:p";
     private static final String C = "urn:example:c";
     private static final Object[] RESOURCE_DEFINITION_METHODS = stream(ResourceDefinition.class.getDeclaredMethods())
             .map(m -> m.getAnnotation(Property.class))
-            .map(Property::mapping)
-            .map(Mapping::getMethodName)
+            .map(Property::valueMapping)
+            .map(ValueMapping::getMethodName)
             .toArray();
 
     private Model m;
@@ -77,14 +76,14 @@ class ResourceDefinitionMappingTest {
     @DisplayName("properly converts node with mapping")
     @ParameterizedTest(name = "{0}")
     @MethodSource
-    void e2e(final Mapping mapping, final RDFNode original, final Object expected) {
+    void e2e(final ValueMapping valueMapping, final RDFNode original, final Object expected) {
         final org.apache.jena.rdf.model.Property p = m.createProperty(P);
         final org.apache.jena.rdf.model.Resource c = m.createResource(C);
 
         final Matcher<Object> isExpected;
         final RDFNode o;
 
-        if (mapping == AS) {
+        if (valueMapping == AS) {
             o = m.createResource().addProperty(p, (String) expected); // Complex properties need a bit more setup
             isExpected = hasProperty(LITERAL_AS_STRING.getMethodName(), equalTo(expected)); // and matcher
         } else {
@@ -96,7 +95,7 @@ class ResourceDefinitionMappingTest {
                 .addProperty(type, c) // anchor for graph definition
                 .addProperty(p, o); // what's being wrapped
 
-        assertThat(wrapped.getResource(), hasProperty(mapping.getMethodName(), isExpected));
+        assertThat(wrapped.getResource(), hasProperty(valueMapping.getMethodName(), isExpected));
     }
 
     private static Stream<Arguments> e2e() {
@@ -138,25 +137,25 @@ class ResourceDefinitionMappingTest {
 
     @Resource
     interface ResourceDefinition {
-        @Property(predicate = P, cardinality = ANY_OR_NULL, mapping = LITERAL_AS_STRING)
+        @Property(predicate = P, valueMapping = LITERAL_AS_STRING)
         String getLiteralAsString();
 
-        @Property(predicate = P, cardinality = ANY_OR_NULL, mapping = IRI_AS_URI)
+        @Property(predicate = P, valueMapping = IRI_AS_URI)
         URI getIriAsUri();
 
-        @Property(predicate = P, cardinality = ANY_OR_NULL, mapping = IRI_AS_STRING)
+        @Property(predicate = P, valueMapping = IRI_AS_STRING)
         String getIriAsString();
 
-        @Property(predicate = P, cardinality = ANY_OR_NULL, mapping = LITERAL_AS_INSTANT)
+        @Property(predicate = P, valueMapping = LITERAL_AS_INSTANT)
         Instant getLiteralAsInstant();
 
-        @Property(predicate = P, cardinality = ANY_OR_NULL, mapping = LITERAL_AS_BOOLEAN)
+        @Property(predicate = P, valueMapping = LITERAL_AS_BOOLEAN)
         Boolean getLiteralAsBoolean();
 
-        @Property(predicate = P, cardinality = ANY_OR_NULL, mapping = LITERAL_AS_INTEGER_OR_NULL)
+        @Property(predicate = P, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
         Integer getLiteralAsIntegerOrNull();
 
-        @Property(predicate = P, cardinality = ANY_OR_NULL, mapping = AS)
+        @Property(predicate = P)
         ResourceDefinition getAs();
     }
 

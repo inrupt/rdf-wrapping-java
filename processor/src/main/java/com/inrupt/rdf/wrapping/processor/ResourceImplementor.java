@@ -25,19 +25,18 @@ import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.$t;
 
 import com.inrupt.rdf.wrapping.annotation.Property;
+import com.inrupt.rdf.wrapping.jena.NodeMappings;
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.graph.Node;
-import org.jboss.jdeparser.JCall;
-import org.jboss.jdeparser.JExpr;
-import org.jboss.jdeparser.JMethodDef;
-import org.jboss.jdeparser.JType;
+import org.jboss.jdeparser.*;
 
 class ResourceImplementor extends Implementor<ResourceDefinition> {
     static final String FACTORY = "factory";
@@ -54,6 +53,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
         addConstructor();
         addPrimitivePropertyMethods();
         addResourcePropertyMethods();
+        addOverwrite();
     }
 
     private void addImports() {
@@ -64,7 +64,8 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
                 ._import(EnhGraph.class)
                 ._import(org.apache.jena.enhanced.Implementation.class)
                 ._import(Node.class)
-                ._import(ValueMappings.class);
+                ._import(ValueMappings.class)
+                ._import(NodeMappings.class);
     }
 
     private void addClass() {
@@ -91,7 +92,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
 
     private void addPrimitivePropertyMethods() {
         definition.primitivePropertyMethods().forEach(method -> {
-            final String mappingMethodName = method.getAnnotation(Property.class).mapping().getMethodName();
+            final String mappingMethodName = method.getAnnotation(Property.class).valueMapping().getMethodName();
             final JExpr mapping = $t(ValueMappings.class).methodRef(mappingMethodName);
 
             addPropertyMethod(method, mapping);
@@ -104,6 +105,26 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
             final JCall mapping = $t(ValueMappings.class).call("as").arg(implementation._class());
 
             addPropertyMethod(method, mapping);
+        });
+    }
+
+    // TODO: Validate
+    // TODO: Cover
+    // TODO: Other mutators
+    private void addOverwrite() {
+        definition.setterPropertyMethods().forEach(method -> {
+            final Property annotation = method.getAnnotation(Property.class);
+            final String predicateFromAnnotation = annotation.predicate();
+            final String cardinality = annotation.cardinality().getMethodName();
+            final JCall predicate = call("getModel").call("createProperty").arg(str(predicateFromAnnotation));
+            final JMethodDef m = addMethod(method);
+
+            final String mappingMethodName = annotation.nodeMapping().getMethodName();
+            final JExpr mapping = $t(NodeMappings.class).methodRef(mappingMethodName);
+
+            final VariableElement variableElement = method.getParameters().get(0);
+            final JParamDeclaration value = m.param(FINAL, JTypes.typeOf(variableElement.asType()), "value");
+            m.body().call(cardinality).arg(predicate).arg($v(value)).arg(mapping);
         });
     }
 

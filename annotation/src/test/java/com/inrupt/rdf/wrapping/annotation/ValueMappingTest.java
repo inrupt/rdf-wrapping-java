@@ -20,7 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.annotation;
 
-import static com.inrupt.rdf.wrapping.annotation.Property.Mapping;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
@@ -28,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.describedAs;
 import static org.hamcrest.Matchers.in;
 
+import com.inrupt.rdf.wrapping.annotation.Property.ValueMapping;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 
 import java.lang.reflect.Method;
@@ -40,22 +40,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-@DisplayName("Mapping")
-class MappingTest {
+@DisplayName("Value mapping")
+class ValueMappingTest {
     private static final Collection<String> MAPPING_METHODS = mappingMethods().collect(toList());
-    private static final Collection<String> ENUM_CONSTANTS = stream(Mapping.class.getEnumConstants())
-            .map(Mapping::getMethodName)
+    private static final Collection<String> ENUM_CONSTANTS = stream(ValueMapping.class.getEnumConstants())
+            .map(ValueMapping::getMethodName)
             .collect(toList());
 
     @DisplayName("has equivalent ValueMappings method for enum constant")
     @ParameterizedTest(name = "{0}")
-    @EnumSource(Mapping.class)
-    void constantHasEquivalentMethod(final Mapping mapping) {
+    @EnumSource(ValueMapping.class)
+    void constantHasEquivalentMethod(final ValueMapping valueMapping) {
         final Matcher<String> hasCorrespondingMethod = describedAs("ValueMappings to have corresponding method",
                 in(MAPPING_METHODS));
 
         assertThat("Mapping enum constant without corresponding ValueMappings method",
-                mapping.getMethodName(), hasCorrespondingMethod);
+                valueMapping.getMethodName(), hasCorrespondingMethod);
     }
 
     @DisplayName("has enum constant equivalent to ValueMappings method")
@@ -72,6 +72,7 @@ class MappingTest {
     private static Stream<String> mappingMethods() {
         return stream(ValueMappings.class.getDeclaredMethods())
                 .filter(method -> isPublic(method.getModifiers()))
-                .map(Method::getName);
+                .map(Method::getName)
+                .distinct();
     }
 }

@@ -20,6 +20,9 @@
  */
 package com.inrupt.rdf.wrapping.annotation;
 
+import static com.inrupt.rdf.wrapping.annotation.Property.Cardinality.ANY_OR_NULL;
+import static com.inrupt.rdf.wrapping.annotation.Property.NodeMapping.IDENTITY;
+import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.AS;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -33,11 +36,13 @@ import java.lang.annotation.Target;
 public @interface Property {
     String predicate();
 
-    Cardinality cardinality();
+    Cardinality cardinality() default ANY_OR_NULL;
 
-    Mapping mapping();
+    ValueMapping valueMapping() default AS;
 
-    enum Mapping {
+    NodeMapping nodeMapping() default IDENTITY;
+
+    enum ValueMapping {
         AS("as"),
         IRI_AS_STRING("iriAsString"),
         IRI_AS_URI("iriAsUri"),
@@ -48,7 +53,24 @@ public @interface Property {
 
         private final String methodName;
 
-        Mapping(final String methodName) {
+        ValueMapping(final String methodName) {
+            this.methodName = methodName;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+    }
+
+    enum NodeMapping {
+        AS_STRING_LITERAL("asStringLiteral"),
+        AS_IRI("asIri"),
+        AS_TYPED_LITERAL("asTypedLiteral"),
+        IDENTITY("identity");
+
+        private final String methodName;
+
+        NodeMapping(final String methodName) {
             this.methodName = methodName;
         }
 
@@ -58,26 +80,30 @@ public @interface Property {
     }
 
     enum Cardinality {
-        ANY_OR_NULL("anyOrNull", false),
+        ANY_OR_NULL("anyOrNull", false, false),
 
-        ANY_OR_THROW("anyOrThrow", false),
+        ANY_OR_THROW("anyOrThrow", false, false),
 
-        SINGLE_OR_NULL("singleOrNull", false),
+        SINGLE_OR_NULL("singleOrNull", false, false),
 
-        SINGLE_OR_THROW("singleOrThrow", false),
+        SINGLE_OR_THROW("singleOrThrow", false, false),
 
-        OBJECT_ITERATOR("objectIterator", true),
+        OBJECT_ITERATOR("objectIterator", true, false),
 
-        OBJECTS_READ_ONLY("objectsReadOnly", true),
+        OBJECTS_READ_ONLY("objectsReadOnly", true, false),
 
-        OBJECT_STREAM("objectStream", true);
+        OBJECT_STREAM("objectStream", true, false),
+
+        OVERWRITE("overwrite", false, true);
 
         private final String methodName;
         private final boolean plural;
+        private final boolean setter;
 
-        Cardinality(final String methodName, final boolean plural) {
+        Cardinality(final String methodName, final boolean plural, final boolean setter) {
             this.methodName = methodName;
             this.plural = plural;
+            this.setter = setter;
         }
 
         public String getMethodName() {
@@ -86,6 +112,10 @@ public @interface Property {
 
         public boolean isPlural() {
             return plural;
+        }
+
+        public boolean isSetter() {
+            return setter;
         }
     }
 }

@@ -20,7 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.AS;
+import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.AS;
 import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
 
 import com.inrupt.rdf.wrapping.annotation.Property;
@@ -39,11 +39,13 @@ import javax.lang.model.type.TypeMirror;
 
 class ResourceDefinition extends Definition {
     private static final Predicate<ExecutableElement> isComplex = method ->
-            method.getAnnotation(Property.class).mapping() == AS;
+            method.getAnnotation(Property.class).valueMapping() == AS;
     private static final Predicate<ExecutableElement> isPlural = method ->
             method.getAnnotation(Property.class).cardinality().isPlural();
     private final Predicate<ExecutableElement> returnsResource = method ->
             getEnv().type(method.getReturnType()).getAnnotation(Resource.class) != null;
+    static final Predicate<ExecutableElement> isSetter = method ->
+            method.getAnnotation(Property.class).cardinality().isSetter();
 
     ResourceDefinition(final TypeElement type, final Environment env) {
         super(type, env);
@@ -51,11 +53,13 @@ class ResourceDefinition extends Definition {
 
     Stream<ExecutableElement> primitivePropertyMethods() {
         return membersAnnotatedWith(Property.class)
+                .filter(not(isSetter))
                 .filter(not(returnsResource));
     }
 
     Stream<ExecutableElement> resourcePropertyMethods() {
         return membersAnnotatedWith(Property.class)
+                .filter(not(isSetter))
                 .filter(returnsResource);
     }
 
@@ -64,6 +68,11 @@ class ResourceDefinition extends Definition {
                 .filter(isComplex)
                 .filter(not(isPlural))
                 .filter(not(isVoid));
+    }
+
+    Stream<ExecutableElement> setterPropertyMethods() {
+        return membersAnnotatedWith(Property.class)
+                .filter(isSetter);
     }
 
     Stream<ExecutableElement> primitiveMappingPropertyMethods() {

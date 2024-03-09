@@ -2,7 +2,7 @@
 package x;
 
 import static com.inrupt.rdf.wrapping.annotation.Property.Cardinality.OBJECT_ITERATOR;
-import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.IRI_AS_STRING;
+import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.IRI_AS_STRING;
 
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
@@ -11,6 +11,6 @@ import java.util.Iterator;
 
 @Resource
 interface X {
-    @Property(predicate = "x", cardinality = OBJECT_ITERATOR, mapping = IRI_AS_STRING)
+    @Property(predicate = "x", cardinality = OBJECT_ITERATOR, valueMapping = IRI_AS_STRING)
     Iterator<String> x();
 }

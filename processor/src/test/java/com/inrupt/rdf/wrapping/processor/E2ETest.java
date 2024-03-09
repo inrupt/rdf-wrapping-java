@@ -22,7 +22,8 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static com.github.jsonldjava.shaded.com.google.common.base.Charsets.UTF_8;
 import static com.inrupt.rdf.wrapping.annotation.Property.Cardinality.*;
-import static com.inrupt.rdf.wrapping.annotation.Property.Mapping.*;
+import static com.inrupt.rdf.wrapping.annotation.Property.NodeMapping.AS_TYPED_LITERAL;
+import static com.inrupt.rdf.wrapping.annotation.Property.ValueMapping.*;
 import static com.inrupt.rdf.wrapping.processor.E2ETest.*;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.io.IOUtils.toInputStream;
@@ -102,6 +103,9 @@ class E2ETest {
         assertThat(MyDataset.constant(), is(STATIC));
         assertThat(MyGraph.constant(), is(STATIC));
         assertThat(MyResource.constant(), is(STATIC));
+
+        myDataset.anonymous().instance().overwrite(999);
+        assertThat(myDataset.anonymous().instance().label(), is(999));
     }
 }
 
@@ -152,20 +156,23 @@ interface MyGraph {
 
 @Resource
 interface MyResource {
-    @Property(predicate = LABEL, cardinality = ANY_OR_NULL, mapping = LITERAL_AS_INTEGER_OR_NULL)
+    @Property(predicate = LABEL, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Integer label();
 
-    @Property(predicate = IRI, cardinality = ANY_OR_NULL, mapping = IRI_AS_URI)
+    @Property(predicate = IRI, valueMapping = IRI_AS_URI)
     URI uri();
 
-    @Property(predicate = CHILD, cardinality = ANY_OR_NULL, mapping = AS)
+    @Property(predicate = CHILD)
     MyResource child();
 
-    @Property(predicate = THROWING, cardinality = ANY_OR_THROW, mapping = LITERAL_AS_STRING)
+    @Property(predicate = THROWING, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
     String throwing();
 
-    @Property(predicate = MANY, cardinality = OBJECTS_READ_ONLY, mapping = LITERAL_AS_INTEGER_OR_NULL)
+    @Property(predicate = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Set<Integer> many();
+
+    @Property(predicate = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
+    void overwrite(Integer value);
 
     // Resource definitions support static methods.
     static UUID constant() {

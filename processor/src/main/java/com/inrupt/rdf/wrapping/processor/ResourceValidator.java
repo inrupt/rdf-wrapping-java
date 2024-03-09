@@ -20,6 +20,10 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.processor.Definition.isVoid;
+import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
+import static com.inrupt.rdf.wrapping.processor.ResourceDefinition.isSetter;
+
 import com.inrupt.rdf.wrapping.annotation.Property;
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
@@ -53,7 +57,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
 
         requireNonMemberMethods(Property.class);
 
-        requireNonVoidReturnType(Property.class);
+        requireNonVoidReturnType();
         requireCompatiblePrimitiveReturnType();
         requireCompatibleComplexReturnType();
 
@@ -61,11 +65,22 @@ class ResourceValidator extends Validator<ResourceDefinition> {
         requirePluralTypeArgument();
     }
 
+    private void requireNonVoidReturnType() {
+        definition.membersAnnotatedWith(Property.class)
+                .filter(not(isSetter))
+                .filter(isVoid)
+                .forEach(method ->
+                        errors.add(new ValidationError(
+                                method,
+                                "Method [%s] must not be void",
+                                method.getSimpleName())));
+    }
+
     private void requireCompatiblePrimitiveReturnType() {
         definition.primitiveMappingPropertyMethods().forEach(method -> {
             final TypeMirror thisReturn = method.getReturnType();
 
-            final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
+            final String mappingMethod = method.getAnnotation(Property.class).valueMapping().getMethodName();
             final TypeMirror mappingReturn = returnTypeOf(mappingMethod, ValueMappings.class);
 
             if (definition.getEnv().getTypeUtils().isAssignable(mappingReturn, thisReturn)) {
@@ -134,7 +149,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
                 return;
             }
 
-            final String mappingMethod = method.getAnnotation(Property.class).mapping().getMethodName();
+            final String mappingMethod = method.getAnnotation(Property.class).valueMapping().getMethodName();
             final TypeMirror mappingReturn = returnTypeOf(mappingMethod, ValueMappings.class);
 
             final List<TypeElement> mappingTypeArguments = new ArrayList<>();
