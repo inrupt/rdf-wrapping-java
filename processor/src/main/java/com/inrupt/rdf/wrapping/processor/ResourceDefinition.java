@@ -79,8 +79,9 @@ class ResourceDefinition extends Definition<TypeElement, Resource> {
                 .filter(not(isVoid));
     }
 
-    Stream<ResourcePropertyDefinition> pluralProperties() {
+    Stream<ResourcePropertyDefinition> primitivePluralProperties() {
         return properties()
+                .filter(not(isComplex))
                 .filter(isPlural);
     }
 

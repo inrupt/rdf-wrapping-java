@@ -29,14 +29,14 @@ import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.WildcardType;
 
 class ResourceValidator extends Validator<ResourceDefinition> {
     ResourceValidator(final ResourceDefinition definition) {
@@ -63,6 +63,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
 
         requirePluralErasure();
         requirePluralTypeArgument();
+        // TODO: plural complex
     }
 
     private void requireNonVoidReturnType() {
@@ -111,7 +112,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
     }
 
     private void requirePluralErasure() {
-        definition.pluralProperties().forEach(p -> {
+        definition.primitivePluralProperties().forEach(p -> {
             final TypeMirror thisErasure = definition.getEnv().getTypeUtils().erasure(p.getReturnType());
 
             final TypeMirror cardinalityReturn = returnTypeOf(p.cardinalityMethod(), WrapperResource.class);
@@ -133,35 +134,49 @@ class ResourceValidator extends Validator<ResourceDefinition> {
         });
     }
 
-    // TODO: Check bounds of type parameters e.g. String & CharSequence
-    // TODO: this `@ResourceProperty(value = "x", cardinality = OBJECT_ITERATOR) Iterator<RDFNode> x()` produces
-    //  "must have same type argument as return type [com.inrupt.rdf.wrapping.jena.ValueMapping<T>] of mapping [as]"
     private void requirePluralTypeArgument() {
-        definition.pluralProperties().forEach(p -> {
+        definition.primitivePluralProperties().forEach(p -> {
             final DeclaredType thisReturn = (DeclaredType) p.getReturnType();
-            final TypeMirror thisErasure = definition.getEnv().getTypeUtils().erasure(thisReturn);
 
-            if (definition.getEnv().isSameType(thisErasure, thisReturn)) {
-                // Ignore cases where return type of property method is not generic
+            // raw generic or not generic
+            if (thisReturn.getTypeArguments().isEmpty()) {
+                return;
+            }
+
+            final boolean hasWildcard = thisReturn.getTypeArguments().stream().anyMatch(WildcardType.class::isInstance);
+
+            // wildcard
+            if (hasWildcard && thisReturn.getTypeArguments().stream()
+                    .filter(WildcardType.class::isInstance)
+                    .map(WildcardType.class::cast)
+                    .flatMap(wildcard -> Stream.of(wildcard.getSuperBound(), wildcard.getExtendsBound()))
+                    .allMatch(Objects::isNull)) {
                 return;
             }
 
             final TypeMirror mappingReturn = returnTypeOf(p.valueMappingMethod(), ValueMappings.class);
 
-            final List<TypeElement> mappingTypeArguments = new ArrayList<>();
-            mappingTypeArguments.add(definition.typeOf(mappingReturn));
+            // extends or super
+            if (thisReturn.getTypeArguments().stream()
+                    .filter(WildcardType.class::isInstance)
+                    .map(WildcardType.class::cast)
+                    .flatMap(wildcard -> Stream.of(wildcard.getSuperBound(), wildcard.getExtendsBound()))
+                    .filter(Objects::nonNull)
+                    .anyMatch(x -> definition.getEnv().getTypeUtils().isAssignable(mappingReturn, x))) {
+                return;
+            }
 
-            final List<TypeElement> thisTypeArguments = thisReturn.getTypeArguments().stream()
-                    .map(definition::typeOf)
-                    .collect(Collectors.toList());
-
-            if (mappingTypeArguments.equals(thisTypeArguments)) {
+            // concrete
+            if (thisReturn.getTypeArguments().stream()
+                    .filter(not(WildcardType.class::isInstance))
+                    .anyMatch(x -> definition.getEnv().getTypeUtils().isAssignable(mappingReturn, x))) {
                 return;
             }
 
             errors.add(new ValidationError(
                     p.element,
-                    "Return type [%s] of [%s] must have same type argument as return type [%s] of mapping [%s]",
+                    "Return type [%s] of [%s] must have type argument assignable from " +
+                            "type argument of return type [%s] of mapping [%s]",
                     thisReturn,
                     p.getName(),
                     mappingReturn,

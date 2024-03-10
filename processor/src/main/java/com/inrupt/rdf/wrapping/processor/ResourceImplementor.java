@@ -51,6 +51,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
         addPrimitivePropertyMethods();
         addResourcePropertyMethods();
         addOverwrite();
+        // TODO: plural complex
     }
 
     private void addImports() {

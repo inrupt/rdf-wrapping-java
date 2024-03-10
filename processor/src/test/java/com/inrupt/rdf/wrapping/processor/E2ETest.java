@@ -77,6 +77,7 @@ class E2ETest {
             "     [                  \n" +
             "         a      :C ;    \n" +
             "         :label  5 ;    \n" +
+            "         :many 5, 6;    \n" +
             "     ] .                \n" +
             " }                      \n";
     private static final org.apache.jena.query.Dataset DATASET = DatasetFactory.create();
@@ -92,7 +93,13 @@ class E2ETest {
 
         assertThat(myDataset.anonymous().instance().label(), is(1));
         assertThat(myDataset.anonymous().instance().uri(), is(U));
-        assertThat(myDataset.anonymous().instance().many(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many1(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many2(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many3(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many4(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many5(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many6(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many7(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().child().label(), is(4));
         assertThrows(Throwable.class, () -> myDataset.anonymous().instance().throwing());
         assertThat(myDataset.anonymous().instance().childLabel(), is(4));
@@ -171,7 +178,53 @@ interface MyResource {
     String throwing();
 
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-    Set<Integer> many();
+    Set<Integer> many1();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Set<?> many2();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Set<? extends Integer> many3();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Set<? extends Number> many4();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Set<? super Integer> many5();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Set<? super Number> many6();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Set<Number> many7();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Set many8();
+
+//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY)
+//    Set<?> many7();
+//
+//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY)
+//    Set<? extends MyResource> many8();
+//
+//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY)
+//    Set many9();
+
+
+//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+//    Collection<Integer> many21();
+//
+//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+//    Collection<?> many22();
+//
+//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+//    Collection<? extends Integer> many23();
+//
+//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+//    Collection<? super Integer> many24();
+//
+//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+//    Collection many25();
 
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
     void overwrite(Integer value);

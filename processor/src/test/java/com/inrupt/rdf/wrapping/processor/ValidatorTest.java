@@ -95,10 +95,7 @@ class ValidatorTest {
                 arguments("resource plural property method erasure super", "must have same erasure as return type"),
                 arguments(
                         "resource plural property method type argument differs",
-                        "must have same type argument as return type"),
-                arguments(
-                        "resource plural property method type argument super",
-                        "must have same type argument as return type")
+                        "must have type argument assignable from type argument of return type")
         );
     }
 
@@ -134,7 +131,12 @@ class ValidatorTest {
                 arguments("resource complex property method is resource instance"),
                 arguments("resource complex property method recursive"),
 
-                arguments("resource plural property method")
+                arguments("resource plural property method"),
+                arguments("resource plural property method raw"),
+                arguments("resource plural property method extends"),
+                arguments("resource plural property method super"),
+                arguments("resource plural property method wildcard"),
+                arguments("resource plural property method type argument super")
         );
     }
 }
