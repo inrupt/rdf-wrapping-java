@@ -9,6 +9,6 @@ import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
 
 @Resource
 interface X {
-    @ResourceProperty(predicate = "x", cardinality = OBJECT_ITERATOR, valueMapping = IRI_AS_STRING)
+    @ResourceProperty(value = "x", cardinality = OBJECT_ITERATOR, valueMapping = IRI_AS_STRING)
     String x();
 }

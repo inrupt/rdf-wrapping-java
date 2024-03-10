@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 public @interface ResourceProperty {
-    String predicate();
+    String value();
 
     Cardinality cardinality() default ANY_OR_NULL;
 

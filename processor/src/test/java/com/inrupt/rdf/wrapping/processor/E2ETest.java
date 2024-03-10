@@ -158,22 +158,22 @@ interface MyGraph {
 
 @Resource
 interface MyResource {
-    @ResourceProperty(predicate = LABEL, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    @ResourceProperty(value = LABEL, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Integer label();
 
-    @ResourceProperty(predicate = IRI, valueMapping = IRI_AS_URI)
+    @ResourceProperty(value = IRI, valueMapping = IRI_AS_URI)
     URI uri();
 
-    @ResourceProperty(predicate = CHILD)
+    @ResourceProperty(CHILD)
     MyResource child();
 
-    @ResourceProperty(predicate = THROWING, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
+    @ResourceProperty(value = THROWING, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
     String throwing();
 
-    @ResourceProperty(predicate = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Set<Integer> many();
 
-    @ResourceProperty(predicate = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
+    @ResourceProperty(value = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
     void overwrite(Integer value);
 
     // Resource definitions support static methods.

@@ -8,6 +8,6 @@ import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
 
 @Resource
 interface X {
-    @ResourceProperty(predicate = "x", valueMapping = IRI_AS_STRING)
+    @ResourceProperty(value = "x", valueMapping = IRI_AS_STRING)
     int x();
 }

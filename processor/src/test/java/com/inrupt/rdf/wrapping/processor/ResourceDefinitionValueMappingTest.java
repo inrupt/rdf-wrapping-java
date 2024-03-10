@@ -138,25 +138,25 @@ class ResourceDefinitionValueMappingTest {
 
     @Resource
     interface ResourceDefinition {
-        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(value = P, valueMapping = LITERAL_AS_STRING)
         String getLiteralAsString();
 
-        @ResourceProperty(predicate = P, valueMapping = IRI_AS_URI)
+        @ResourceProperty(value = P, valueMapping = IRI_AS_URI)
         URI getIriAsUri();
 
-        @ResourceProperty(predicate = P, valueMapping = IRI_AS_STRING)
+        @ResourceProperty(value = P, valueMapping = IRI_AS_STRING)
         String getIriAsString();
 
-        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_INSTANT)
+        @ResourceProperty(value = P, valueMapping = LITERAL_AS_INSTANT)
         Instant getLiteralAsInstant();
 
-        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_BOOLEAN)
+        @ResourceProperty(value = P, valueMapping = LITERAL_AS_BOOLEAN)
         Boolean getLiteralAsBoolean();
 
-        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+        @ResourceProperty(value = P, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
         Integer getLiteralAsIntegerOrNull();
 
-        @ResourceProperty(predicate = P)
+        @ResourceProperty(P)
         ResourceDefinition getAs();
     }
 

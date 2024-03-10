@@ -11,6 +11,6 @@ import java.util.Iterator;
 
 @Resource
 interface X {
-    @ResourceProperty(predicate = "x", cardinality = OBJECT_ITERATOR, valueMapping = IRI_AS_STRING)
+    @ResourceProperty(value = "x", cardinality = OBJECT_ITERATOR, valueMapping = IRI_AS_STRING)
     Iterator<String> x();
 }

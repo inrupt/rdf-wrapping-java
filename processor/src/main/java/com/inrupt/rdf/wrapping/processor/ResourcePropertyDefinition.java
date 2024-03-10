@@ -35,7 +35,7 @@ class ResourcePropertyDefinition extends PropertyDefinition<ResourceProperty> {
     }
 
     String predicate() {
-        return annotation().predicate();
+        return annotation().value();
     }
 
     Cardinality cardinality() {

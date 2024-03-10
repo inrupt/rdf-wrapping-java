@@ -213,25 +213,25 @@ class ResourceDefinitionCardinalityTest {
 
     @Resource
     interface ResourceDefinition {
-        @ResourceProperty(predicate = P, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(value = P, valueMapping = LITERAL_AS_STRING)
         String getAnyOrNull();
 
-        @ResourceProperty(predicate = P, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(value = P, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
         String getAnyOrThrow();
 
-        @ResourceProperty(predicate = P, cardinality = SINGLE_OR_NULL, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(value = P, cardinality = SINGLE_OR_NULL, valueMapping = LITERAL_AS_STRING)
         String getSingleOrNull();
 
-        @ResourceProperty(predicate = P, cardinality = SINGLE_OR_THROW, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(value = P, cardinality = SINGLE_OR_THROW, valueMapping = LITERAL_AS_STRING)
         String getSingleOrThrow();
 
-        @ResourceProperty(predicate = P, cardinality = OBJECT_ITERATOR, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(value = P, cardinality = OBJECT_ITERATOR, valueMapping = LITERAL_AS_STRING)
         Iterator<String> getObjectIterator();
 
-        @ResourceProperty(predicate = P, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(value = P, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_STRING)
         Set<String> getObjectsReadOnly();
 
-        @ResourceProperty(predicate = P, cardinality = OBJECT_STREAM, valueMapping = LITERAL_AS_STRING)
+        @ResourceProperty(value = P, cardinality = OBJECT_STREAM, valueMapping = LITERAL_AS_STRING)
         Stream<String> getObjectStream();
     }
 

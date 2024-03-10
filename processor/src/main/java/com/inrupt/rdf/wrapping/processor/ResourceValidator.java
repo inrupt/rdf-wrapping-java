@@ -134,6 +134,8 @@ class ResourceValidator extends Validator<ResourceDefinition> {
     }
 
     // TODO: Check bounds of type parameters e.g. String & CharSequence
+    // TODO: this `@ResourceProperty(value = "x", cardinality = OBJECT_ITERATOR) Iterator<RDFNode> x()` produces
+    //  "must have same type argument as return type [com.inrupt.rdf.wrapping.jena.ValueMapping<T>] of mapping [as]"
     private void requirePluralTypeArgument() {
         definition.pluralProperties().forEach(p -> {
             final DeclaredType thisReturn = (DeclaredType) p.getReturnType();

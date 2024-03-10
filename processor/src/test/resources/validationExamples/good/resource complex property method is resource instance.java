@@ -6,6 +6,6 @@ import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
 
 @Resource
 interface X {
-    @ResourceProperty(predicate = "x")
+    @ResourceProperty("x")
     X x();
 }

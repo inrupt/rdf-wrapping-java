@@ -13,7 +13,7 @@ interface X {
 
     @Resource
     interface Y {
-        @ResourceProperty(predicate = "x")
+        @ResourceProperty("x")
         Y x();
     }
 }
