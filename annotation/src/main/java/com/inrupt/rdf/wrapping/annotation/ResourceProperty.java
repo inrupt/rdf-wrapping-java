@@ -43,22 +43,28 @@ public @interface ResourceProperty {
     NodeMapping nodeMapping() default IDENTITY;
 
     enum ValueMapping {
-        AS("as"),
-        IRI_AS_STRING("iriAsString"),
-        IRI_AS_URI("iriAsUri"),
-        LITERAL_AS_BOOLEAN("literalAsBoolean"),
-        LITERAL_AS_INSTANT("literalAsInstant"),
-        LITERAL_AS_INTEGER_OR_NULL("literalAsIntegerOrNull"),
-        LITERAL_AS_STRING("literalAsString");
+        AS("as", true),
+        IRI_AS_STRING("iriAsString", false),
+        IRI_AS_URI("iriAsUri", false),
+        LITERAL_AS_BOOLEAN("literalAsBoolean", false),
+        LITERAL_AS_INSTANT("literalAsInstant", false),
+        LITERAL_AS_INTEGER_OR_NULL("literalAsIntegerOrNull", false),
+        LITERAL_AS_STRING("literalAsString", false);
 
         private final String methodName;
+        private final boolean complex;
 
-        ValueMapping(final String methodName) {
+        ValueMapping(final String methodName, final boolean complex) {
             this.methodName = methodName;
+            this.complex = complex;
         }
 
         public String getMethodName() {
             return methodName;
+        }
+
+        public boolean isComplex() {
+            return complex;
         }
     }
 

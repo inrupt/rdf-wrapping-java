@@ -84,7 +84,7 @@ class ResourceDefinitionValueMappingTest {
         final Matcher<Object> isExpected;
         final RDFNode o;
 
-        if (valueMapping == AS) {
+        if (valueMapping.isComplex()) {
             o = m.createResource().addProperty(p, (String) expected); // Complex properties need a bit more setup
             isExpected = hasProperty(LITERAL_AS_STRING.getMethodName(), equalTo(expected)); // and matcher
         } else {

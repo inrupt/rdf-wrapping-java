@@ -20,7 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.AS;
 import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
 import static javax.lang.model.type.TypeKind.VOID;
 
@@ -38,7 +37,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 class ResourceDefinition extends Definition<TypeElement, Resource> {
-    private static final Predicate<ResourcePropertyDefinition> isComplex = p -> p.valueMapping() == AS;
+    private static final Predicate<ResourcePropertyDefinition> isComplex = p -> p.valueMapping().isComplex();
     private static final Predicate<ResourcePropertyDefinition> isPlural = p -> p.cardinality().isPlural();
     private final Predicate<ResourcePropertyDefinition> returnsResource = p ->
             getEnv().type(p.getReturnType()).getAnnotation(Resource.class) != null;
