@@ -38,6 +38,7 @@ import static org.junit.Assert.assertThrows;
 import com.inrupt.rdf.wrapping.annotation.*;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -93,13 +94,20 @@ class E2ETest {
 
         assertThat(myDataset.anonymous().instance().label(), is(1));
         assertThat(myDataset.anonymous().instance().uri(), is(U));
-        assertThat(myDataset.anonymous().instance().many1(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many2(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many3(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many4(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many5(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many6(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many7(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many8(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many10(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many11(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many12(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many13(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many14(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many15(), contains(2, 3));
+        assertThat(myDataset.anonymous().instance().many16(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().child().label(), is(4));
         assertThrows(Throwable.class, () -> myDataset.anonymous().instance().throwing());
         assertThat(myDataset.anonymous().instance().childLabel(), is(4));
@@ -178,53 +186,52 @@ interface MyResource {
     String throwing();
 
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-    Set<Integer> many1();
+    Set many1();
 
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Set<?> many2();
 
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-    Set<? extends Integer> many3();
+    Set<Integer> many3();
 
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-    Set<? extends Number> many4();
+    Set<? extends Integer> many4();
 
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Set<? super Integer> many5();
 
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-    Set<? super Number> many6();
+    Set<Number> many6();
 
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-    Set<Number> many7();
+    Set<? extends Number> many7();
 
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-    Set many8();
+    Set<? super Number> many8();
 
-//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY)
-//    Set<?> many7();
-//
-//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY)
-//    Set<? extends MyResource> many8();
-//
-//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY)
-//    Set many9();
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Collection many9();
 
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Collection<?> many10();
 
-//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-//    Collection<Integer> many21();
-//
-//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-//    Collection<?> many22();
-//
-//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-//    Collection<? extends Integer> many23();
-//
-//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-//    Collection<? super Integer> many24();
-//
-//    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-//    Collection many25();
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Collection<Integer> many11();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Collection<? extends Integer> many12();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Collection<? super Integer> many13();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Collection<Number> many14();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Collection<? extends Number> many15();
+
+    @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
+    Collection<? super Number> many16();
 
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
     void overwrite(Integer value);

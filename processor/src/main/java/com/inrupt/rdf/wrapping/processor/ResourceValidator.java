@@ -119,8 +119,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
             final TypeMirror cardinalityErasure =
                     definition.getEnv().getTypeUtils().erasure(cardinalityReturn);
 
-            // TODO: Check subclassing of erasures e.g. Collection<T> & Set<T>
-            if (definition.getEnv().isSameType(cardinalityErasure, thisErasure)) {
+            if (definition.getEnv().getTypeUtils().isAssignable(cardinalityErasure, thisErasure)) {
                 return;
             }
 

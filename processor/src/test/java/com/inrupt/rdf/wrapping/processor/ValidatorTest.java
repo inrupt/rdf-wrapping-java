@@ -92,7 +92,6 @@ class ValidatorTest {
                 arguments("resource complex property method is void", MUST_NOT_BE_VOID),
 
                 arguments("resource plural property method erasure differs", "must have same erasure as return type"),
-                arguments("resource plural property method erasure super", "must have same erasure as return type"),
                 arguments(
                         "resource plural property method type argument differs",
                         "must have type argument assignable from type argument of return type")
@@ -125,18 +124,12 @@ class ValidatorTest {
 
                 arguments("resource extends nothing"),
                 arguments("resource extends Resource"),
-                arguments("resource property method is assignable instance"),
                 arguments("resource unannotated method is static"),
                 arguments("resource unannotated method is default"),
                 arguments("resource complex property method is resource instance"),
                 arguments("resource complex property method recursive"),
 
-                arguments("resource plural property method"),
-                arguments("resource plural property method raw"),
-                arguments("resource plural property method extends"),
-                arguments("resource plural property method super"),
-                arguments("resource plural property method wildcard"),
-                arguments("resource plural property method type argument super")
+                arguments("resource plural primitive property")
         );
     }
 }
