@@ -21,8 +21,6 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
-import static com.inrupt.rdf.wrapping.processor.ResourceDefinition.isSetter;
-import static com.inrupt.rdf.wrapping.processor.ResourceDefinition.isVoid;
 
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
@@ -67,14 +65,11 @@ class ResourceValidator extends Validator<ResourceDefinition> {
     }
 
     private void requireNonVoidReturnType() {
-        definition.properties()
-                .filter(not(isSetter))
-                .filter(isVoid)
-                .forEach(method ->
-                        errors.add(new ValidationError(
-                                method.element,
-                                "Method [%s] must not be void",
-                                method.getName())));
+        definition.voidGetters().forEach(method ->
+                errors.add(new ValidationError(
+                        method.element,
+                        "Method [%s] must not be void",
+                        method.getName())));
     }
 
     private void requireCompatiblePrimitiveReturnType() {

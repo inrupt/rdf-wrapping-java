@@ -39,10 +39,8 @@ import javax.lang.model.type.TypeMirror;
 class ResourceDefinition extends Definition<TypeElement, Resource> {
     private static final Predicate<ResourcePropertyDefinition> isComplex = p -> p.valueMapping().isComplex();
     private static final Predicate<ResourcePropertyDefinition> isPlural = p -> p.cardinality().isPlural();
-    private final Predicate<ResourcePropertyDefinition> returnsResource = p ->
-            getEnv().type(p.getReturnType()).getAnnotation(Resource.class) != null;
-    static final Predicate<ResourcePropertyDefinition> isSetter = p -> p.cardinality().isSetter();
-    static final Predicate<ResourcePropertyDefinition> isVoid = p -> p.getReturnType().getKind() == VOID;
+    private final Predicate<ResourcePropertyDefinition> isSetter = p -> p.cardinality().isSetter();
+    private final Predicate<ResourcePropertyDefinition> isVoid = p -> p.getReturnType().getKind() == VOID;
 
     ResourceDefinition(final TypeElement element, final Environment env) {
         super(element, env, Resource.class);
@@ -51,13 +49,13 @@ class ResourceDefinition extends Definition<TypeElement, Resource> {
     Stream<ResourcePropertyDefinition> primitiveProperties() {
         return properties()
                 .filter(not(isSetter))
-                .filter(not(returnsResource));
+                .filter(not(isComplex));
     }
 
     Stream<ResourcePropertyDefinition> resourceProperties() {
         return properties()
                 .filter(not(isSetter))
-                .filter(returnsResource);
+                .filter(isComplex);
     }
 
     Stream<ResourcePropertyDefinition> complexMappingProperties() {
@@ -83,6 +81,12 @@ class ResourceDefinition extends Definition<TypeElement, Resource> {
         return properties()
                 .filter(not(isComplex))
                 .filter(isPlural);
+    }
+
+    Stream<ResourcePropertyDefinition> voidGetters() {
+        return properties()
+                .filter(not(isSetter))
+                .filter(isVoid);
     }
 
     Stream<TypeMirror> transitiveResourceTypes() {
