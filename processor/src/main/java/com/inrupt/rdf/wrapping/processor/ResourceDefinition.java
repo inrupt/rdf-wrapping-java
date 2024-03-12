@@ -54,6 +54,7 @@ class ResourceDefinition extends Definition<TypeElement, Resource> {
 
     Stream<ResourcePropertyDefinition> resourceProperties() {
         return properties()
+                .filter(not(isPlural))
                 .filter(not(isSetter))
                 .filter(isComplex);
     }
@@ -80,6 +81,12 @@ class ResourceDefinition extends Definition<TypeElement, Resource> {
     Stream<ResourcePropertyDefinition> primitivePluralProperties() {
         return properties()
                 .filter(not(isComplex))
+                .filter(isPlural);
+    }
+
+    Stream<ResourcePropertyDefinition> complexPlurals() {
+        return properties()
+                .filter(isComplex)
                 .filter(isPlural);
     }
 

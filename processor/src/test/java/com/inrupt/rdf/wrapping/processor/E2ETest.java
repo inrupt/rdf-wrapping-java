@@ -31,8 +31,7 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.apache.jena.riot.Lang.TRIG;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThrows;
 
 import com.inrupt.rdf.wrapping.annotation.*;
@@ -92,7 +91,7 @@ class E2ETest {
     void test() {
         final MyDataset myDataset = MyDataset.wrap(DATASET);
 
-        assertThat(myDataset.anonymous().instance().label(), is(1));
+        assertThat(myDataset.anonymous().instance().getLabel(), is(1));
         assertThat(myDataset.anonymous().instance().uri(), is(U));
         assertThat(myDataset.anonymous().instance().many2(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many3(), contains(2, 3));
@@ -108,13 +107,14 @@ class E2ETest {
         assertThat(myDataset.anonymous().instance().many14(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many15(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many16(), contains(2, 3));
-        assertThat(myDataset.anonymous().instance().child().label(), is(4));
+        assertThat(myDataset.anonymous().instance().child().getLabel(), is(4));
+        assertThat(myDataset.anonymous().instance().children(), contains(hasProperty("label", is(4))));
         assertThrows(Throwable.class, () -> myDataset.anonymous().instance().throwing());
         assertThat(myDataset.anonymous().instance().childLabel(), is(4));
-        assertThat(myDataset.anonymous().subject().label(), is(1));
-        assertThat(myDataset.anonymous().object().label(), is(4));
+        assertThat(myDataset.anonymous().subject().getLabel(), is(1));
+        assertThat(myDataset.anonymous().object().getLabel(), is(4));
         assertThat(myDataset.anonymous().label(), is(1));
-        assertThat(myDataset.named().instance().label(), is(5));
+        assertThat(myDataset.named().instance().getLabel(), is(5));
         assertThat(myDataset.label(), is(5));
 
         assertThat(MyDataset.constant(), is(STATIC));
@@ -122,7 +122,7 @@ class E2ETest {
         assertThat(MyResource.constant(), is(STATIC));
 
         myDataset.anonymous().instance().overwrite(999);
-        assertThat(myDataset.anonymous().instance().label(), is(999));
+        assertThat(myDataset.anonymous().instance().getLabel(), is(999));
     }
 }
 
@@ -145,7 +145,7 @@ interface MyDataset {
 
     // Dataset definitions support default methods.
     default Integer label() {
-        return named().instance().label();
+        return named().instance().getLabel();
     }
 }
 
@@ -167,20 +167,23 @@ interface MyGraph {
 
     // Graph definitions support default methods.
     default Integer label() {
-        return instance().label();
+        return instance().getLabel();
     }
 }
 
 @Resource
 interface MyResource {
     @ResourceProperty(value = LABEL, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
-    Integer label();
+    Integer getLabel();
 
     @ResourceProperty(value = IRI, valueMapping = IRI_AS_URI)
     URI uri();
 
     @ResourceProperty(CHILD)
     MyResource child();
+
+    @ResourceProperty(value = CHILD, cardinality = OBJECTS_READ_ONLY)
+    Set<? extends MyResource> children();
 
     @ResourceProperty(value = THROWING, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
     String throwing();
@@ -243,6 +246,6 @@ interface MyResource {
 
     // Resource definitions support default methods.
     default Integer childLabel() {
-        return child().label();
+        return child().getLabel();
     }
 }

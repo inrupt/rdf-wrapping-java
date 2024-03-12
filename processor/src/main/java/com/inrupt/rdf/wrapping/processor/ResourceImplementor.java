@@ -30,6 +30,9 @@ import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
 import javax.annotation.Generated;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.WildcardType;
 
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.graph.Node;
@@ -51,7 +54,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
         addPrimitivePropertyMethods();
         addResourcePropertyMethods();
         addOverwrite();
-        // TODO: plural complex
+        addComplexPlural();
     }
 
     private void addImports() {
@@ -97,11 +100,24 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
     }
 
     private void addResourcePropertyMethods() {
-        definition.resourceProperties().forEach(p -> {
-            final JType implementation = asImplementation(p.getReturnType());
-            final JCall mapping = $t(ValueMappings.class).call("as").arg(implementation._class());
+        definition.resourceProperties().forEach(p ->
+                addComplex(p, p.getReturnType()));
+    }
 
-            addPropertyMethod(p, mapping);
+    // TODO: Validate
+    // TODO: Cover
+    private void addComplexPlural() {
+        definition.complexPlurals().forEach(p -> {
+            final DeclaredType thisReturn = (DeclaredType) p.getReturnType();
+
+            final TypeMirror typeArg = thisReturn.getTypeArguments().stream()
+                    .filter(WildcardType.class::isInstance)
+                    .map(WildcardType.class::cast)
+                    .map(WildcardType::getExtendsBound)
+                    .findAny()
+                    .orElse(null);
+
+            addComplex(p, typeArg);
         });
     }
 
@@ -119,6 +135,13 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
 
             m.body().call(p.cardinalityMethod()).arg(predicate).arg($v(value)).arg(mapping);
         });
+    }
+
+    private void addComplex(final ResourcePropertyDefinition definition, final TypeMirror type) {
+        final JType implementation = asImplementation(type);
+        final JCall mapping = $t(ValueMappings.class).call("as").arg(implementation._class());
+
+        addPropertyMethod(definition, mapping);
     }
 
     private void addPropertyMethod(final ResourcePropertyDefinition p, final JExpr mapping) {
