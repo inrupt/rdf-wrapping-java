@@ -33,6 +33,6 @@ class DatasetDefinition extends Definition<TypeElement, Dataset> {
     }
 
     Stream<DatasetPropertyDefinition> properties() {
-        return membersAnnotatedWith(DatasetProperty.class).map(m -> new DatasetPropertyDefinition(m, env));
+        return membersAnnotatedWith(DatasetProperty.class).map(m -> new DatasetPropertyDefinition(m, getEnv()));
     }
 }

@@ -46,10 +46,6 @@ class ResourceValidator extends Validator<ResourceDefinition> {
     protected void validateInternal() {
         requireInterface();
 
-        // TODO: Allow definitions to extend WrapperResource. That means interface must be extracted from
-        //  WrapperResource so definition can extend it. Also allow definitions to extend other definitions
-        //  (interfaces annotated with @Resource). That requires implementor to follow suit. Both above apply to
-        //  dataset and graph definitions as well
         limitBaseInterfaces(org.apache.jena.rdf.model.Resource.class);
 
         requireMemberMethods(ResourceProperty.class);
@@ -73,7 +69,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
     private void requireNonVoidReturnType() {
         definition.voidGetters().forEach(method ->
                 errors.add(new ValidationError(
-                        method.element,
+                        method,
                         "Method [%s] must not be void",
                         method.getName())));
     }
@@ -87,7 +83,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
             }
 
             errors.add(new ValidationError(
-                    p.element,
+                    p,
                     "Return type [%s] of [%s] must be assignable from return type [%s] of mapping [%s]",
                     p.getReturnType(),
                     p.getName(),
@@ -98,14 +94,14 @@ class ResourceValidator extends Validator<ResourceDefinition> {
 
     private void requireCompatibleComplexReturnType() {
         definition.complexMappingProperties().forEach(p -> {
-            final TypeElement returnType = definition.returnTypeOf(p.element);
+            final TypeElement returnType = definition.returnTypeOf(p.getElement());
 
             if (returnType != null && returnType.getAnnotation(Resource.class) != null) {
                 return;
             }
 
             errors.add(new ValidationError(
-                    p.element,
+                    p,
                     "Method %s on interface %s must return @Resource interface",
                     p.getName(),
                     definition.getElement().getSimpleName()));
@@ -125,7 +121,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
             }
 
             errors.add(new ValidationError(
-                    p.element,
+                    p,
                     "Return type [%s] of [%s] must have same erasure as return type [%s] of cardinality [%s]",
                     p.getReturnType(),
                     p.getName(),
@@ -176,7 +172,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
             }
 
             errors.add(new ValidationError(
-                    p.element,
+                    p,
                     "Return type [%s] of [%s] must have type argument assignable from " +
                             "type argument of return type [%s] of mapping [%s]",
                     thisReturn,
@@ -196,7 +192,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
             }
 
             errors.add(new ValidationError(
-                    p.element,
+                    p,
                     "Return type [%s] of [%s] cannot be raw",
                     thisReturn,
                     p.getName()));
@@ -220,7 +216,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
             }
 
             errors.add(new ValidationError(
-                    p.element,
+                    p,
                     "Return type [%s] of [%s] must have wildcard type argument",
                     thisReturn,
                     p.getName()));
@@ -252,7 +248,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
             }
 
             errors.add(new ValidationError(
-                    p.element,
+                    p,
                     "Return type [%s] of [%s] must have upper bounded type argument",
                     thisReturn,
                     p.getName()));
@@ -296,7 +292,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
             }
 
             errors.add(new ValidationError(
-                    p.element,
+                    p,
                     "Plural complex resource property must return a generic type whose argument has upper bound " +
                             "annotated with @Resource"));
         });
@@ -319,7 +315,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
                 return;
             }
 
-            errors.add(new ValidationError(p.element, "Plural complex setters are not supported"));
+            errors.add(new ValidationError(p, "Plural complex setters are not supported"));
         });
     }
 

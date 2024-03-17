@@ -63,10 +63,10 @@ class ResourcePropertyDefinition extends PropertyDefinition<ResourceProperty> {
     }
 
     Name getName() {
-        return element.getSimpleName();
+        return getElement().getSimpleName();
     }
 
     TypeMirror getValueParamType() {
-        return element.getParameters().get(0).asType();
+        return getElement().getParameters().get(0).asType();
     }
 }

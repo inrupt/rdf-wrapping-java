@@ -98,6 +98,7 @@ abstract class Validator<T extends Definition<?, ?>> {
                         definition.getElement().getSimpleName())));
     }
 
+    // TODO: Allow definitions to extend other definitions.
     protected void limitBaseInterfaces(final Class<?> allowed) {
         if (!definition.getElement().getKind().isInterface()) {
             return;
@@ -109,7 +110,7 @@ abstract class Validator<T extends Definition<?, ?>> {
             }
 
             errors.add(new ValidationError(
-                    definition.getElement(),
+                    definition,
                     "Interface %s can only extend %s or nothing",
                     definition.getElement().getSimpleName(),
                     allowed.getName()));
@@ -122,7 +123,7 @@ abstract class Validator<T extends Definition<?, ?>> {
         }
 
         errors.add(new ValidationError(
-                definition.getElement(),
+                definition,
                 "Element %s must be an interface but was a %s",
                 definition.getElement().getSimpleName(),
                 definition.getElement().getKind()));

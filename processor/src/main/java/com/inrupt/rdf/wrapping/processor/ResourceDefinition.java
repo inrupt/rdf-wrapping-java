@@ -125,6 +125,6 @@ class ResourceDefinition extends Definition<TypeElement, Resource> {
     }
 
     Stream<ResourcePropertyDefinition> properties() {
-        return membersAnnotatedWith(ResourceProperty.class).map(e -> new ResourcePropertyDefinition(e, env));
+        return membersAnnotatedWith(ResourceProperty.class).map(e -> new ResourcePropertyDefinition(e, getEnv()));
     }
 }

@@ -40,8 +40,8 @@ import org.jboss.jdeparser.JTypes;
 class Definition<T extends Element, U extends Annotation> {
     static final Predicate<ExecutableElement> isVoid = method -> method.getReturnType().getKind() == VOID;
 
-    protected final T element;
-    protected final Environment env;
+    private final T element;
+    private final Environment env;
     private final Class<U> clazz;
 
     Definition(final T element, final Environment env, final Class<U> clazz) {

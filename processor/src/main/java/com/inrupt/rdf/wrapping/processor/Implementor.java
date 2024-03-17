@@ -96,8 +96,8 @@ abstract class Implementor<T extends Definition<?, ?>> {
     }
 
     protected JMethodDef addMethod(final Definition<? extends ExecutableElement, ?> d) {
-        final String myName = d.element.getSimpleName().toString();
-        final JType myType = typeOf(d.element.getReturnType());
+        final String myName = d.getElement().getSimpleName().toString();
+        final JType myType = typeOf(d.getElement().getReturnType());
 
         final JMethodDef myMethod = target.method(PUBLIC, myType, myName);
         myMethod.annotate(Override.class);

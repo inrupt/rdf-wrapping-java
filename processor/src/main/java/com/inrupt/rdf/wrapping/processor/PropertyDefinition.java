@@ -31,6 +31,6 @@ abstract class PropertyDefinition<T extends Annotation> extends Definition<Execu
     }
 
     TypeMirror getReturnType() {
-        return element.getReturnType();
+        return getElement().getReturnType();
     }
 }

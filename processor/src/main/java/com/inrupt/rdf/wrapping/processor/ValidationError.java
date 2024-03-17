@@ -29,6 +29,10 @@ class ValidationError {
     private final Element element;
     private final String msg;
 
+    ValidationError(final Definition<?, ?> definition, final String msg, final Object... args) {
+        this(definition.getElement(), msg, args);
+    }
+
     ValidationError(final Element element, final String msg, final Object... args) {
         this.element = element;
         this.msg = String.format(msg, args);

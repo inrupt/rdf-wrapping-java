@@ -36,7 +36,7 @@ class GraphDefinition extends Definition<TypeElement, Graph> {
     }
 
     Stream<GraphPropertyDefinition> properties() {
-        return membersAnnotatedWith(GraphProperty.class).map(m -> new GraphPropertyDefinition(m, env));
+        return membersAnnotatedWith(GraphProperty.class).map(m -> new GraphPropertyDefinition(m, getEnv()));
     }
 
     Stream<TypeMirror> transitiveResourceTypes() {
