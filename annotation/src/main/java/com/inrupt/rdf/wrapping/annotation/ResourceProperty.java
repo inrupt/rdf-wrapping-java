@@ -100,7 +100,11 @@ public @interface ResourceProperty {
 
         OBJECT_STREAM("objectStream", true, false),
 
-        OVERWRITE("overwrite", false, true);
+        OVERWRITE("overwrite", false, true),
+
+        OVERWRITE_NULLABLE("overwriteNullable", false, true),
+
+        ADD("add", false, true);
 
         private final String methodName;
         private final boolean plural;

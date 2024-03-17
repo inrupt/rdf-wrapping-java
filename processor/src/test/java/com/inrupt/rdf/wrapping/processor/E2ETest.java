@@ -124,6 +124,10 @@ class E2ETest {
 
         myDataset.anonymous().instance().overwrite(999);
         assertThat(myDataset.anonymous().instance().getLabel(), is(999));
+        myDataset.anonymous().instance().overwriteNullable((Integer) null);
+        assertThat(myDataset.anonymous().instance().getLabel(), is(nullValue()));
+        myDataset.anonymous().instance().add(888);
+        assertThat(myDataset.anonymous().instance().getLabel(), is(888));
     }
 }
 
@@ -242,6 +246,12 @@ interface MyResource {
 
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
     void overwrite(Integer value);
+
+    @ResourceProperty(value = LABEL, cardinality = OVERWRITE_NULLABLE, nodeMapping = AS_TYPED_LITERAL)
+    void overwriteNullable(Integer value);
+
+    @ResourceProperty(value = LABEL, cardinality = ADD, nodeMapping = AS_TYPED_LITERAL)
+    void add(Integer value);
 
     // Resource definitions support static methods.
     static UUID constant() {

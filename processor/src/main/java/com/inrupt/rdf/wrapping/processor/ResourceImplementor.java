@@ -53,7 +53,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
         addConstructor();
         addPrimitivePropertyMethods();
         addResourcePropertyMethods();
-        addOverwrite();
+        addMutators();
         addComplexPlural();
     }
 
@@ -121,8 +121,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
 
     // TODO: Validate
     // TODO: Cover
-    // TODO: Other mutators
-    private void addOverwrite() {
+    private void addMutators() {
         definition.setterProperties().forEach(p -> {
             final JCall predicate = call("getModel").call("createProperty").arg(str(p.predicate()));
 
