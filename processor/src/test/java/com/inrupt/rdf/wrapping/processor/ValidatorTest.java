@@ -98,7 +98,8 @@ class ValidatorTest {
                 arguments("resource plural plural complex raw", "cannot be raw"),
                 arguments("resource plural complex specific", "must have wildcard type argument"),
                 arguments("resource plural complex unbounded", "must have upper bounded type argument"),
-                arguments("resource plural complex incompatible", "argument has upper bound annotated with @Resource")
+                arguments("resource plural complex incompatible", "argument has upper bound annotated with @Resource"),
+                arguments("resource mutator plural complex", "Plural complex setters are not supported")
         );
     }
 
@@ -134,7 +135,8 @@ class ValidatorTest {
                 arguments("resource complex property method recursive"),
 
                 arguments("resource plural primitive property"),
-                arguments("resource plural complex property")
+                arguments("resource plural complex property"),
+                arguments("resource mutator")
         );
     }
 }

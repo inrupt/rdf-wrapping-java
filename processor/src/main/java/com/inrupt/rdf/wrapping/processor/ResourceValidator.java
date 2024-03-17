@@ -66,6 +66,8 @@ class ResourceValidator extends Validator<ResourceDefinition> {
         requirePluralComplexWildcard();
         requirePluralComplexExtend();
         requirePluralCompatible();
+
+        requireMutatorNoPluralComplex();
     }
 
     private void requireNonVoidReturnType() {
@@ -297,6 +299,27 @@ class ResourceValidator extends Validator<ResourceDefinition> {
                     p.element,
                     "Plural complex resource property must return a generic type whose argument has upper bound " +
                             "annotated with @Resource"));
+        });
+    }
+
+    private void requireMutatorNoPluralComplex() {
+        definition.setterProperties().forEach(p -> {
+            final DeclaredType valueArgType = (DeclaredType) p.getValueParamType();
+
+            // Ignore value params lacking generic type arguments
+            if (valueArgType.getTypeArguments().isEmpty()) {
+                return;
+            }
+
+            // Ignore value params with primitive generic type arguments
+            if (valueArgType.getTypeArguments().stream()
+                    .map(definition::typeOf)
+                    .map(a -> a.getAnnotation(Resource.class))
+                    .allMatch(Objects::isNull)) {
+                return;
+            }
+
+            errors.add(new ValidationError(p.element, "Plural complex setters are not supported"));
         });
     }
 

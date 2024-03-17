@@ -24,6 +24,7 @@ import static org.jboss.jdeparser.JExprs.*;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JTypes.typeOf;
 
+import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.jena.NodeMappings;
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
@@ -36,6 +37,7 @@ import javax.lang.model.type.WildcardType;
 
 import org.apache.jena.enhanced.EnhGraph;
 import org.apache.jena.graph.Node;
+import org.apache.jena.rdf.model.RDFNode;
 import org.jboss.jdeparser.*;
 
 class ResourceImplementor extends Implementor<ResourceDefinition> {
@@ -128,8 +130,15 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
             final JExpr mapping = typeOf(NodeMappings.class).methodRef(p.nodeMappingMethod());
 
             final JMethodDef m = addMethod(p);
-            final DeclaredType valueArgType = (DeclaredType)p.getValueParamType();
+            final DeclaredType valueArgType = (DeclaredType) p.getValueParamType();
             final JParamDeclaration value = m.param(FINAL, typeOf(valueArgType), "value");
+
+            final JExpr valueExpr;
+            if (definition.typeOf(valueArgType).getAnnotation(Resource.class) != null) {
+                valueExpr = name(value).cast(RDFNode.class);
+            } else {
+                valueExpr = name(value);
+            }
 
             final JCall call = m.body().call(typeOf(target)._super(), p.cardinalityMethod());
 
@@ -138,7 +147,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
                     .ifPresent(typeMirror ->
                             call.typeArg(typeOf(typeMirror)));
 
-            call.arg(predicate).arg($v(value)).arg(mapping);
+            call.arg(predicate).arg(valueExpr).arg(mapping);
         });
     }
 

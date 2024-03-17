@@ -251,20 +251,29 @@ interface MyResource {
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Collection<? super Number> many16();
 
+    @ResourceProperty(value = LABEL, cardinality = OVERWRITE)
+    void overwrite(MyResource value);
+
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
     void overwrite(Integer value);
-
-    @ResourceProperty(value = LABEL, cardinality = OVERWRITE_NULLABLE, nodeMapping = AS_TYPED_LITERAL)
-    void overwriteNullable(Integer value);
-
-    @ResourceProperty(value = LABEL, cardinality = ADD, nodeMapping = AS_TYPED_LITERAL)
-    void add(Integer value);
 
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
     void overwrite(Iterable<Integer> value);
 
+    @ResourceProperty(value = LABEL, cardinality = OVERWRITE_NULLABLE)
+    void overwriteNullable(MyResource value);
+
+    @ResourceProperty(value = LABEL, cardinality = OVERWRITE_NULLABLE, nodeMapping = AS_TYPED_LITERAL)
+    void overwriteNullable(Integer value);
+
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE_NULLABLE, nodeMapping = AS_TYPED_LITERAL)
     void overwriteNullable(Iterable<Integer> value);
+
+    @ResourceProperty(value = LABEL, cardinality = ADD)
+    void add(MyResource value);
+
+    @ResourceProperty(value = LABEL, cardinality = ADD, nodeMapping = AS_TYPED_LITERAL)
+    void add(Integer value);
 
     @ResourceProperty(value = LABEL, cardinality = ADD, nodeMapping = AS_TYPED_LITERAL)
     void add(Iterable<Integer> value);
