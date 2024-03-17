@@ -27,6 +27,7 @@ import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.Cardinality.*;
 import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.NodeMapping.AS_TYPED_LITERAL;
 import static com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping.*;
 import static com.inrupt.rdf.wrapping.processor.E2ETest.*;
+import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.apache.jena.riot.Lang.TRIG;
@@ -128,6 +129,12 @@ class E2ETest {
         assertThat(myDataset.anonymous().instance().getLabel(), is(nullValue()));
         myDataset.anonymous().instance().add(888);
         assertThat(myDataset.anonymous().instance().getLabel(), is(888));
+        myDataset.anonymous().instance().overwrite(singletonList(777));
+        assertThat(myDataset.anonymous().instance().getLabel(), is(777));
+        myDataset.anonymous().instance().overwriteNullable((Iterable<Integer>) null);
+        assertThat(myDataset.anonymous().instance().getLabel(), is(nullValue()));
+        myDataset.anonymous().instance().add(singletonList(666));
+        assertThat(myDataset.anonymous().instance().getLabel(), is(666));
     }
 }
 
@@ -252,6 +259,15 @@ interface MyResource {
 
     @ResourceProperty(value = LABEL, cardinality = ADD, nodeMapping = AS_TYPED_LITERAL)
     void add(Integer value);
+
+    @ResourceProperty(value = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
+    void overwrite(Iterable<Integer> value);
+
+    @ResourceProperty(value = LABEL, cardinality = OVERWRITE_NULLABLE, nodeMapping = AS_TYPED_LITERAL)
+    void overwriteNullable(Iterable<Integer> value);
+
+    @ResourceProperty(value = LABEL, cardinality = ADD, nodeMapping = AS_TYPED_LITERAL)
+    void add(Iterable<Integer> value);
 
     // Resource definitions support static methods.
     static UUID constant() {

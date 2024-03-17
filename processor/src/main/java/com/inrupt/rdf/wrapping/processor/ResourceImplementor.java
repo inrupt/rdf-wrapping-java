@@ -22,7 +22,7 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static org.jboss.jdeparser.JExprs.*;
 import static org.jboss.jdeparser.JMod.*;
-import static org.jboss.jdeparser.JTypes.$t;
+import static org.jboss.jdeparser.JTypes.typeOf;
 
 import com.inrupt.rdf.wrapping.jena.NodeMappings;
 import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
@@ -78,7 +78,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
                 STATIC | FINAL,
                 org.apache.jena.enhanced.Implementation.class,
                 FACTORY,
-                $t(UriOrBlankFactory.class)._new().arg($t(target).methodRef("new")));
+                typeOf(UriOrBlankFactory.class)._new().arg(typeOf(target).methodRef("new")));
     }
 
     private void addConstructor() {
@@ -93,7 +93,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
 
     private void addPrimitivePropertyMethods() {
         definition.primitiveProperties().forEach(p -> {
-            final JExpr mapping = $t(ValueMappings.class).methodRef(p.valueMappingMethod());
+            final JExpr mapping = typeOf(ValueMappings.class).methodRef(p.valueMappingMethod());
 
             addPropertyMethod(p, mapping);
         });
@@ -125,18 +125,26 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
         definition.setterProperties().forEach(p -> {
             final JCall predicate = call("getModel").call("createProperty").arg(str(p.predicate()));
 
-            final JExpr mapping = $t(NodeMappings.class).methodRef(p.nodeMappingMethod());
+            final JExpr mapping = typeOf(NodeMappings.class).methodRef(p.nodeMappingMethod());
 
             final JMethodDef m = addMethod(p);
-            final JParamDeclaration value = m.param(FINAL, JTypes.typeOf(p.getValueParamType()), "value");
+            final DeclaredType valueArgType = (DeclaredType)p.getValueParamType();
+            final JParamDeclaration value = m.param(FINAL, typeOf(valueArgType), "value");
 
-            m.body().call(p.cardinalityMethod()).arg(predicate).arg($v(value)).arg(mapping);
+            final JCall call = m.body().call(typeOf(target)._super(), p.cardinalityMethod());
+
+            valueArgType.getTypeArguments().stream()
+                    .findFirst()
+                    .ifPresent(typeMirror ->
+                            call.typeArg(typeOf(typeMirror)));
+
+            call.arg(predicate).arg($v(value)).arg(mapping);
         });
     }
 
     private void addComplex(final ResourcePropertyDefinition definition, final TypeMirror type) {
         final JType implementation = asImplementation(type);
-        final JCall mapping = $t(ValueMappings.class).call("as").arg(implementation._class());
+        final JCall mapping = typeOf(ValueMappings.class).call("as").arg(implementation._class());
 
         addPropertyMethod(definition, mapping);
     }
