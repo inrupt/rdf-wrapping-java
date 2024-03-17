@@ -108,7 +108,8 @@ class E2ETest {
         assertThat(myDataset.anonymous().instance().many15(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().many16(), contains(2, 3));
         assertThat(myDataset.anonymous().instance().child().getLabel(), is(4));
-        assertThat(myDataset.anonymous().instance().children(), contains(hasProperty("label", is(4))));
+        assertThat(myDataset.anonymous().instance().children1(), contains(hasProperty("label", is(4))));
+        assertThat(myDataset.anonymous().instance().children2(), contains(hasProperty("label", is(4))));
         assertThrows(Throwable.class, () -> myDataset.anonymous().instance().throwing());
         assertThat(myDataset.anonymous().instance().childLabel(), is(4));
         assertThat(myDataset.anonymous().subject().getLabel(), is(1));
@@ -183,7 +184,10 @@ interface MyResource {
     MyResource child();
 
     @ResourceProperty(value = CHILD, cardinality = OBJECTS_READ_ONLY)
-    Set<? extends MyResource> children();
+    Set<? extends MyResource> children1();
+
+    @ResourceProperty(value = CHILD, cardinality = OBJECTS_READ_ONLY)
+    Collection<? extends MyResource> children2();
 
     @ResourceProperty(value = THROWING, cardinality = ANY_OR_THROW, valueMapping = LITERAL_AS_STRING)
     String throwing();

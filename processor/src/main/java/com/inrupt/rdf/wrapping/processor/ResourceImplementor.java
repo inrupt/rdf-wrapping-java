@@ -104,18 +104,16 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
                 addComplex(p, p.getReturnType()));
     }
 
-    // TODO: Validate
     // TODO: Cover
     private void addComplexPlural() {
         definition.complexPlurals().forEach(p -> {
             final DeclaredType thisReturn = (DeclaredType) p.getReturnType();
 
             final TypeMirror typeArg = thisReturn.getTypeArguments().stream()
-                    .filter(WildcardType.class::isInstance)
-                    .map(WildcardType.class::cast)
+                    .map(WildcardType.class::cast) // safe due to validator
                     .map(WildcardType::getExtendsBound)
-                    .findAny()
-                    .orElse(null);
+                    .findFirst()
+                    .get(); // safe due to validator
 
             addComplex(p, typeArg);
         });

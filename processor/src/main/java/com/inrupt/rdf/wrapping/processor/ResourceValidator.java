@@ -21,6 +21,7 @@
 package com.inrupt.rdf.wrapping.processor;
 
 import static com.inrupt.rdf.wrapping.processor.PredicateShim.not;
+import static javax.lang.model.type.TypeKind.WILDCARD;
 
 import com.inrupt.rdf.wrapping.annotation.Resource;
 import com.inrupt.rdf.wrapping.annotation.ResourceProperty;
@@ -61,7 +62,10 @@ class ResourceValidator extends Validator<ResourceDefinition> {
 
         requirePluralErasure();
         requirePluralTypeArgument();
-        // TODO: plural complex
+        requirePluralComplexNotRaw();
+        requirePluralComplexWildcard();
+        requirePluralComplexExtend();
+        requirePluralCompatible();
     }
 
     private void requireNonVoidReturnType() {
@@ -132,12 +136,14 @@ class ResourceValidator extends Validator<ResourceDefinition> {
         definition.primitivePluralProperties().forEach(p -> {
             final DeclaredType thisReturn = (DeclaredType) p.getReturnType();
 
-            // raw generic or not generic
+            // Ignore return types lacking generic type arguments
             if (thisReturn.getTypeArguments().isEmpty()) {
                 return;
             }
 
-            final boolean hasWildcard = thisReturn.getTypeArguments().stream().anyMatch(WildcardType.class::isInstance);
+            final boolean hasWildcard = thisReturn.getTypeArguments().stream()
+                    .map(TypeMirror::getKind)
+                    .anyMatch(WILDCARD::equals);
 
             // wildcard
             if (hasWildcard && thisReturn.getTypeArguments().stream()
@@ -175,6 +181,122 @@ class ResourceValidator extends Validator<ResourceDefinition> {
                     p.getName(),
                     mappingReturn,
                     p.valueMappingMethod()));
+        });
+    }
+
+    private void requirePluralComplexNotRaw() {
+        definition.complexPlurals().forEach(p -> {
+            final DeclaredType thisReturn = (DeclaredType) p.getReturnType();
+
+            // Require return types to be generic and not raw.
+            if (!thisReturn.getTypeArguments().isEmpty()) {
+                return;
+            }
+
+            errors.add(new ValidationError(
+                    p.element,
+                    "Return type [%s] of [%s] cannot be raw",
+                    thisReturn,
+                    p.getName()));
+        });
+    }
+
+    private void requirePluralComplexWildcard() {
+        definition.complexPlurals().forEach(p -> {
+            final DeclaredType thisReturn = (DeclaredType) p.getReturnType();
+
+            // Ignore return types lacking generic type arguments
+            if (thisReturn.getTypeArguments().isEmpty()) {
+                return;
+            }
+
+            // Require return type generic arguments to be wildcards.
+            if (thisReturn.getTypeArguments().stream()
+                    .map(TypeMirror::getKind)
+                    .allMatch(WILDCARD::equals)) {
+                return;
+            }
+
+            errors.add(new ValidationError(
+                    p.element,
+                    "Return type [%s] of [%s] must have wildcard type argument",
+                    thisReturn,
+                    p.getName()));
+        });
+    }
+
+    private void requirePluralComplexExtend() {
+        definition.complexPlurals().forEach(p -> {
+            final DeclaredType thisReturn = (DeclaredType) p.getReturnType();
+
+            // Ignore return types lacking generic type arguments
+            if (thisReturn.getTypeArguments().isEmpty()) {
+                return;
+            }
+
+            // Ignore return types with non-wildcard type arguments
+            if (thisReturn.getTypeArguments().stream()
+                    .map(TypeMirror::getKind)
+                    .anyMatch(not(WILDCARD::equals))) {
+                return;
+            }
+
+            // Require return type generic arguments to have upper bounds.
+            if (thisReturn.getTypeArguments().stream()
+                    .map(WildcardType.class::cast)
+                    .map(WildcardType::getExtendsBound)
+                    .allMatch(Objects::nonNull)) {
+                return;
+            }
+
+            errors.add(new ValidationError(
+                    p.element,
+                    "Return type [%s] of [%s] must have upper bounded type argument",
+                    thisReturn,
+                    p.getName()));
+        });
+    }
+
+    private void requirePluralCompatible() {
+        definition.complexPlurals().forEach(p -> {
+            final DeclaredType thisReturn = (DeclaredType) p.getReturnType();
+
+            // Ignore return types lacking generic type arguments
+            if (thisReturn.getTypeArguments().isEmpty()) {
+                return;
+            }
+
+            // Ignore return types with non-wildcard type arguments
+            if (thisReturn.getTypeArguments().stream()
+                    .map(TypeMirror::getKind)
+                    .anyMatch(not(WILDCARD::equals))) {
+                return;
+            }
+
+            // Ignore return types with type arguments that are not upper bounded
+            if (thisReturn.getTypeArguments().stream()
+                    .map(WildcardType.class::cast)
+                    .map(WildcardType::getExtendsBound)
+                    .anyMatch(Objects::isNull)) {
+                return;
+            }
+
+            // Require return type generic argument upper bounds to be appropriately annotated, because they will be
+            // used by implementor to calculate projection class for value mapping of complex plural resource
+            // properties.
+            if (thisReturn.getTypeArguments().stream()
+                    .map(WildcardType.class::cast)
+                    .map(WildcardType::getExtendsBound)
+                    .map(definition::typeOf)
+                    .map(a -> a.getAnnotation(Resource.class))
+                    .allMatch(Objects::nonNull)) {
+                return;
+            }
+
+            errors.add(new ValidationError(
+                    p.element,
+                    "Plural complex resource property must return a generic type whose argument has upper bound " +
+                            "annotated with @Resource"));
         });
     }
 
