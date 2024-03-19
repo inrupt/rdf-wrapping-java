@@ -37,6 +37,11 @@
       <artifactId>inrupt-rdf-wrapping-test-rdf4j</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.inrupt.rdf</groupId>
+      <artifactId>inrupt-rdf-wrapping-processor</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
