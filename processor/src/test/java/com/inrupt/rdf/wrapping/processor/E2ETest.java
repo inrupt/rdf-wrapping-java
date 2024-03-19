@@ -135,6 +135,11 @@ class E2ETest {
         assertThat(myDataset.anonymous().instance().getLabel(), is(nullValue()));
         myDataset.anonymous().instance().add(singletonList(666));
         assertThat(myDataset.anonymous().instance().getLabel(), is(666));
+
+        final MyResource five = myDataset.named().createMyResource(randomUUID().toString());
+        five.overwrite(555);
+        myDataset.named().instance().add(five);
+        assertThat(myDataset.named().instance().child().getLabel(), is(555));
     }
 }
 
@@ -163,6 +168,10 @@ interface MyDataset {
 
 @Graph
 interface MyGraph {
+    default MyResource createMyResource(final String uri) {
+        return MyResource.create(uri, this);
+    }
+
     @GraphProperty(CHILD)
     MyResource subject();
 
@@ -185,6 +194,10 @@ interface MyGraph {
 
 @Resource
 interface MyResource {
+    static MyResource create(final String uri, final MyGraph graph) {
+        return Manager.create(uri, MyResource.class, graph);
+    }
+
     @ResourceProperty(value = LABEL, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Integer getLabel();
 
@@ -251,7 +264,7 @@ interface MyResource {
     @ResourceProperty(value = MANY, cardinality = OBJECTS_READ_ONLY, valueMapping = LITERAL_AS_INTEGER_OR_NULL)
     Collection<? super Number> many16();
 
-    @ResourceProperty(value = LABEL, cardinality = OVERWRITE)
+    @ResourceProperty(value = CHILD, cardinality = OVERWRITE)
     void overwrite(MyResource value);
 
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
@@ -260,7 +273,7 @@ interface MyResource {
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE, nodeMapping = AS_TYPED_LITERAL)
     void overwrite(Iterable<Integer> value);
 
-    @ResourceProperty(value = LABEL, cardinality = OVERWRITE_NULLABLE)
+    @ResourceProperty(value = CHILD, cardinality = OVERWRITE_NULLABLE)
     void overwriteNullable(MyResource value);
 
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE_NULLABLE, nodeMapping = AS_TYPED_LITERAL)
@@ -269,7 +282,7 @@ interface MyResource {
     @ResourceProperty(value = LABEL, cardinality = OVERWRITE_NULLABLE, nodeMapping = AS_TYPED_LITERAL)
     void overwriteNullable(Iterable<Integer> value);
 
-    @ResourceProperty(value = LABEL, cardinality = ADD)
+    @ResourceProperty(value = CHILD, cardinality = ADD)
     void add(MyResource value);
 
     @ResourceProperty(value = LABEL, cardinality = ADD, nodeMapping = AS_TYPED_LITERAL)

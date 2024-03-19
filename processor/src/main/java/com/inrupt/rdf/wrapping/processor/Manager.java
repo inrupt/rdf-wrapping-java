@@ -23,11 +23,15 @@ package com.inrupt.rdf.wrapping.processor;
 import static com.inrupt.rdf.wrapping.processor.Implementor.WRAP;
 import static com.inrupt.rdf.wrapping.processor.Implementor.asImplementation;
 
+import com.inrupt.rdf.wrapping.annotation.Resource;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * A utility class that aids wrapper interfaces to find generated implementations.
@@ -42,6 +46,25 @@ public final class Manager {
 
     public static <T> T wrap(final Dataset original, final Class<T> definition) {
         return wrap(original, definition, Dataset.class);
+    }
+
+    // TODO: Tidy
+    // TODO: Cover
+    public static <T, U> T create(final String name, final Class<T> resource, final U graph) {
+        Objects.requireNonNull(resource);
+        Objects.requireNonNull(graph);
+
+        if (resource.getAnnotation(Resource.class) == null) {
+            throw new RuntimeException("resource must be a definition");
+        }
+
+        if (!(graph instanceof Model)) {
+            throw new RuntimeException("graph must be a Model");
+        }
+
+        final Class<? extends RDFNode> rawImplementation = findImplementation(resource).asSubclass(RDFNode.class);
+        final Model graph1 = (Model) graph;
+        return (T) graph1.createResource(name).as(rawImplementation);
     }
 
     private static <T> T wrap(final Object original, final Class<T> definition, final Class<?> parameterType) {
