@@ -307,7 +307,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
                 return;
             }
 
-            // Ignore value params with primitive generic type arguments
+            // Require generic type arguments to be primitive
             if (valueArgType.getTypeArguments().stream()
                     .map(definition::typeOf)
                     .map(a -> a.getAnnotation(Resource.class))

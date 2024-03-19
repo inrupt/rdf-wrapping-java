@@ -27,7 +27,6 @@ interface X {
     @ResourceProperty(value = "x", cardinality = OVERWRITE_NULLABLE, nodeMapping = AS_TYPED_LITERAL)
     void overwriteNullable(final Iterable<Integer> value);
 
-
     @ResourceProperty(value = "x", cardinality = ADD)
     void add(final X value);
 
