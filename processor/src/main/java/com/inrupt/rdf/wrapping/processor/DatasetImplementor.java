@@ -22,6 +22,7 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static org.jboss.jdeparser.JExprs.*;
 import static org.jboss.jdeparser.JMod.*;
+import static org.jboss.jdeparser.JType.THIS;
 import static org.jboss.jdeparser.JTypes.$t;
 
 import javax.annotation.Generated;
@@ -74,9 +75,9 @@ class DatasetImplementor extends Implementor<DatasetDefinition> {
     private void addGraphs() {
         definition.properties().forEach(p -> {
             if (p.graphName().isEmpty()) {
-                addGraph(p, call("getDefaultModel"));
+                addGraph(p, THIS._super().call("getDefaultModel"));
             } else {
-                addGraph(p, call("getNamedModel").arg(str(p.graphName())));
+                addGraph(p, THIS._super().call("getNamedModel").arg(str(p.graphName())));
             }
         });
     }

@@ -22,6 +22,7 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static org.jboss.jdeparser.JExprs.*;
 import static org.jboss.jdeparser.JMod.*;
+import static org.jboss.jdeparser.JType.THIS;
 import static org.jboss.jdeparser.JTypes.typeOf;
 
 import com.inrupt.rdf.wrapping.annotation.Resource;
@@ -140,7 +141,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
                 valueExpr = name(value);
             }
 
-            final JCall call = m.body().call(typeOf(target)._super(), p.cardinalityMethod());
+            final JCall call = m.body().call(THIS._super(), p.cardinalityMethod());
 
             valueArgType.getTypeArguments().stream()
                     .findFirst()
@@ -159,7 +160,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
     }
 
     private void addPropertyMethod(final ResourcePropertyDefinition p, final JExpr mapping) {
-        final JCall predicate = call("getModel").call("createProperty").arg(str(p.predicate()));
+        final JCall predicate = THIS._super().call("getModel").call("createProperty").arg(str(p.predicate()));
 
         addMethod(p).body()._return(call(p.cardinalityMethod()).arg(predicate).arg(mapping));
     }

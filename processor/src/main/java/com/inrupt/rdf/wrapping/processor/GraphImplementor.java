@@ -22,8 +22,8 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static com.inrupt.rdf.wrapping.processor.ResourceImplementor.FACTORY;
 import static org.jboss.jdeparser.JExprs.$v;
-import static org.jboss.jdeparser.JExprs.call;
 import static org.jboss.jdeparser.JMod.*;
+import static org.jboss.jdeparser.JType.THIS;
 import static org.jboss.jdeparser.JTypes.$t;
 
 import com.inrupt.rdf.wrapping.jena.WrapperModel;
@@ -87,7 +87,7 @@ class GraphImplementor extends Implementor<GraphDefinition> {
 
             constructor
                     .body()
-                    .call(call("getPersonality"), "add")
+                    .call(THIS._super().call("getPersonality"), "add")
                     .arg(implementation._class())
                     .arg(implementation.field(FACTORY));
         });
@@ -98,7 +98,7 @@ class GraphImplementor extends Implementor<GraphDefinition> {
             final JType implementation = asImplementation(p.getReturnType());
 
             // Call model wrapper convenience method passing projection class argument
-            final JCall convenienceCall = call(p.method()).arg(implementation._class());
+            final JCall convenienceCall = THIS._super().call(p.method()).arg(implementation._class());
 
             // Pass each filter value from the annotation as additional argument
             for (final String value : p.resources()) {
