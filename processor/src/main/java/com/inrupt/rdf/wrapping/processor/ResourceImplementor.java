@@ -77,7 +77,7 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
 
     private void addFactoryField() {
         target.field(
-                STATIC | FINAL,
+                PUBLIC | STATIC | FINAL,
                 org.apache.jena.enhanced.Implementation.class,
                 FACTORY,
                 typeOf(UriOrBlankFactory.class)._new().arg(typeOf(target).methodRef("new")));
