@@ -28,8 +28,6 @@ import static org.jboss.jdeparser.JTypes.$t;
 
 import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
-import javax.annotation.Generated;
-
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.impl.ModelCom;
@@ -45,22 +43,12 @@ class GraphImplementor extends Implementor<GraphDefinition> {
 
     @Override
     protected void implementInternal() {
-        addImports();
         addClass();
         final JMethodDef constructor = addConstructor();
         addToPersonality(constructor);
         addWrap();
 
         addResourceMethods();
-    }
-
-    private void addImports() {
-        sourceFile
-                ._import(WrapperModel.class)
-                ._import(Generated.class)
-                ._import(Graph.class)
-                ._import(Model.class)
-                ._import(ModelCom.class);
     }
 
     private void addClass() {

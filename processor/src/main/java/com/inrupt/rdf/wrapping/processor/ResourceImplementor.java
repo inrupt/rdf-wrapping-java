@@ -31,7 +31,6 @@ import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
-import javax.annotation.Generated;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
@@ -50,7 +49,6 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
 
     @Override
     protected void implementInternal() {
-        addImports();
         addClass();
         addFactoryField();
         addConstructor();
@@ -58,18 +56,6 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
         addResourcePropertyMethods();
         addMutators();
         addComplexPlural();
-    }
-
-    private void addImports() {
-        sourceFile
-                ._import(UriOrBlankFactory.class)
-                ._import(WrapperResource.class)
-                ._import(Generated.class)
-                ._import(EnhGraph.class)
-                ._import(org.apache.jena.enhanced.Implementation.class)
-                ._import(Node.class)
-                ._import(ValueMappings.class)
-                ._import(NodeMappings.class);
     }
 
     private void addClass() {

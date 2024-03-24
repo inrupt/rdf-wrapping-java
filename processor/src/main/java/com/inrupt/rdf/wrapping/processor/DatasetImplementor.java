@@ -25,8 +25,6 @@ import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JType.THIS;
 import static org.jboss.jdeparser.JTypes.$t;
 
-import javax.annotation.Generated;
-
 import org.apache.jena.query.Dataset;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.sparql.core.DatasetImpl;
@@ -41,19 +39,10 @@ class DatasetImplementor extends Implementor<DatasetDefinition> {
 
     @Override
     protected void implementInternal() {
-        addImports();
         addClass();
         addConstructor();
         addWrap();
         addGraphs();
-    }
-
-    private void addImports() {
-        sourceFile
-                ._import(Generated.class)
-                ._import(Dataset.class)
-                ._import(DatasetGraph.class)
-                ._import(DatasetImpl.class);
     }
 
     private void addClass() {
