@@ -64,7 +64,7 @@ class GraphImplementor extends Implementor<GraphDefinition> {
     }
 
     private void addWrap() {
-        final JMethodDef myWrap = target.method(PUBLIC | STATIC, definition.getOriginalInterface(), WRAP);
+        final JMethodDef myWrap = target.method(PUBLIC | STATIC, getOriginalInterface(), WRAP);
         myWrap.param(FINAL, Model.class, ORIGINAL);
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("getGraph")));
     }

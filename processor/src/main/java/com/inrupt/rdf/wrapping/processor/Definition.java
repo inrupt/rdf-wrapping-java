@@ -79,10 +79,6 @@ class Definition<T extends Element, U extends Annotation> {
         return env;
     }
 
-    protected JType getOriginalInterface() {
-        return JTypes.typeOf(element.asType());
-    }
-
     protected Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
         return env.methodsOf(element)
                 .filter(method -> method.getAnnotation(annotation) != null);

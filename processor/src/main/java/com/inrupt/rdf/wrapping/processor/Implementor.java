@@ -89,10 +89,14 @@ abstract class Implementor<T extends Definition<?, ?>> {
     protected void addClass(final Class<?> clazz) {
         target = sourceFile._class(PUBLIC, getImplementationClass());
         target._extends(clazz);
-        target._implements(definition.getOriginalInterface());
+        target._implements(getOriginalInterface());
 
         target.docComment().text("Warning, this class consists of generated code.");
         target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
+    }
+
+    protected JType getOriginalInterface() {
+        return JTypes.typeOf(definition.getElement().asType());
     }
 
     protected JMethodDef addMethod(final Definition<? extends ExecutableElement, ?> d) {

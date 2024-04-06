@@ -56,7 +56,7 @@ class DatasetImplementor extends Implementor<DatasetDefinition> {
     }
 
     private void addWrap() {
-        final JMethodDef myWrap = target.method(PUBLIC | STATIC, definition.getOriginalInterface(), WRAP);
+        final JMethodDef myWrap = target.method(PUBLIC | STATIC, getOriginalInterface(), WRAP);
         myWrap.param(FINAL, Dataset.class, ORIGINAL);
         myWrap.body()._return($t(target)._new().arg($v(ORIGINAL).call("asDatasetGraph")));
     }
