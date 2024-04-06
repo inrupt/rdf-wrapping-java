@@ -300,15 +300,13 @@ class ResourceValidator extends Validator<ResourceDefinition> {
 
     private void requireMutatorNoPluralComplex() {
         definition.setterProperties().forEach(p -> {
-            final DeclaredType valueArgType = (DeclaredType) p.getValueParamType();
-
             // Ignore value params lacking generic type arguments
-            if (valueArgType.getTypeArguments().isEmpty()) {
+            if (p.getValueParamType().getTypeArguments().isEmpty()) {
                 return;
             }
 
             // Require generic type arguments to be primitive
-            if (valueArgType.getTypeArguments().stream()
+            if (p.getValueParamType().getTypeArguments().stream()
                     .map(definition.getEnv()::findDeclaration)
                     .map(a -> a.getAnnotation(Resource.class))
                     .allMatch(Objects::isNull)) {

@@ -20,7 +20,8 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.jboss.jdeparser.JExprs.*;
+import static org.jboss.jdeparser.JExprs.$v;
+import static org.jboss.jdeparser.JExprs.str;
 import static org.jboss.jdeparser.JMod.*;
 import static org.jboss.jdeparser.JType.THIS;
 import static org.jboss.jdeparser.JTypes.$t;

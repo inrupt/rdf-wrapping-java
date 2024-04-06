@@ -32,10 +32,6 @@ import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
-
-import org.jboss.jdeparser.JType;
-import org.jboss.jdeparser.JTypes;
 
 class Definition<T extends Element, U extends Annotation> {
     static final Predicate<ExecutableElement> isVoid = method -> method.getReturnType().getKind() == VOID;
@@ -63,10 +59,6 @@ class Definition<T extends Element, U extends Annotation> {
         }
     }
 
-    TypeElement typeOf(final TypeMirror mirror) {
-        return getEnv().type(mirror);
-    }
-
     TypeElement returnTypeOf(final ExecutableElement method) {
         return getEnv().findDeclaration(method.getReturnType());
     }
@@ -80,7 +72,7 @@ class Definition<T extends Element, U extends Annotation> {
     }
 
     protected Stream<ExecutableElement> membersAnnotatedWith(final Class<? extends Annotation> annotation) {
-        return env.methodsOf(element)
+        return getEnv().methodsOf(getElement())
                 .filter(method -> method.getAnnotation(annotation) != null);
     }
 

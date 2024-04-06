@@ -30,7 +30,6 @@ import com.inrupt.rdf.wrapping.jena.WrapperModel;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.impl.ModelCom;
 import org.jboss.jdeparser.JCall;
 import org.jboss.jdeparser.JExprs;
 import org.jboss.jdeparser.JMethodDef;

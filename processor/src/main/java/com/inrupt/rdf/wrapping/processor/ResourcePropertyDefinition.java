@@ -27,7 +27,7 @@ import com.inrupt.rdf.wrapping.annotation.ResourceProperty.ValueMapping;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
-import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.DeclaredType;
 
 class ResourcePropertyDefinition extends PropertyDefinition<ResourceProperty> {
     ResourcePropertyDefinition(final ExecutableElement element, final Environment env) {
@@ -68,7 +68,7 @@ class ResourcePropertyDefinition extends PropertyDefinition<ResourceProperty> {
         return getElement().getSimpleName();
     }
 
-    TypeMirror getValueParamType() {
-        return getElement().getParameters().get(0).asType();
+    DeclaredType getValueParamType() {
+        return (DeclaredType) getElement().getParameters().get(0).asType();
     }
 }
