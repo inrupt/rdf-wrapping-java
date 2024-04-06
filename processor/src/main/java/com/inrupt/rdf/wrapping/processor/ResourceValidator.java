@@ -285,7 +285,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
             if (thisReturn.getTypeArguments().stream()
                     .map(WildcardType.class::cast)
                     .map(WildcardType::getExtendsBound)
-                    .map(definition::typeOf)
+                    .map(definition.getEnv()::findDeclaration)
                     .map(a -> a.getAnnotation(Resource.class))
                     .allMatch(Objects::nonNull)) {
                 return;
@@ -309,7 +309,7 @@ class ResourceValidator extends Validator<ResourceDefinition> {
 
             // Require generic type arguments to be primitive
             if (valueArgType.getTypeArguments().stream()
-                    .map(definition::typeOf)
+                    .map(definition.getEnv()::findDeclaration)
                     .map(a -> a.getAnnotation(Resource.class))
                     .allMatch(Objects::isNull)) {
                 return;

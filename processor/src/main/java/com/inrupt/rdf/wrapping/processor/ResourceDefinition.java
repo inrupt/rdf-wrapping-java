@@ -119,7 +119,7 @@ class ResourceDefinition extends Definition<TypeElement, Resource> {
 
     private ResourceDefinition dequeue(final Queue<TypeMirror> outstanding) {
         final TypeMirror next = outstanding.remove();
-        final TypeElement nextType = getEnv().type(next);
+        final TypeElement nextType = getEnv().findDeclaration(next);
 
         return new ResourceDefinition(nextType, getEnv());
     }

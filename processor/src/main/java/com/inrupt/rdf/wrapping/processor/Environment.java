@@ -34,11 +34,11 @@ class Environment extends WrapperProcessingEnvironment {
         super(env);
     }
 
-    TypeElement type(final Class<?> clazz) {
+    TypeElement findDeclaration(final Class<?> clazz) {
         return getElementUtils().getTypeElement(clazz.getCanonicalName());
     }
 
-    TypeElement type(final TypeMirror mirror) {
+    TypeElement findDeclaration(final TypeMirror mirror) {
         return (TypeElement) getTypeUtils().asElement(mirror);
     }
 
@@ -55,10 +55,10 @@ class Environment extends WrapperProcessingEnvironment {
     }
 
     Stream<ExecutableElement> methodsOf(final Class<?> clazz) {
-        return methodsOf(type(clazz));
+        return methodsOf(findDeclaration(clazz));
     }
 
     private TypeMirror mirror(final Class<?> clazz) {
-        return type(clazz).asType();
+        return findDeclaration(clazz).asType();
     }
 }

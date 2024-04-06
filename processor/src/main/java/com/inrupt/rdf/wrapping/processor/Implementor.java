@@ -106,7 +106,7 @@ abstract class Implementor<T extends Definition<?, ?>> {
     }
 
     protected JType asImplementation(final TypeMirror original) {
-        final TypeElement returnType = definition.typeOf(original);
+        final TypeElement returnType = definition.getEnv().findDeclaration(original);
         final String originalBinaryName = binaryName(returnType);
 
         return $t(asImplementation(originalBinaryName));

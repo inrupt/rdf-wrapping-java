@@ -68,7 +68,7 @@ class Definition<T extends Element, U extends Annotation> {
     }
 
     TypeElement returnTypeOf(final ExecutableElement method) {
-        return typeOf(method.getReturnType());
+        return getEnv().findDeclaration(method.getReturnType());
     }
 
     protected T getElement() {

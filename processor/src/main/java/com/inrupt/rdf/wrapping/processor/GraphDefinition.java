@@ -42,7 +42,7 @@ class GraphDefinition extends Definition<TypeElement, Graph> {
     Stream<TypeMirror> transitiveResourceTypes() {
         final Stream<TypeMirror> children = returnTypes();
         final Stream<TypeMirror> descendants = returnTypes()
-                .map(getEnv()::type)
+                .map(getEnv()::findDeclaration)
                 .map(type -> new ResourceDefinition(type, getEnv()))
                 .flatMap(ResourceDefinition::transitiveResourceTypes);
 
