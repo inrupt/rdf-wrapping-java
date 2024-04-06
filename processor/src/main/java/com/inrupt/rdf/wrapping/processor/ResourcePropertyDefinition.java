@@ -38,10 +38,12 @@ class ResourcePropertyDefinition extends PropertyDefinition<ResourceProperty> {
         return annotation().value();
     }
 
+    // TODO: Rename
     Cardinality cardinality() {
         return annotation().cardinality();
     }
 
+    // TODO: Rename
     String cardinalityMethod() {
         return cardinality().getMethodName();
     }

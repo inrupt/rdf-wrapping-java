@@ -36,6 +36,7 @@ import java.lang.annotation.Target;
 public @interface ResourceProperty {
     String value();
 
+    // TODO: Rename
     Cardinality cardinality() default ANY_OR_NULL;
 
     ValueMapping valueMapping() default AS;
