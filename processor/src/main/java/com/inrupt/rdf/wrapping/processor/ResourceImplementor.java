@@ -112,8 +112,6 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
     // TODO: Cover
     private void addMutators() {
         definition.setterProperties().forEach(p -> {
-            final JCall predicate = call("getModel").call("createProperty").arg(str(p.predicate()));
-
             final JExpr mapping = typeOf(NodeMappings.class).methodRef(p.nodeMappingMethod());
 
             final JMethodDef m = addMethod(p);
@@ -146,8 +144,10 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
     }
 
     private void addPropertyMethod(final ResourcePropertyDefinition p, final JExpr mapping) {
-        final JCall predicate = THIS._super().call("getModel").call("createProperty").arg(str(p.predicate()));
+        addMethod(p).body()._return(THIS._super().call(p.cardinalityMethod()).arg(getProperty(p)).arg(mapping));
+    }
 
-        addMethod(p).body()._return(call(p.cardinalityMethod()).arg(predicate).arg(mapping));
+    private static JCall getProperty(final ResourcePropertyDefinition d) {
+        return THIS._super().call("getModel").call("getProperty").arg(str(d.predicate()));
     }
 }
