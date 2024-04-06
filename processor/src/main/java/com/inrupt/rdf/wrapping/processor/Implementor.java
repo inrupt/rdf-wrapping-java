@@ -91,7 +91,11 @@ abstract class Implementor<T extends Definition<?, ?>> {
         target._extends(clazz);
         target._implements(getOriginalInterface());
 
-        target.docComment().text("Warning, this class consists of generated code.");
+        final JDocComment javadoc = target.docComment();
+        javadoc.text("Warning, this class consists of generated code and is not intended to be used directly. Use ");
+        javadoc.linkType(false, getOriginalInterface()).text("the original interface");
+        javadoc.text(" instead.");
+
         target.annotate(Generated.class).value(this.getClass().getName()).value("date", Instant.now().toString());
     }
 
