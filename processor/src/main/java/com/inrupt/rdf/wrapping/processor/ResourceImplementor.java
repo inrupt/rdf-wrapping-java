@@ -31,6 +31,7 @@ import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
 import com.inrupt.rdf.wrapping.jena.ValueMappings;
 import com.inrupt.rdf.wrapping.jena.WrapperResource;
 
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
@@ -114,25 +115,27 @@ class ResourceImplementor extends Implementor<ResourceDefinition> {
         definition.setterProperties().forEach(p -> {
             final JExpr mapping = typeOf(NodeMappings.class).methodRef(p.nodeMappingMethod());
 
-            final JMethodDef m = addMethod(p);
-            final DeclaredType valueArgType = (DeclaredType) p.getValueParamType();
-            final JParamDeclaration value = m.param(FINAL, typeOf(valueArgType), "value");
+            final JMethodDef method = addMethod(p);
+            final JParamDeclaration valueParam = method.param(FINAL, typeOf(p.getValueParamType()), "value");
 
-            final JExpr valueExpr;
-            if (definition.typeOf(valueArgType).getAnnotation(Resource.class) != null) {
-                valueExpr = name(value).cast(RDFNode.class);
-            } else {
-                valueExpr = name(value);
-            }
+            // Mutator method implementations for complex properties must cast value parameter to node so it works
+            // with identity node mapping.
+            // TODO: What happens with other node mapping methods?
+            final TypeElement declaration = definition.getEnv().findDeclaration(p.getValueParamType());
+            final JExpr value = declaration.getAnnotation(Resource.class) != null ?
+                    name(valueParam).cast(RDFNode.class) :
+                    name(valueParam);
 
-            final JCall call = m.body().call(THIS._super(), p.cardinalityMethod());
+            final JCall call = method.body().call(THIS._super(), p.cardinalityMethod());
 
-            valueArgType.getTypeArguments().stream()
+            // Plural mutator method implementations must specify type argument of cardinality method to assist type
+            // inference.
+            p.getValueParamType().getTypeArguments().stream()
                     .findFirst()
-                    .ifPresent(typeMirror ->
-                            call.typeArg(typeOf(typeMirror)));
+                    .map(JTypes::typeOf)
+                    .ifPresent(call::typeArg);
 
-            call.arg(predicate).arg(valueExpr).arg(mapping);
+            call.arg(getProperty(p)).arg(value).arg(mapping);
         });
     }
 
