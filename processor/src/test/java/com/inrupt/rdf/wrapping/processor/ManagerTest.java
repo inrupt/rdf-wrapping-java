@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static com.inrupt.rdf.wrapping.processor.Manager.create;
 import static com.inrupt.rdf.wrapping.processor.Manager.wrap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
@@ -28,12 +29,19 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import com.inrupt.rdf.wrapping.jena.UriOrBlankFactory;
+import com.inrupt.rdf.wrapping.jena.WrapperModel;
+
 import java.util.stream.Stream;
 
+import org.apache.jena.enhanced.EnhGraph;
+import org.apache.jena.enhanced.Implementation;
+import org.apache.jena.graph.Node;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,6 +72,28 @@ class ManagerTest {
         );
     }
 
+    @DisplayName("fails to create resource with error")
+    @ParameterizedTest(name = "[{2}] when definition is [{0}] and graph is [{1}]")
+    @MethodSource
+    void createFails(final Class<?> definition, final Object model, final String error) {
+        final Throwable t = assertThrows(RuntimeException.class, () -> create(null, definition, model));
+        assertThat(t, hasProperty("message", is(error)));
+    }
+
+    static Stream<Arguments> createFails() {
+        final Object model = ModelFactory.createDefaultModel();
+        final Object notModel = "not model";
+        final Personalized personalized = new Personalized();
+
+        return Stream.of(
+                arguments(ResourceOk.class, notModel, "graph must be a Model"),
+                arguments(ResourceNoImplementation.class, model, "implementation not found"),
+                arguments(ResourceImplementationMismatch.class, model, "implementation type mismatch"),
+                arguments(ResourceNoConstructor.class, personalized, "could not project to implementation"),
+                arguments(ResourceNotDefinition.class, personalized, "implementation does not implement definition")
+        );
+    }
+
     @Test
     @DisplayName("wraps graph")
     void wrapModel() {
@@ -78,6 +108,14 @@ class ManagerTest {
         final Dataset dataset = DatasetFactory.create();
 
         assertDoesNotThrow(() -> wrap(dataset, OkDataset.class));
+    }
+
+    @Test
+    @DisplayName("creates resource")
+    void createResource() {
+        final Model model = new Personalized();
+
+        assertDoesNotThrow(() -> create(null, ResourceOk.class, model));
     }
 
     interface NoImplementation {
@@ -149,4 +187,55 @@ class ManagerTest {
             };
         }
     }
+
+    //region Resource
+
+    static class Personalized extends WrapperModel {
+        protected Personalized() {
+            super(ModelFactory.createDefaultModel().getGraph());
+
+            getPersonality()
+                    .add(ResourceOk_$impl.class, ResourceOk_$impl.factory)
+                    .add(ResourceNotDefinition_$impl.class, ResourceNotDefinition_$impl.factory);
+        }
+    }
+
+    interface ResourceNoImplementation {
+    }
+
+    interface ResourceNotDefinition {
+    }
+
+    static class ResourceNotDefinition_$impl extends ResourceImpl {
+        static final Implementation factory = new UriOrBlankFactory(ResourceNotDefinition_$impl::new);
+
+        protected ResourceNotDefinition_$impl(final Node n, final EnhGraph m) {
+            super(n, m);
+        }
+    }
+
+    interface ResourceNoConstructor {
+    }
+
+    static class ResourceNoConstructor_$impl extends ResourceImpl {
+    }
+
+    interface ResourceImplementationMismatch {
+    }
+
+    static class ResourceImplementationMismatch_$impl {
+    }
+
+    interface ResourceOk {
+    }
+
+    static class ResourceOk_$impl extends ResourceImpl implements ResourceOk {
+        static final Implementation factory = new UriOrBlankFactory(ResourceOk_$impl::new);
+
+        protected ResourceOk_$impl(final Node n, final EnhGraph m) {
+            super(n, m);
+        }
+    }
+
+    //endregion
 }

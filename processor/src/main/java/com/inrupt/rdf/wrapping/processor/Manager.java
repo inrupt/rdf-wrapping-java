@@ -23,12 +23,11 @@ package com.inrupt.rdf.wrapping.processor;
 import static com.inrupt.rdf.wrapping.processor.Implementor.WRAP;
 import static com.inrupt.rdf.wrapping.processor.Implementor.asImplementation;
 
-import com.inrupt.rdf.wrapping.annotation.Resource;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
+import org.apache.jena.enhanced.UnsupportedPolymorphismException;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
@@ -48,23 +47,15 @@ public final class Manager {
         return wrap(original, definition, Dataset.class);
     }
 
-    // TODO: Tidy
-    // TODO: Cover
-    public static <T, U> T create(final String name, final Class<T> resource, final U graph) {
-        Objects.requireNonNull(resource);
+    public static <T> T create(final String name, final Class<T> targetClass, final Object graph) {
+        Objects.requireNonNull(targetClass);
         Objects.requireNonNull(graph);
 
-        if (resource.getAnnotation(Resource.class) == null) {
-            throw new RuntimeException("resource must be a definition");
-        }
-
-        if (!(graph instanceof Model)) {
-            throw new RuntimeException("graph must be a Model");
-        }
-
-        final Class<? extends RDFNode> rawImplementation = findImplementation(resource).asSubclass(RDFNode.class);
-        final Model graph1 = (Model) graph;
-        return (T) graph1.createResource(name).as(rawImplementation);
+        final Class<?> rawImplementation = findImplementation(targetClass);
+        final Class<? extends RDFNode> implementation = subclass(rawImplementation, RDFNode.class);
+        final Model model = asModel(graph);
+        final RDFNode result = createAndProject(name, model, implementation);
+        return ensureImplements(result, targetClass);
     }
 
     private static <T> T wrap(final Object original, final Class<T> definition, final Class<?> parameterType) {
@@ -130,5 +121,32 @@ public final class Manager {
         } catch (ClassCastException e) {
             throw new RuntimeException("wrap method return type mismatch", e);
         }
+    }
+
+    private static <T> T ensureImplements(final Object result, final Class<T> definition) {
+        try {
+            return definition.cast(result);
+
+        } catch (ClassCastException e) {
+            throw new RuntimeException("implementation does not implement definition", e);
+        }
+    }
+
+    private static RDFNode createAndProject(final String name, final Model m,
+                                            final Class<? extends RDFNode> implementation) {
+        try {
+            return m.createResource(name).as(implementation);
+
+        } catch (UnsupportedPolymorphismException e) {
+            throw new RuntimeException("could not project to implementation", e);
+        }
+    }
+
+    private static Model asModel(final Object graph) {
+        if (!(graph instanceof Model)) {
+            throw new RuntimeException("graph must be a Model");
+        }
+
+        return (Model) graph;
     }
 }
