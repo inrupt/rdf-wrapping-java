@@ -22,9 +22,6 @@ package com.inrupt.rdf.wrapping.processor;
 
 import static javax.lang.model.type.TypeKind.VOID;
 
-import com.inrupt.rdf.wrapping.annotation.Dataset;
-import com.inrupt.rdf.wrapping.annotation.Graph;
-
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -44,19 +41,6 @@ class Definition<T extends Element, U extends Annotation> {
         this.element = element;
         this.env = env;
         this.clazz = clazz;
-    }
-
-    static Definition<TypeElement, ?> definition(final TypeElement type, final Environment env) {
-        if (type.getAnnotation(Dataset.class) != null) {
-            return new DatasetDefinition(type, env);
-
-        } else if (type.getAnnotation(Graph.class) != null) {
-            return new GraphDefinition(type, env);
-
-        } else { // Resource
-            // Processor's supported annotations are finite
-            return new ResourceDefinition(type, env);
-        }
     }
 
     TypeElement returnTypeOf(final ExecutableElement method) {

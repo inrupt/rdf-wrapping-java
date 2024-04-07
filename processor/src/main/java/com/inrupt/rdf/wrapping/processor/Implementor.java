@@ -67,19 +67,6 @@ abstract class Implementor<T extends Definition<?, ?>> {
         }
     }
 
-    static Implementor<?> implementor(final Definition<?, ?> definition) {
-        if (definition instanceof DatasetDefinition) {
-            return new DatasetImplementor((DatasetDefinition) definition);
-
-        } else if (definition instanceof GraphDefinition) {
-            return new GraphImplementor((GraphDefinition) definition);
-
-        } else { // Resource
-            // Processor's supported annotations are finite
-            return new ResourceImplementor((ResourceDefinition) definition);
-        }
-    }
-
     static String asImplementation(final String original) {
         return original + "_$impl";
     }

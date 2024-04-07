@@ -42,19 +42,6 @@ abstract class Validator<T extends Definition<?, ?>> {
         this.definition = definition;
     }
 
-    static Validator<?> validator(final Definition<?, ?> definition) {
-        if (definition instanceof DatasetDefinition) {
-            return new DatasetValidator((DatasetDefinition) definition);
-
-        } else if (definition instanceof GraphDefinition) {
-            return new GraphValidator((GraphDefinition) definition);
-
-        } else { // Resource
-            // Processor's supported annotations are finite
-            return new ResourceValidator((ResourceDefinition) definition);
-        }
-    }
-
     Collection<ValidationError> validate() {
         validateInternal();
 

@@ -20,9 +20,6 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static com.inrupt.rdf.wrapping.processor.Definition.definition;
-import static com.inrupt.rdf.wrapping.processor.Implementor.implementor;
-import static com.inrupt.rdf.wrapping.processor.Validator.validator;
 import static java.util.stream.Collectors.toSet;
 import static javax.lang.model.SourceVersion.RELEASE_8;
 import static javax.tools.Diagnostic.Kind.NOTE;
@@ -78,5 +75,44 @@ public class Processor extends AbstractProcessor {
         }
 
         return true;
+    }
+
+    private static Definition<TypeElement, ?> definition(final TypeElement type, final Environment env) {
+        if (type.getAnnotation(Dataset.class) != null) {
+            return new DatasetDefinition(type, env);
+
+        } else if (type.getAnnotation(Graph.class) != null) {
+            return new GraphDefinition(type, env);
+
+        } else { // Resource
+            // Supported annotations are finite
+            return new ResourceDefinition(type, env);
+        }
+    }
+
+    private static Implementor<?> implementor(final Definition<?, ?> definition) {
+        if (definition instanceof DatasetDefinition) {
+            return new DatasetImplementor((DatasetDefinition) definition);
+
+        } else if (definition instanceof GraphDefinition) {
+            return new GraphImplementor((GraphDefinition) definition);
+
+        } else { // Resource
+            // Supported annotations are finite
+            return new ResourceImplementor((ResourceDefinition) definition);
+        }
+    }
+
+    private static Validator<?> validator(final Definition<?, ?> definition) {
+        if (definition instanceof DatasetDefinition) {
+            return new DatasetValidator((DatasetDefinition) definition);
+
+        } else if (definition instanceof GraphDefinition) {
+            return new GraphValidator((GraphDefinition) definition);
+
+        } else { // Resource
+            // Supported annotations are finite
+            return new ResourceValidator((ResourceDefinition) definition);
+        }
     }
 }
