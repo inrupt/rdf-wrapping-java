@@ -74,7 +74,7 @@ public final class Manager {
             return Class.forName(implementation);
 
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("implementation not found", e);
+            throw new ProcessorException("implementation not found", e);
         }
     }
 
@@ -83,7 +83,7 @@ public final class Manager {
             return implementation.asSubclass(definition);
 
         } catch (ClassCastException e) {
-            throw new RuntimeException("implementation type mismatch", e);
+            throw new ProcessorException("implementation type mismatch", e);
         }
     }
 
@@ -92,13 +92,13 @@ public final class Manager {
             return implementation.getDeclaredMethod(WRAP, parameterType);
 
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException("wrap method not found", e);
+            throw new ProcessorException("wrap method not found", e);
         }
     }
 
     private static void ensureNotVoid(final Method wrap) {
         if (wrap.getReturnType() == void.class) {
-            throw new RuntimeException("wrap method is void");
+            throw new ProcessorException("wrap method is void");
         }
     }
 
@@ -107,10 +107,10 @@ public final class Manager {
             return wrap.invoke(null, original);
 
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("wrap method inaccessible", e);
+            throw new ProcessorException("wrap method inaccessible", e);
 
         } catch (InvocationTargetException e) {
-            throw new RuntimeException("wrap method threw exception", e);
+            throw new ProcessorException("wrap method threw exception", e);
         }
     }
 
@@ -119,7 +119,7 @@ public final class Manager {
             return definition.cast(result);
 
         } catch (ClassCastException e) {
-            throw new RuntimeException("wrap method return type mismatch", e);
+            throw new ProcessorException("wrap method return type mismatch", e);
         }
     }
 
@@ -128,7 +128,7 @@ public final class Manager {
             return definition.cast(result);
 
         } catch (ClassCastException e) {
-            throw new RuntimeException("implementation does not implement definition", e);
+            throw new ProcessorException("implementation does not implement definition", e);
         }
     }
 
@@ -138,13 +138,13 @@ public final class Manager {
             return m.createResource(name).as(implementation);
 
         } catch (UnsupportedPolymorphismException e) {
-            throw new RuntimeException("could not project to implementation", e);
+            throw new ProcessorException("could not project to implementation", e);
         }
     }
 
     private static Model asModel(final Object graph) {
         if (!(graph instanceof Model)) {
-            throw new RuntimeException("graph must be a Model");
+            throw new ProcessorException("graph must be a Model");
         }
 
         return (Model) graph;
