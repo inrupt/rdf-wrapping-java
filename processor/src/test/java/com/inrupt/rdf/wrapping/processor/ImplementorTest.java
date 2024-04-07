@@ -20,17 +20,14 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static javax.tools.Diagnostic.Kind.ERROR;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -51,6 +48,7 @@ class ImplementorTest {
         final Name name = mock(Name.class);
         final PackageElement packageElement = mock(PackageElement.class);
         final Filer filer = mock(Filer.class);
+        final Messager messager = mock(Messager.class);
         when(definition.getElement()).thenReturn(type);
         when(definition.getEnv()).thenReturn(env);
 
@@ -60,6 +58,7 @@ class ImplementorTest {
         when(filer.createSourceFile(any())).thenThrow(IOException.class); // Substance
         when(env.getElementUtils()).thenReturn(elementUtils);
         when(env.getFiler()).thenReturn(filer);
+        when(env.getMessager()).thenReturn(messager);
 
         @SuppressWarnings({"rawtypes", "unchecked"}) // For test brevity
         final Implementor mock = new Implementor(definition) {
@@ -68,7 +67,7 @@ class ImplementorTest {
             }
         };
 
-        final Throwable t = assertThrows(RuntimeException.class, mock::implement);
-        assertThat(t, hasProperty("message", is("could not open writer")));
+        mock.implement();
+        verify(messager).printMessage(eq(ERROR), startsWith("could not write source"), eq(type));
     }
 }

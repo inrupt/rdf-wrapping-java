@@ -20,6 +20,7 @@
  */
 package com.inrupt.rdf.wrapping.processor;
 
+import static javax.tools.Diagnostic.Kind.ERROR;
 import static org.jboss.jdeparser.JMod.PUBLIC;
 import static org.jboss.jdeparser.JTypes.$t;
 import static org.jboss.jdeparser.JTypes.typeOf;
@@ -63,7 +64,8 @@ abstract class Implementor<T extends Definition<?, ?>> {
         try {
             sources.writeSources();
         } catch (IOException e) {
-            throw new RuntimeException("could not open writer", e);
+            final String msg = String.format("could not write sources, caused by [%s]", e);
+            definition.getEnv().getMessager().printMessage(ERROR, msg, definition.getElement());
         }
     }
 
