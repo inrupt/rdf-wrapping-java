@@ -28,7 +28,7 @@
     <checkstyle.plugin.version>3.3.1</checkstyle.plugin.version>
     <compiler.plugin.version>3.13.0</compiler.plugin.version>
     <deploy.plugin.version>3.1.1</deploy.plugin.version>
-    <install.plugin.version>3.1.1</install.plugin.version>
+    <install.plugin.version>3.1.2</install.plugin.version>
     <gpg.plugin.version>3.2.4</gpg.plugin.version>
     <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
     <jar.plugin.version>3.4.1</jar.plugin.version>
