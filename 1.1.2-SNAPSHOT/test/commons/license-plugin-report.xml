@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<licensePluginReport goal="CHECK" timestamp="1714476035803">
+<licensePluginReport goal="CHECK" timestamp="1715169178578">
     <module artifactId="inrupt-rdf-wrapping-test-commons" groupId="com.inrupt.rdf" version="1.1.2-SNAPSHOT"/>
     <files>
         <file path="src/main/java/com/inrupt/rdf/wrapping/test/commons/CommonsObjectSetBase.java" result="PRESENT"/>
