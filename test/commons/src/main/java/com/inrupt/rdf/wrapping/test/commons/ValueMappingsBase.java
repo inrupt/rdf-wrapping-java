@@ -160,6 +160,7 @@ public class ValueMappingsBase {
     public static final class MockBadCtorNode extends WrapperIRI {
         private static final RDF FACTORY = RDFFactory.getInstance();
 
+        @SuppressWarnings("java:S112") // fine in test code
         public MockBadCtorNode(final RDFTerm node) {
             super(node, FACTORY.createGraph());
             throw new RuntimeException();
