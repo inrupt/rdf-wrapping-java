@@ -9,9 +9,6 @@
 
   <artifactId>inrupt-rdf-wrapping-test</artifactId>
   <name>Inrupt RDF Wrapping Tests</name>
-  <description>
-    <!-- TODO: Write -->
-  </description>
   <packaging>pom</packaging>
 
   <modules>

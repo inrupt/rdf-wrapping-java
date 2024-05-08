@@ -37,6 +37,8 @@ import org.junit.jupiter.api.Test;
 public class TermMappingsBase {
     private static final RDF FACTORY = RDFFactory.getInstance();
     private static final Graph GRAPH = FACTORY.createGraph();
+    private static final String LEXICAL_FORM = "lexicalForm";
+    private static final String DATATYPE = "datatype";
 
     @Test
     void asStringLiteralTest() {
@@ -48,8 +50,8 @@ public class TermMappingsBase {
 
         assertThat(asStringLiteral(string, GRAPH), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("lexicalForm", is(string))).and(
-                hasProperty("datatype", is(xsdString))));
+                hasProperty(LEXICAL_FORM, is(string))).and(
+                hasProperty(DATATYPE, is(xsdString))));
     }
 
     @Test
@@ -86,8 +88,8 @@ public class TermMappingsBase {
 
         assertThat(asTypedLiteral(instant, GRAPH), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("lexicalForm", is(instant.toString()))).and(
-                hasProperty("datatype", is(xsdDateTime))));
+                hasProperty(LEXICAL_FORM, is(instant.toString()))).and(
+                hasProperty(DATATYPE, is(xsdDateTime))));
     }
 
     @Test
@@ -99,8 +101,8 @@ public class TermMappingsBase {
 
         assertThat(asTypedLiteral(true, GRAPH), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("lexicalForm", is("true"))).and(
-                hasProperty("datatype", is(xsdBoolean))));
+                hasProperty(LEXICAL_FORM, is("true"))).and(
+                hasProperty(DATATYPE, is(xsdBoolean))));
     }
 
     @Test
@@ -112,8 +114,8 @@ public class TermMappingsBase {
 
         assertThat(asTypedLiteral(1, GRAPH), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("lexicalForm", is("1"))).and(
-                hasProperty("datatype", is(xsdInt))));
+                hasProperty(LEXICAL_FORM, is("1"))).and(
+                hasProperty(DATATYPE, is(xsdInt))));
     }
 
     @Test

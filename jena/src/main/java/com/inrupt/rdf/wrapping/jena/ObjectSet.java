@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.util.iterator.ExtendedIterator;
 
 /**
  * This class implements the {@link Set} interface as a dynamic, mutable view over an RDF predicate-object list
@@ -114,7 +113,7 @@ public class ObjectSet<T> extends AbstractSet<T> {
     @Override
     public int size() {
         int total = 0;
-        final ExtendedIterator iter = statements();
+        final StmtIterator iter = statements();
         while (iter.hasNext()) {
             total += 1;
             iter.next();
