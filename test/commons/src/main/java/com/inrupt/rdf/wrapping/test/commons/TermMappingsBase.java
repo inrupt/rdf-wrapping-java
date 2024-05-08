@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 public class TermMappingsBase {
     private static final RDF FACTORY = RDFFactory.getInstance();
     private static final Graph GRAPH = FACTORY.createGraph();
+    private static final String LEXICAL_FORM = "lexicalForm";
 
     @Test
     void asStringLiteralTest() {
@@ -48,7 +49,7 @@ public class TermMappingsBase {
 
         assertThat(asStringLiteral(string, GRAPH), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("lexicalForm", is(string))).and(
+                hasProperty(LEXICAL_FORM, is(string))).and(
                 hasProperty("datatype", is(xsdString))));
     }
 
@@ -86,7 +87,7 @@ public class TermMappingsBase {
 
         assertThat(asTypedLiteral(instant, GRAPH), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("lexicalForm", is(instant.toString()))).and(
+                hasProperty(LEXICAL_FORM, is(instant.toString()))).and(
                 hasProperty("datatype", is(xsdDateTime))));
     }
 
@@ -99,7 +100,7 @@ public class TermMappingsBase {
 
         assertThat(asTypedLiteral(true, GRAPH), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("lexicalForm", is("true"))).and(
+                hasProperty(LEXICAL_FORM, is("true"))).and(
                 hasProperty("datatype", is(xsdBoolean))));
     }
 
@@ -112,7 +113,7 @@ public class TermMappingsBase {
 
         assertThat(asTypedLiteral(1, GRAPH), both(
                 instanceOf(Literal.class)).and(
-                hasProperty("lexicalForm", is("1"))).and(
+                hasProperty(LEXICAL_FORM, is("1"))).and(
                 hasProperty("datatype", is(xsdInt))));
     }
 
