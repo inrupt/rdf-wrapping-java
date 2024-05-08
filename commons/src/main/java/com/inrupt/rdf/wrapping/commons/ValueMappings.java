@@ -196,10 +196,16 @@ public final class ValueMappings {
      *
      * @return a mapping that converts the term to the supplied implementation type
      *
+     * @implNote The {@code view} target class must contain a public constructor with one of the following signatures:
+     * <ol>
+     *     <li>{@link RDFTerm}, {@link Graph}</li>
+     *     <li>{@link RDFTerm}</li>
+     * </ol>
+     * Constructors will be searched in the above order.
+     *
      * @throws NullPointerException if the view is null
      * @see #as(RDFTerm, Graph, Class) the returned mapping function (including exceptions it throws)
      */
-    // TODO: Document constructor requirements
     public static <T extends RDFTerm> ValueMapping<T> as(final Class<T> view) {
         Objects.requireNonNull(view, "View must not be null");
 
