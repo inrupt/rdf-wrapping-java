@@ -47,7 +47,7 @@
     <guava.version>33.2.0-jre</guava.version>
 
     <!-- tooling -->
-    <checkstyle.tool.version>10.16.0</checkstyle.tool.version>
+    <checkstyle.tool.version>10.17.0</checkstyle.tool.version>
 
     <!-- testing -->
     <junit.version>5.10.2</junit.version>
