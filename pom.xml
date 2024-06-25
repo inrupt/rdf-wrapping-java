@@ -24,7 +24,7 @@
     <inrupt.commons.rdf4j.version>0.6.0</inrupt.commons.rdf4j.version>
 
     <!-- plugins -->
-    <clean.plugin.version>3.3.2</clean.plugin.version>
+    <clean.plugin.version>3.4.0</clean.plugin.version>
     <checkstyle.plugin.version>3.4.0</checkstyle.plugin.version>
     <compiler.plugin.version>3.13.0</compiler.plugin.version>
     <deploy.plugin.version>3.1.2</deploy.plugin.version>
