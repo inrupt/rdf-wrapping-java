@@ -31,7 +31,7 @@
     <compiler.plugin.version>3.13.0</compiler.plugin.version>
     <deploy.plugin.version>3.1.2</deploy.plugin.version>
     <install.plugin.version>3.1.2</install.plugin.version>
-    <gpg.plugin.version>3.2.4</gpg.plugin.version>
+    <gpg.plugin.version>3.2.5</gpg.plugin.version>
     <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
     <jar.plugin.version>3.4.2</jar.plugin.version>
     <javadoc.plugin.version>3.8.0</javadoc.plugin.version>
