@@ -42,7 +42,7 @@
     <pmd.plugin.version>3.24.0</pmd.plugin.version>
     <release.plugin.version>3.1.1</release.plugin.version>
     <resources.plugin.version>3.3.1</resources.plugin.version>
-    <site.plugin.version>3.12.1</site.plugin.version>
+    <site.plugin.version>3.20.0</site.plugin.version>
     <sonar.plugin.version>4.0.0.4121</sonar.plugin.version>
     <source.plugin.version>3.3.1</source.plugin.version>
     <surefire.plugin.version>3.3.1</surefire.plugin.version>
