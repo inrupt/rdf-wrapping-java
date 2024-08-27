@@ -4,6 +4,16 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      plugins:
+        patterns:
+          - "org.apache.maven.plugins:*"
+          - "com.mycila:license-maven-plugin"
+          - "org.jacoco:jacoco-maven-plugin"
+          - "org.sonarsource.scanner.maven:sonar-maven-plugin"
+          - "org.sonatype.plugins:nexus-staging-maven-plugin"
+          - "org.owasp:dependency-check-maven"
+          - "com.puppycrawl.tools:checkstyle"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
