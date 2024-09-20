@@ -4,6 +4,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "com.google.protobuf:protobuf-java"
+        update-types:
+          - "version-update:semver-major"
     groups:
       plugins:
         patterns:
