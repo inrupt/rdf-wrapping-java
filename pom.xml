@@ -46,7 +46,7 @@
     <sonar.plugin.version>4.0.0.4121</sonar.plugin.version>
     <source.plugin.version>3.3.1</source.plugin.version>
     <surefire.plugin.version>3.5.0</surefire.plugin.version>
-    <guava.version>33.3.0-jre</guava.version>
+    <guava.version>33.3.1-jre</guava.version>
 
     <!-- tooling -->
     <checkstyle.tool.version>10.18.1</checkstyle.tool.version>
