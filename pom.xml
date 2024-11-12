@@ -43,13 +43,13 @@
     <release.plugin.version>3.1.1</release.plugin.version>
     <resources.plugin.version>3.3.1</resources.plugin.version>
     <site.plugin.version>3.21.0</site.plugin.version>
-    <sonar.plugin.version>4.0.0.4121</sonar.plugin.version>
+    <sonar.plugin.version>5.0.0.4389</sonar.plugin.version>
     <source.plugin.version>3.3.1</source.plugin.version>
     <surefire.plugin.version>3.5.2</surefire.plugin.version>
     <guava.version>33.3.1-jre</guava.version>
 
     <!-- tooling -->
-    <checkstyle.tool.version>10.20.0</checkstyle.tool.version>
+    <checkstyle.tool.version>10.20.1</checkstyle.tool.version>
 
     <!-- testing -->
     <junit.version>5.11.3</junit.version>
