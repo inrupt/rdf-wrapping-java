@@ -146,7 +146,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.25.5</version>
+        <version>3.25.6</version>
       </dependency>
       <!-- Update for CVE-2024-47554 via Jena 5.1 -->
       <dependency>
