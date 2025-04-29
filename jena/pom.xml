@@ -46,6 +46,19 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>java-11</id>
+      <activation>
+        <jdk>11</jdk>
+      </activation>
+      <properties>
+        <jena.version>4.10.0</jena.version>
+      </properties>
+    </profile>
+  </profiles>
+
+
   <build>
     <plugins>
       <plugin>
