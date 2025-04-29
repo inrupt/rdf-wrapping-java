@@ -647,6 +647,16 @@
 
   <profiles>
     <profile>
+      <id>java-11</id>
+      <!-- Jena 5 requires Java 17+ -->
+      <activation>
+        <jdk>11</jdk>
+      </activation>
+      <properties>
+        <jena.version>4.10.0</jena.version>
+      </properties>
+    </profile>
+    <profile>
       <id>publish</id>
       <!-- skip tests for publish profile, since these tests have already run -->
       <properties>
