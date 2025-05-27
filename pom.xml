@@ -49,7 +49,7 @@
     <guava.version>33.4.8-jre</guava.version>
 
     <!-- tooling -->
-    <checkstyle.tool.version>10.23.1</checkstyle.tool.version>
+    <checkstyle.tool.version>10.24.0</checkstyle.tool.version>
 
     <!-- testing -->
     <junit.version>5.12.2</junit.version>
