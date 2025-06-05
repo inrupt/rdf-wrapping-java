@@ -37,4 +37,7 @@ jobs:
           MAVEN_REPO_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           MAVEN_REPO_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          
+
+      - name: Sonar Analysis
+        run: mvn sonar:sonar -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }}
+
