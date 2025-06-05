@@ -40,7 +40,7 @@ jobs:
           cache: 'maven'
 
       - name: Build and analyze with SonarCloud
-        run: mvn -B -ntp verify sonar:sonar -sonar.token=${{ secrets.SONARQUBE_TOKEN }}
+        run: mvn -B -ntp verify sonar:sonar -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }}
 
   dependencies:
     name: Dependency Check
