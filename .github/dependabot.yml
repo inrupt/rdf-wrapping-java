@@ -3,7 +3,8 @@ updates:
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: cron
+      cronjob: "0 5 1,15 * *"
     ignore:
       - dependency-name: "com.google.protobuf:protobuf-java"
         update-types:
@@ -18,8 +19,9 @@ updates:
           - "org.sonatype.plugins:nexus-staging-maven-plugin"
           - "org.owasp:dependency-check-maven"
           - "com.puppycrawl.tools:checkstyle"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 
