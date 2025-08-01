@@ -23,7 +23,7 @@
     <inrupt.commons.rdf4j.version>0.6.0</inrupt.commons.rdf4j.version>
 
     <!-- transitive dependencies -->
-    <jackson.version>2.19.1</jackson.version>
+    <jackson.version>2.19.2</jackson.version>
 
     <!-- plugins -->
     <clean.plugin.version>3.5.0</clean.plugin.version>
