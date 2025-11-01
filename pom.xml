@@ -19,7 +19,7 @@
     <!-- dependencies -->
     <commons.rdf.version>0.5.0</commons.rdf.version>
     <rdf4j.version>5.2.0</rdf4j.version>
-    <jena.version>5.5.0</jena.version>
+    <jena.version>5.6.0</jena.version>
     <inrupt.commons.rdf4j.version>0.6.0</inrupt.commons.rdf4j.version>
 
     <!-- transitive dependencies -->
