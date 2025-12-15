@@ -39,17 +39,17 @@
     <owasp.plugin.version>12.1.9</owasp.plugin.version>
     <projectinfo.plugin.version>3.9.0</projectinfo.plugin.version>
     <pmd.plugin.version>3.28.0</pmd.plugin.version>
-    <release.plugin.version>3.2.0</release.plugin.version>
+    <release.plugin.version>3.3.1</release.plugin.version>
     <resources.plugin.version>3.4.0</resources.plugin.version>
     <site.plugin.version>3.21.0</site.plugin.version>
-    <sonar.plugin.version>5.3.0.6276</sonar.plugin.version>
+    <sonar.plugin.version>5.5.0.6356</sonar.plugin.version>
     <sonatype.plugin.version>0.9.0</sonatype.plugin.version>
     <source.plugin.version>3.4.0</source.plugin.version>
     <surefire.plugin.version>3.5.4</surefire.plugin.version>
     <guava.version>33.5.0-jre</guava.version>
 
     <!-- tooling -->
-    <checkstyle.tool.version>12.2.0</checkstyle.tool.version>
+    <checkstyle.tool.version>12.3.0</checkstyle.tool.version>
 
     <!-- testing -->
     <junit.version>6.0.1</junit.version>
