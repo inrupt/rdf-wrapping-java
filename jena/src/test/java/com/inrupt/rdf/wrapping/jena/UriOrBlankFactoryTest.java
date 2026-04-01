@@ -42,7 +42,7 @@ class UriOrBlankFactoryTest {
     void wrapTest() {
         final UriOrBlankFactory implementation = new UriOrBlankFactory(EnhNode::new);
         final Node blank = createBlankNode();
-        final Node literal = createLiteral(randomUUID().toString());
+        final Node literal = createLiteralString(randomUUID().toString());
         final EnhGraph graph = new EnhGraph(null, null);
 
         assertThrows(NullPointerException.class, () -> implementation.wrap(null, null));
@@ -57,7 +57,7 @@ class UriOrBlankFactoryTest {
         final UriOrBlankFactory implementation = new UriOrBlankFactory(EnhNode::new);
         final Node blank = createBlankNode();
         final Node iri = createURI(randomUUID().toString());
-        final Node literal = createLiteral(randomUUID().toString());
+        final Node literal = createLiteralString(randomUUID().toString());
         final EnhGraph graph = new EnhGraph(null, null);
 
         assertThrows(NullPointerException.class, () -> implementation.canWrap(null, null));
