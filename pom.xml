@@ -641,13 +641,14 @@
 
   <profiles>
     <profile>
-      <id>java-11</id>
-      <!-- Jena 5 requires Java 17+ -->
+      <id>java17</id>
+      <!-- Jena 6 requires Java 21+ -->
       <activation>
-        <jdk>11</jdk>
+        <jdk>(,21)</jdk>
       </activation>
       <properties>
-        <jena.version>4.10.0</jena.version>
+        <jena.version>5.6.0</jena.version>
+        <checkstyle.tool.version>12.3.1</checkstyle.tool.version>
       </properties>
     </profile>
     <profile>
