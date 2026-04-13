@@ -5,9 +5,13 @@ on:
     - cron: '0 4 * * 1,2,3,4,5'
   workflow_dispatch: { }
 
+permissions: {}
+
 jobs:
   build:
     name: Build and collect data
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     if: ${{ github.actor != 'dependabot[bot]' }}
 

@@ -4,9 +4,13 @@ on:
   # Build pull requests for any branch
   pull_request: { }
 
+permissions: {}
+
 jobs:
   build:
     name: Java environment
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -27,6 +31,8 @@ jobs:
 
   sonar:
     name: SonarCloud Analysis
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
   
     steps:
@@ -44,6 +50,8 @@ jobs:
 
   dependencies:
     name: Dependency Check
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -74,6 +82,7 @@ jobs:
         run: mvn -B -ntp verify -Pdependencies -Dnvd.api.datafeed="file:${GITHUB_WORKSPACE}/data/cache/nvdcve-{0}.json.gz"
 
   check:
+    permissions: {}
     if: always()
     needs:
       - build
