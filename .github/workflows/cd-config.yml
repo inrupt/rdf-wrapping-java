@@ -7,9 +7,13 @@ on:
     tags:
       - inrupt-rdf-wrapping-[0-9]+.[0-9]+.[0-9]+
 
+permissions: {}
+
 jobs:
   publish:
     name: Build and deploy
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
 
     steps:
