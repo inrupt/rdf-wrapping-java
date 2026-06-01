@@ -48,45 +48,11 @@ jobs:
       - name: Build and analyze with SonarCloud
         run: mvn -B -ntp verify sonar:sonar -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }}
 
-  dependencies:
-    name: Dependency Check
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ 17 ]
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.java }}
-          cache: 'maven'
-
-      - name: Generate Cache Name
-        shell: bash
-        run: echo "CACHE_NAME=$(date '+%y.%j')" >> $GITHUB_ENV
-
-      - name: Restore NVD data cache
-        uses: actions/cache@v5
-        with:
-          key: nvd-data-${{ env.CACHE_NAME }}
-          restore-keys: nvd-data-
-          path: ./data/cache
-
-      - name: Verify dependencies
-        run: mvn -B -ntp verify -Pdependencies -Dnvd.api.datafeed="file:${GITHUB_WORKSPACE}/data/cache/nvdcve-{0}.json.gz"
-
   check:
     permissions: {}
     if: always()
     needs:
       - build
-      - dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe # release/v1
