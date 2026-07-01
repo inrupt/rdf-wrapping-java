@@ -52,7 +52,7 @@
     <checkstyle.tool.version>13.6.0</checkstyle.tool.version>
 
     <!-- testing -->
-    <junit.version>6.1.0</junit.version>
+    <junit.version>6.1.1</junit.version>
     <slf4j.version>2.0.18</slf4j.version>
     <hamcrest.version>3.0</hamcrest.version>
     <mockito.version>5.23.0</mockito.version>
