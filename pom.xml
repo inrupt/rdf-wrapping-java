@@ -33,9 +33,9 @@
     <install.plugin.version>3.1.4</install.plugin.version>
     <gpg.plugin.version>3.2.8</gpg.plugin.version>
     <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
-    <jar.plugin.version>3.5.0</jar.plugin.version>
+    <jar.plugin.version>3.5.1</jar.plugin.version>
     <javadoc.plugin.version>3.12.0</javadoc.plugin.version>
-    <license.plugin.version>5.0.0</license.plugin.version>
+    <license.plugin.version>5.1.1</license.plugin.version>
     <owasp.plugin.version>12.2.2</owasp.plugin.version>
     <projectinfo.plugin.version>3.9.0</projectinfo.plugin.version>
     <pmd.plugin.version>3.28.0</pmd.plugin.version>
@@ -49,7 +49,7 @@
     <guava.version>33.6.0-jre</guava.version>
 
     <!-- tooling -->
-    <checkstyle.tool.version>13.8.0</checkstyle.tool.version>
+    <checkstyle.tool.version>13.9.0</checkstyle.tool.version>
 
     <!-- testing -->
     <junit.version>6.1.2</junit.version>
