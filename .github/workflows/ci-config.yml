@@ -3,6 +3,8 @@ name: RDF Wrapping CI
 on:
   # Build pull requests for any branch
   pull_request: { }
+  # Run the required tests on the merge queue.
+  merge_group:
 
 permissions: {}
 
