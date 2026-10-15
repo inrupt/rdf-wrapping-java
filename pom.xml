@@ -46,7 +46,7 @@
     <sonatype.plugin.version>0.11.0</sonatype.plugin.version>
     <source.plugin.version>3.4.0</source.plugin.version>
     <surefire.plugin.version>3.6.0</surefire.plugin.version>
-    <guava.version>33.7.1-jre</guava.version>
+    <guava.version>33.7.2-jre</guava.version>
 
     <!-- tooling -->
     <checkstyle.tool.version>14.3.0</checkstyle.tool.version>
